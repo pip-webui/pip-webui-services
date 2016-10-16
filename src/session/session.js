@@ -36,8 +36,8 @@
                 }, 0);
             }
 
-            function startSession(newSession, fullReset, partialReset) {
-                pipAssert.isObject(newSession || '', "pipSession.start: argument should be an object");
+            function openSession(newSession, fullReset, partialReset) {
+                pipAssert.isObject(newSession || '', "pipSession.open: argument should be an object");
 
                 session = newSession;
 
@@ -46,10 +46,10 @@
 
                 resetContent(fullReset, partialReset);
 
-                $rootScope.$broadcast('pipSessionStarted', session);
+                $rootScope.$broadcast('pipSessionOpened', session);
             }
 
-            function stopSession(fullReset, partialReset) {
+            function closeSession(fullReset, partialReset) {
                 var oldSession = session;
                 session = null;
 
@@ -58,7 +58,7 @@
 
                 resetContent(fullReset, partialReset);
 
-                $rootScope.$broadcast('pipSessionStopped', oldSession);
+                $rootScope.$broadcast('pipSessionClosed', oldSession);
             }
 
             function getSession() {
@@ -67,8 +67,8 @@
 
             return {
                 get: getSession,
-                start: startSession,
-                stop: stopSession
+                open: openSession,
+                close: closeSession
             }
         };
 
