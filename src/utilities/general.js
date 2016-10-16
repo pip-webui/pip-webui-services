@@ -34,8 +34,8 @@
             toBool: convertToBoolean,
             convertObjectIdsToString: convertObjectIdsToString,
             OidToString: convertObjectIdsToString,
-            generateVerificationCode: generateVerificationCode,
-            vercode: generateVerificationCode,
+            // generateVerificationCode: generateVerificationCode,
+            // vercode: generateVerificationCode,
             equalObjectIds: equalObjectIds,
             eqOid: equalObjectIds,
             notEqualObjectIds: notEqualObjectIds,
@@ -44,7 +44,7 @@
             hasOid: containsObjectId,
             isObjectId: isObjectId,
             // Strings functions. No analogues in lodash.strings
-            hashCode: hashCode,
+            // hashCode: hashCode,
             makeString: makeString,
             // Collection function. No analogues in lodash. It may be in lodash later. Look gitHub/lodash issue #1022
             replaceBy: replaceBy

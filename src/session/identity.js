@@ -10,7 +10,7 @@
 
     var thisModule = angular.module('pipIdentity', []);
 
-    thisModule.provider('pipIdentity', function($timeout, pipAssertProvider) {
+    thisModule.provider('pipIdentity', function(pipAssertProvider) {
         var 
             setRoot = true,
             identity = null;
@@ -18,7 +18,7 @@
         this.setRoot = initSetRoot;
         this.identity = initIdentity;
 
-        this.$get = function ($rootScope, pipAssert) {
+        this.$get = function ($rootScope, $timeout, pipAssert) {
             // Set root variable
             if (setRoot)
                 $rootScope.$identity = identity;

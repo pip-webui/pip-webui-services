@@ -45,16 +45,7 @@
             var browser, version;
             var ua = $window.navigator.userAgent;
 
-            if (ua.search(/Edge/) > -1) browser = "edge";
-            if (ua.search(/MSIE/) > -1) browser = "ie";
-            if (ua.search(/Trident/) > -1) browser = "ie11";
-            if (ua.search(/Firefox/) > -1) browser = "firefox";
-            if (ua.search(/Opera/) > -1) browser = "opera";
-            if (ua.search(/OPR/) > -1) browser = "operaWebkit";
-            if (ua.search(/YaBrowser/) > -1) browser = "yabrowser";
-            if (ua.search(/Chrome/) > -1) browser = "chrome";
-            if (ua.search(/Safari/) > -1) browser = "safari";
-            if (ua.search(/Maxthon/) > -1) browser = "maxthon";
+            browser = getBrowserName();
 
             switch (browser) {
                 case "edge":

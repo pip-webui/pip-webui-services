@@ -10,7 +10,7 @@
 
     var thisModule = angular.module('pipSession', []);
 
-    thisModule.provider('pipSession', function($timeout, pipAssertProvider) {
+    thisModule.provider('pipSession', function(pipAssertProvider) {
         var 
             setRoot = true,
             session = null;
@@ -18,7 +18,7 @@
         this.setRoot = initSetRoot;
         this.session = initSession;
 
-        this.$get = function ($rootScope, pipAssert) {
+        this.$get = function ($rootScope, $timeout, pipAssert) {
             // Set root variable
             if (setRoot)
                 $rootScope.$session = session;

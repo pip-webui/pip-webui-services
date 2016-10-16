@@ -26,160 +26,6 @@
     
 })();
 /**
- * @file Application router extended from ui.router
- * @copyright Digital Living Software Corp. 2014-2016
- */
- 
- /* global angular */
- 
-(function () {
-    'use strict';
-    
-    var thisModule = angular.module('pipState', ['ui.router', 'pipTranslate', 'pipAssert']);
-
-    thisModule.config(
-        ['$locationProvider', '$httpProvider', 'pipTranslateProvider', function($locationProvider, $httpProvider, pipTranslateProvider) {
-            // Switch to HTML5 routing mode
-            //$locationProvider.html5Mode(true);
-            pipTranslateProvider.translations('en', {
-                'ERROR_SWITCHING': 'Error while switching route. Try again.'
-            });
-
-            pipTranslateProvider.translations('ru', {
-                'ERROR_SWITCHING': 'Ошибка при переходе. Попробуйте ещё раз.'
-            });
-        }]
-    );
-
-    thisModule.run(
-        ['$rootScope', 'pipTranslate', '$state', function($rootScope, pipTranslate, $state) {
-            $rootScope.$on('$stateChangeSuccess',
-                function(event, toState, toParams, fromState, fromParams) {
-                    // Unset routing variable to disable page transition
-                    $rootScope.$routing = false;
-                    // Record current and previous state
-                    $rootScope.$state = {name: toState.name, url: toState.url, params: toParams};
-                    $rootScope.$prevState = {name: fromState.name, url: fromState.url, params: fromParams};
-                }
-            );
-
-            // Intercept route error
-            $rootScope.$on('$stateChangeError',
-                function(event, toState, toParams, fromState, fromParams, error) {
-                    // Unset routing variable to disable page transition
-                    $rootScope.$routing = false;
-
-                    console.error('Error while switching route to ' + toState.name);
-                    console.error(error);
-                }
-            );
-
-
-            // Intercept route error
-            $rootScope.$on('$stateNotFound',
-                function(event, unfoundState, fromState, fromParams) {
-                    event.preventDefault();
-
-                    // todo make configured error state name
-                    $state.go('errors_missing_route',  {
-                            unfoundState: unfoundState,
-                            fromState : {
-                                to: fromState ? fromState.name : '',
-                                fromParams: fromParams
-                            }
-                        }
-                    );
-                    $rootScope.$routing = false;
-                }
-            );
-
-        }]
-    );
-
-    thisModule.provider('pipState', ['$stateProvider', 'pipAssertProvider', function($stateProvider, pipAssertProvider) {
-        // Configuration of redirected states
-        var redirectedStates = {};
-
-        this.redirect = setRedirect;
-        this.state = $stateProvider.state;
-
-        this.$get = ['$state', '$timeout', 'pipAssert', function ($state, $timeout, pipAssert) {
-            $state.redirect = redirect;
-            $state.goBack = goBack;
-            $state.goBackAndSelect = goBackAndSelect;
-            
-            return $state;
-            
-			//------------------------
-            
-            function redirect(event, state, params, $rootScope) {
-                pipAssert.contains(state, 'name', "$state.redirect: state should contains name prop");
-                pipAssert.isObject(params, "$state.redirect: params should be an object");
-
-                var toState;
-
-                $rootScope.$routing = true;
-                toState = redirectedStates[state.name];
-                if (_.isFunction(toState)) {
-                    toState = toState(state.name, params, $rootScope);
-
-                    if (_.isNull(toState)) {
-                        $rootScope.$routing = false;
-                        throw new Error('Redirected toState cannot be null');
-                    }
-                }
-
-                if (!!toState) {
-                    $timeout(function() {
-                        event.preventDefault();
-                        $state.transitionTo(toState, params, {location: 'replace'});
-                    });
-
-                    return true;
-                }
-
-                return false;
-            }
-
-            function goBack() {
-                $window.history.back()
-            }
-
-            function goBackAndSelect(obj, objParamName, id, idParamName) {
-                pipAssert.isObject(obj, 'pipUtils.goBack: first argument should be an object');
-                pipAssert.isString(idParamName, 'pipUtils.goBack: second argument should a string');
-                pipAssert.isString(objParamName, 'pipUtils.goBack: third argument should a string');
-                    
-                if ($rootScope.$prevState && $rootScope.$prevState.name) {
-                    var state = _.cloneDeep($rootScope.$prevState);
-
-                    state.params[idParamName] = id;
-                    state.params[objParamName] = obj;
-
-                    $state.go(state.name, state.params);
-                } else {
-                    $window.history.back();
-                }
-            }
-        }];
-
-        return;        
-        //------------------
-
-        // Specify automatic redirect from one state to another
-        function setRedirect(fromState, toState) {
-            pipAssertProvider.isNotNull(fromState, "pipState.redirect: fromState cannot be null");
-            pipAssertProvider.isNotNull(toState, "pipState.redirect: toState cannot be null");
-            
-            redirectedStates[fromState] = toState;  
-
-            return this;
-        };
-
-    }]);
-
-})();
-/**
  * @file Assertion utilities
  * @copyright Digital Living Software Corp. 2014-2016
  */
@@ -409,6 +255,338 @@
 
 })();
 
+/**
+ * @file Application router extended from ui.router
+ * @copyright Digital Living Software Corp. 2014-2016
+ */
+ 
+ /* global angular */
+ 
+(function () {
+    'use strict';
+    
+    var thisModule = angular.module('pipState', ['ui.router', 'pipTranslate', 'pipAssert']);
+
+    thisModule.config(
+        ['$locationProvider', '$httpProvider', 'pipTranslateProvider', function($locationProvider, $httpProvider, pipTranslateProvider) {
+            // Switch to HTML5 routing mode
+            //$locationProvider.html5Mode(true);
+            pipTranslateProvider.translations('en', {
+                'ERROR_SWITCHING': 'Error while switching route. Try again.'
+            });
+
+            pipTranslateProvider.translations('ru', {
+                'ERROR_SWITCHING': 'Ошибка при переходе. Попробуйте ещё раз.'
+            });
+        }]
+    );
+
+    thisModule.run(
+        ['$rootScope', 'pipTranslate', '$state', function($rootScope, pipTranslate, $state) {
+            $rootScope.$on('$stateChangeSuccess',
+                function(event, toState, toParams, fromState, fromParams) {
+                    // Unset routing variable to disable page transition
+                    $rootScope.$routing = false;
+                    // Record current and previous state
+                    $rootScope.$state = {name: toState.name, url: toState.url, params: toParams};
+                    $rootScope.$prevState = {name: fromState.name, url: fromState.url, params: fromParams};
+                }
+            );
+
+            // Intercept route error
+            $rootScope.$on('$stateChangeError',
+                function(event, toState, toParams, fromState, fromParams, error) {
+                    // Unset routing variable to disable page transition
+                    $rootScope.$routing = false;
+
+                    console.error('Error while switching route to ' + toState.name);
+                    console.error(error);
+                }
+            );
+
+
+            // Intercept route error
+            $rootScope.$on('$stateNotFound',
+                function(event, unfoundState, fromState, fromParams) {
+                    event.preventDefault();
+
+                    // todo make configured error state name
+                    $state.go('errors_missing_route',  {
+                            unfoundState: unfoundState,
+                            fromState : {
+                                to: fromState ? fromState.name : '',
+                                fromParams: fromParams
+                            }
+                        }
+                    );
+                    $rootScope.$routing = false;
+                }
+            );
+
+        }]
+    );
+
+    thisModule.provider('pipState', ['$stateProvider', 'pipAssertProvider', function($stateProvider, pipAssertProvider) {
+        // Configuration of redirected states
+        var redirectedStates = {};
+
+        this.redirect = setRedirect;
+        this.state = $stateProvider.state;
+
+        this.$get = ['$state', '$timeout', 'pipAssert', function ($state, $timeout, pipAssert) {
+            $state.redirect = redirect;
+            $state.goBack = goBack;
+            $state.goBackAndSelect = goBackAndSelect;
+            
+            return $state;
+            
+			//------------------------
+            
+            function redirect(event, state, params, $rootScope) {
+                pipAssert.contains(state, 'name', "$state.redirect: state should contains name prop");
+                pipAssert.isObject(params, "$state.redirect: params should be an object");
+
+                var toState;
+
+                $rootScope.$routing = true;
+                toState = redirectedStates[state.name];
+                if (_.isFunction(toState)) {
+                    toState = toState(state.name, params, $rootScope);
+
+                    if (_.isNull(toState)) {
+                        $rootScope.$routing = false;
+                        throw new Error('Redirected toState cannot be null');
+                    }
+                }
+
+                if (!!toState) {
+                    $timeout(function() {
+                        event.preventDefault();
+                        $state.transitionTo(toState, params, {location: 'replace'});
+                    });
+
+                    return true;
+                }
+
+                return false;
+            }
+
+            function goBack() {
+                $window.history.back()
+            }
+
+            function goBackAndSelect(obj, objParamName, id, idParamName) {
+                pipAssert.isObject(obj, 'pipUtils.goBack: first argument should be an object');
+                pipAssert.isString(idParamName, 'pipUtils.goBack: second argument should a string');
+                pipAssert.isString(objParamName, 'pipUtils.goBack: third argument should a string');
+                    
+                if ($rootScope.$prevState && $rootScope.$prevState.name) {
+                    var state = _.cloneDeep($rootScope.$prevState);
+
+                    state.params[idParamName] = id;
+                    state.params[objParamName] = obj;
+
+                    $state.go(state.name, state.params);
+                } else {
+                    $window.history.back();
+                }
+            }
+        }];
+
+        return;        
+        //------------------
+
+        // Specify automatic redirect from one state to another
+        function setRedirect(fromState, toState) {
+            pipAssertProvider.isNotNull(fromState, "pipState.redirect: fromState cannot be null");
+            pipAssertProvider.isNotNull(toState, "pipState.redirect: toState cannot be null");
+            
+            redirectedStates[fromState] = toState;  
+
+            return this;
+        };
+
+    }]);
+
+})();
+/**
+ * @file Identity service
+ * @copyright Digital Living Software Corp. 2014-2016
+ */
+ 
+ /* global _, angular */
+
+(function () {
+    'use strict';
+
+    var thisModule = angular.module('pipIdentity', []);
+
+    thisModule.provider('pipIdentity', ['pipAssertProvider', function(pipAssertProvider) {
+        var 
+            setRoot = true,
+            identity = null;
+
+        this.setRoot = initSetRoot;
+        this.identity = initIdentity;
+
+        this.$get = ['$rootScope', '$timeout', 'pipAssert', function ($rootScope, $timeout, pipAssert) {
+            // Set root variable
+            if (setRoot)
+                $rootScope.$identity = identity;
+
+            function getIdentity() {
+                return identity;
+            }
+
+            // Resetting root scope to force update language on the screen
+            function resetContent(fullReset, partialReset) {
+                fullReset = fullReset !== undefined ? !!fullReset : true;
+                partialReset = partialReset !== undefined ? !!partialReset : true;
+
+                $rootScope.$reset = fullReset;
+                $rootScope.$partialReset = partialReset;
+                $timeout(function() {
+                    $rootScope.$reset = false;
+                    $rootScope.$partialReset = false;
+                }, 0);
+            }
+
+            function setIdentity(newIdentity, fullReset, partialReset) {
+                if (newIdentity != null)
+                    pipAssert.isObject(newIdentity || '', "pipIdentity.set: argument should be an object");
+
+                identity = newIdentity;
+
+                if (setRoot)
+                    $rootScope.$identity = identity;
+
+                resetContent(fullReset, partialReset);
+
+                $rootScope.$broadcast('pipIdentityChanged', identity);
+            }
+
+            return {
+                get: getIdentity,
+                set: setIdentity,
+            }
+        }];
+
+        // Initialize set root flag
+        function initSetRoot(newSetRoot) {
+            if (newSetRoot != null) {
+                pipAssertProvider.isBoolean(newSetRoot || '', "pipIdentityProvider.setRoot: argument should be a boolean");
+                setRoot = newSetRoot;
+            }
+            return setRoot;  
+        }
+
+        // Initialize identity
+        function initIdentity(newIdentity) {
+            if (newIdentity != null) {
+                pipAssertProvider.isObject(newIdentity || '', "pipIdentityProvider.identity: argument should be an object");
+                identity = newIdentity;
+            }
+            return identity;  
+        }
+
+    }]);
+
+})();
+/**
+ * @file Session service
+ * @copyright Digital Living Software Corp. 2014-2016
+ */
+ 
+ /* global _, angular */
+
+(function (angular, _) {
+    'use strict';
+
+    var thisModule = angular.module('pipSession', []);
+
+    thisModule.provider('pipSession', ['pipAssertProvider', function(pipAssertProvider) {
+        var 
+            setRoot = true,
+            session = null;
+
+        this.setRoot = initSetRoot;
+        this.session = initSession;
+
+        this.$get = ['$rootScope', '$timeout', 'pipAssert', function ($rootScope, $timeout, pipAssert) {
+            // Set root variable
+            if (setRoot)
+                $rootScope.$session = session;
+            
+            // Resetting root scope to force update language on the screen
+            function resetContent(fullReset, partialReset) {
+                fullReset = fullReset !== undefined ? !!fullReset : true;
+                partialReset = partialReset !== undefined ? !!partialReset : true;
+
+                $rootScope.$reset = fullReset;
+                $rootScope.$partialReset = partialReset;
+                $timeout(function() {
+                    $rootScope.$reset = false;
+                    $rootScope.$partialReset = false;
+                }, 0);
+            }
+
+            function openSession(newSession, fullReset, partialReset) {
+                pipAssert.isObject(newSession || '', "pipSession.open: argument should be an object");
+
+                session = newSession;
+
+                if (setRoot)
+                    $rootScope.$session = session;
+
+                resetContent(fullReset, partialReset);
+
+                $rootScope.$broadcast('pipSessionOpened', session);
+            }
+
+            function closeSession(fullReset, partialReset) {
+                var oldSession = session;
+                session = null;
+
+                if (setRoot)
+                    $rootScope.$session = session;
+
+                resetContent(fullReset, partialReset);
+
+                $rootScope.$broadcast('pipSessionClosed', oldSession);
+            }
+
+            function getSession() {
+                return session;
+            }
+
+            return {
+                get: getSession,
+                open: openSession,
+                close: closeSession
+            }
+        }];
+
+        // Initialize set root flag
+        function initSetRoot(newSetRoot) {
+            if (newSetRoot != null) {
+                pipAssertProvider.isBoolean(newSetRoot || '', "pipSessionProvider.setRoot: argument should be a boolean");
+                setRoot = newSetRoot;
+            }
+            return setRoot;  
+        }
+
+        // Initialize session
+        function initSession(newSession) {
+            if (newSession != null) {
+                pipAssertProvider.isObject(newSession || '', "pipSessionProvider.session: argument should be an object");
+                session = newSession;
+            }
+            return session;  
+        }
+
+    }]);
+
+})(window.angular, window._);
 
  /* global angular */
 
@@ -733,184 +911,6 @@
 
 })();
 
-/**
- * @file Identity service
- * @copyright Digital Living Software Corp. 2014-2016
- */
- 
- /* global _, angular */
-
-(function () {
-    'use strict';
-
-    var thisModule = angular.module('pipIdentity', []);
-
-    thisModule.provider('pipIdentity', ['$timeout', 'pipAssertProvider', function($timeout, pipAssertProvider) {
-        var 
-            setRoot = true,
-            identity = null;
-
-        this.setRoot = initSetRoot;
-        this.identity = initIdentity;
-
-        this.$get = ['$rootScope', 'pipAssert', function ($rootScope, pipAssert) {
-            // Set root variable
-            if (setRoot)
-                $rootScope.$identity = identity;
-
-            function getIdentity() {
-                return identity;
-            }
-
-            // Resetting root scope to force update language on the screen
-            function resetContent(fullReset, partialReset) {
-                fullReset = fullReset !== undefined ? !!fullReset : true;
-                partialReset = partialReset !== undefined ? !!partialReset : true;
-
-                $rootScope.$reset = fullReset;
-                $rootScope.$partialReset = partialReset;
-                $timeout(function() {
-                    $rootScope.$reset = false;
-                    $rootScope.$partialReset = false;
-                }, 0);
-            }
-
-            function setIdentity(newIdentity, fullReset, partialReset) {
-                if (newIdentity != null)
-                    pipAssert.isObject(newIdentity || '', "pipIdentity.set: argument should be an object");
-
-                identity = newIdentity;
-
-                if (setRoot)
-                    $rootScope.$identity = identity;
-
-                resetContent(fullReset, partialReset);
-
-                $rootScope.$broadcast('pipIdentityChanged', identity);
-            }
-
-            return {
-                get: getIdentity,
-                set: setIdentity,
-            }
-        }];
-
-        // Initialize set root flag
-        function initSetRoot(newSetRoot) {
-            if (newSetRoot != null) {
-                pipAssertProvider.isBoolean(newSetRoot || '', "pipIdentityProvider.setRoot: argument should be a boolean");
-                setRoot = newSetRoot;
-            }
-            return setRoot;  
-        }
-
-        // Initialize identity
-        function initIdentity(newIdentity) {
-            if (newIdentity != null) {
-                pipAssertProvider.isObject(newIdentity || '', "pipIdentityProvider.identity: argument should be an object");
-                identity = newIdentity;
-            }
-            return identity;  
-        }
-
-    }]);
-
-})();
-/**
- * @file Session service
- * @copyright Digital Living Software Corp. 2014-2016
- */
- 
- /* global _, angular */
-
-(function (angular, _) {
-    'use strict';
-
-    var thisModule = angular.module('pipSession', []);
-
-    thisModule.provider('pipSession', ['$timeout', 'pipAssertProvider', function($timeout, pipAssertProvider) {
-        var 
-            setRoot = true,
-            session = null;
-
-        this.setRoot = initSetRoot;
-        this.session = initSession;
-
-        this.$get = ['$rootScope', 'pipAssert', function ($rootScope, pipAssert) {
-            // Set root variable
-            if (setRoot)
-                $rootScope.$session = session;
-            
-            // Resetting root scope to force update language on the screen
-            function resetContent(fullReset, partialReset) {
-                fullReset = fullReset !== undefined ? !!fullReset : true;
-                partialReset = partialReset !== undefined ? !!partialReset : true;
-
-                $rootScope.$reset = fullReset;
-                $rootScope.$partialReset = partialReset;
-                $timeout(function() {
-                    $rootScope.$reset = false;
-                    $rootScope.$partialReset = false;
-                }, 0);
-            }
-
-            function openSession(newSession, fullReset, partialReset) {
-                pipAssert.isObject(newSession || '', "pipSession.open: argument should be an object");
-
-                session = newSession;
-
-                if (setRoot)
-                    $rootScope.$session = session;
-
-                resetContent(fullReset, partialReset);
-
-                $rootScope.$broadcast('pipSessionOpened', session);
-            }
-
-            function closeSession(fullReset, partialReset) {
-                var oldSession = session;
-                session = null;
-
-                if (setRoot)
-                    $rootScope.$session = session;
-
-                resetContent(fullReset, partialReset);
-
-                $rootScope.$broadcast('pipSessionClosed', oldSession);
-            }
-
-            function getSession() {
-                return session;
-            }
-
-            return {
-                get: getSession,
-                open: openSession,
-                close: closeSession
-            }
-        }];
-
-        // Initialize set root flag
-        function initSetRoot(newSetRoot) {
-            if (newSetRoot != null) {
-                pipAssertProvider.isBoolean(newSetRoot || '', "pipSessionProvider.setRoot: argument should be a boolean");
-                setRoot = newSetRoot;
-            }
-            return setRoot;  
-        }
-
-        // Initialize session
-        function initSession(newSession) {
-            if (newSession != null) {
-                pipAssertProvider.isObject(newSession || '', "pipSessionProvider.session: argument should be an object");
-                session = newSession;
-            }
-            return session;  
-        }
-
-    }]);
-
-})(window.angular, window._);
 /**
  * @file Global application timer service
  * @copyright Digital Living Software Corp. 2014-2016
@@ -1668,8 +1668,8 @@
             toBool: convertToBoolean,
             convertObjectIdsToString: convertObjectIdsToString,
             OidToString: convertObjectIdsToString,
-            generateVerificationCode: generateVerificationCode,
-            vercode: generateVerificationCode,
+            // generateVerificationCode: generateVerificationCode,
+            // vercode: generateVerificationCode,
             equalObjectIds: equalObjectIds,
             eqOid: equalObjectIds,
             notEqualObjectIds: notEqualObjectIds,
@@ -1678,7 +1678,7 @@
             hasOid: containsObjectId,
             isObjectId: isObjectId,
             // Strings functions. No analogues in lodash.strings
-            hashCode: hashCode,
+            // hashCode: hashCode,
             makeString: makeString,
             // Collection function. No analogues in lodash. It may be in lodash later. Look gitHub/lodash issue #1022
             replaceBy: replaceBy
@@ -1881,16 +1881,7 @@
             var browser, version;
             var ua = $window.navigator.userAgent;
 
-            if (ua.search(/Edge/) > -1) browser = "edge";
-            if (ua.search(/MSIE/) > -1) browser = "ie";
-            if (ua.search(/Trident/) > -1) browser = "ie11";
-            if (ua.search(/Firefox/) > -1) browser = "firefox";
-            if (ua.search(/Opera/) > -1) browser = "opera";
-            if (ua.search(/OPR/) > -1) browser = "operaWebkit";
-            if (ua.search(/YaBrowser/) > -1) browser = "yabrowser";
-            if (ua.search(/Chrome/) > -1) browser = "chrome";
-            if (ua.search(/Safari/) > -1) browser = "safari";
-            if (ua.search(/Maxthon/) > -1) browser = "maxthon";
+            browser = getBrowserName();
 
             switch (browser) {
                 case "edge":
