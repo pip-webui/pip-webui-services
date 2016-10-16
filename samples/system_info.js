@@ -6,13 +6,13 @@
     var thisModule = angular.module('appCoreServices.SystemInfo', []);
 
     thisModule.controller('SystemInfoController',
-        function($scope, pipUtils) {
-            $scope.browser = pipUtils.getBrowser();
+        function($scope, pipSystemInfo) {
 
-            $scope.checkSupported = pipUtils.checkSupported();
+            $scope.browserName = pipSystemInfo.getBrowserName();
+            $scope.browserVersion = pipSystemInfo.getBrowserVersion();
+
+            $scope.checkSupported = pipSystemInfo.isSupported();
         }
-
-
     );
 
 })();
