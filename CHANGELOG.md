@@ -2,7 +2,7 @@
 
 ## <a name="1.5.0"></a> 1.5.0 (2016-10-15)
 
-Moved services from pip-webui-core
+Moved services from pip-webui-services
 
 #### Features
 * **session** Session service to track opening and closing sessions to the server

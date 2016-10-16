@@ -16,7 +16,7 @@
             // 3rd Party Modules
             'ui.router', 'ui.utils', 'ngResource', 'ngAria', 'ngCookies', 'ngSanitize', 'ngMessages',
             'ngMaterial', 'wu.masonry', 'LocalStorageModule', 'angularFileUpload', 'ngAnimate', 
-			'pipCore',
+			'pipServices',
             'appCoreServices.Error', 'appCoreServices.Timer',
             'appCoreServices.Transaction', 'appCoreServices.Translate',
             'appCoreServices.SystemInfo'
