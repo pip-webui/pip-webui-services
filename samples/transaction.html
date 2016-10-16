@@ -1,0 +1,54 @@
+<div class="app-transaction">
+	<md-progress-linear ng-show="transaction.busy()" md-mode="indeterminate" class="pip-progress-ontop">
+	</md-progress-linear>
+
+	<div class="pip-header">
+		<h3>{{ 'SAMPLE_LOGIN' | translate }}</h3>
+	</div>
+	<div class="pip-body">
+		<div class="pip-content">
+
+			<form name="form" novalidate>
+
+				<div ng-messages="form.$serverError" class="text-error bm8">
+					<div ng-message="ERROR_3">{{ 'ERROR_3' | translate }}</div>
+					<div ng-message="ERROR_4">{{ 'ERROR_4' | translate }}</div>
+					<div ng-message="ERROR_UNKNOWN">{{ form.$serverError.ERROR_UNKNOWN }}</div>
+				</div>
+
+				<md-input-container>
+					<label>{{ 'LOGIN' | translate }}</label>
+					<input name="login" type="email" ng-model="data.login" pip-clear-errors required
+							ng-disabled="transaction.busy()" pip-server-errors />
+
+					<div ng-messages="touchedErrorsWithHint(form, form.login)" class="md-input-error">
+						<div ng-message="required">{{ 'REQUIRED_LOG' | translate }}</div>
+						<div ng-message="email">{{ 'EMAIL' | translate }}</div>
+						<div ng-message="ERROR_1">{{ 'ERROR_1' | translate }}</div>
+					</div>
+				</md-input-container>
+
+				<md-input-container>
+					<label>{{ 'PASSWORD' | translate }}</label>
+					<input name="password" ng-disabled="transaction.busy()" type="password" 
+						ng-model="data.password" pip-clear-errors required minlength="6" pip-server-errors />
+					<div ng-messages="touchedErrorsWithHint(form, form.password)" class="md-input-error">
+						<div ng-message="hint" class="text-hint">{{ 'HINT' | translate }}</div>
+						<div ng-message="required">{{ 'REQUIRED_PASS' | translate }}</div>
+						<div ng-message="minlength">{{ 'MIN_LENGTH' | translate }}</div>
+						<div ng-message="ERROR_2">{{ 'ERROR_2' | translate }}</div>
+					</div>
+				</md-input-container>
+			</form>
+
+		</div>
+	</div>
+	<div class="pip-footer">
+		<md-button ng-show="transaction.busy()" ng-click="transaction.abort()" class="md-warn">
+			{{ 'ABORT' | translate }}
+		</md-button>
+		<md-button ng-hide="transaction.busy()" ng-disabled="form.$invalid" ng-click="onProcess()" class="md-accent">
+			{{ 'LOGIN_BUT' | translate }}
+		</md-button>
+	</div>
+</div>

@@ -1,0 +1,11 @@
+<h2 class="tm24">Timer</h2>
+<div>
+    <md-button ng-click="onStartClick()" ng-disabled="isStarted()">{{'START' | translate}}</md-button>
+    <md-button ng-click="onStopClick()" ng-disabled="!isStarted()">{{'STOP' | translate}}</md-button>
+    <br>
+    <p>{{'AUTO_UPDATE' | translate}} (every 60 sec): <span ng-show="isStarted()">{{ getAutoUpdateDif() }} {{'SECONDS' | translate}}</span></p>
+    {{'AUTO_UPDATE' | translate}} {{'BROADCAST_COUNT' | translate}} {{ autoPullCount }}
+    <br>
+    <p> {{'AUTO_PULL' | translate}} (every 15 sec): <span ng-show="isStarted()">{{ getAutoPullDif() }} {{'SECONDS' | translate}}</span></p>
+    {{'AUTO_PULL' | translate}} {{'BROADCAST_COUNT' | translate}} {{ autoUpdateCount }}
+</div>

@@ -1,0 +1,22 @@
+<md-menu md-position-mode="target">
+                <span
+					  ng-click="$mdOpenMenu()"
+					  aria-label="language selection">
+                    {{ $language | translate}}
+                    <md-icon md-svg-icon="icons:triangle-down"></md-icon>
+                </span>
+	<md-menu-content width="3">
+		<md-menu-item ng-repeat="lang in languages">
+			<md-button ng-click="onLanguageClick(lang)">{{lang | translate}}</md-button>
+		</md-menu-item>
+	</md-menu-content>
+</md-menu>
+<div>
+	<span>{{ 'SCOPE1_TEXT' | translate }}</span>
+</div>
+<div>
+	<span pip-translate="SCOPE2_TEXT"></span>
+</div>
+<div>
+	<pip-translate-html key="SCOPE3_TEXT"/>
+</div>
