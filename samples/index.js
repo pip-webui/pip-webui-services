@@ -25,7 +25,7 @@
 
     thisModule.config(function (pipTranslateProvider, $stateProvider, $urlRouterProvider, $mdIconProvider, $mdThemingProvider) {
 
-            $mdIconProvider.iconSet('icons', '../images/icons.svg', 512);
+            $mdIconProvider.iconSet('icons', 'images/icons.svg', 512);
 //             $mdThemingProvider.theme('blue')
 //                 .primaryPalette('blue')
 //                 .accentPalette('green');

@@ -3,7 +3,7 @@
 (function () {
     'use strict';
 
-    var thisModule = angular.module('appCoreServices.Transaction', ['pipUtils.FormErrors']);
+    var thisModule = angular.module('appCoreServices.Transaction', []);
 
     thisModule.config(function (pipTranslateProvider) {
         // This is used for translate sample
@@ -43,12 +43,14 @@
     });
 
     thisModule.controller('TransactionController',
-        function($scope, $timeout, pipTransaction, pipFormErrors) {
+        // function($scope, $timeout, pipTransaction, pipFormErrors) {
+        function($scope, $timeout, pipTransaction) {
             $scope.data = {
                 login: 'johndoe@mail.com',
                 password: ''
             };
-            $scope.touchedErrorsWithHint = pipFormErrors.touchedErrorsWithHint;
+            // todo error handling without pipFormErrors
+            // $scope.touchedErrorsWithHint = pipFormErrors.touchedErrorsWithHint;
             $scope.transaction = pipTransaction('sample_login', $scope);
 
             var login = function (callback) {
@@ -79,7 +81,7 @@
 
             $scope.onProcess = function () {
                 if ($scope.form.$invalid) {
-                    pipFormErrors.resetFormErrors($scope.form, true);
+                    // pipFormErrors.resetFormErrors($scope.form, true);
 
                     return;
                 }
@@ -93,16 +95,16 @@
                     $scope.transaction.end(error);
 
                     if (!error) {
-                        pipFormErrors.resetFormErrors($scope.form, false);
+                        // pipFormErrors.resetFormErrors($scope.form, false);
 
                         console.log('Congratulations! You successfully logged in.');
                     } else {
-                        pipFormErrors.resetFormErrors($scope.form, true);
+                        // pipFormErrors.resetFormErrors($scope.form, true);
 
-                        pipFormErrors.setFormError(
-                            $scope.form, error,
-                           { 1: 'login', 2: 'password', 3: 'form', 4: 'form' }
-                        );
+                        // pipFormErrors.setFormError(
+                        //     $scope.form, error,
+                        //    { 1: 'login', 2: 'password', 3: 'form', 4: 'form' }
+                        // );
                     }
                 });
             };
