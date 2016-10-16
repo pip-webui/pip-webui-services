@@ -9,5 +9,5 @@
     'use strict';
 
     angular.module('pipUtils', 
-		['pipUtils.General', 'pipUtils.Strings', 'pipUtils.Collections']);
+		['pipUtils.General', 'pipUtils.Collections']);
 })();

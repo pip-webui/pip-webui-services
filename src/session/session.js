@@ -5,7 +5,7 @@
  
  /* global _, angular */
 
-(function () {
+(function (angular, _) {
     'use strict';
 
     var thisModule = angular.module('pipSession', []);
@@ -92,4 +92,4 @@
 
     });
 
-})();
+})(window.angular, window._);
