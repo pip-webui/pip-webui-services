@@ -5,44 +5,26 @@
 
     var content = [
         { title: 'Translate', state: 'translate', url: '/translate', controller: 'TranslateController', templateUrl: 'translate.html' },
-        //{ title: 'Error', state: 'error', url: '/error', controller: 'ErrorController', templateUrl: 'error.html' },
         { title: 'Transaction', state: 'transaction', url: '/transaction', controller: 'TransactionController', templateUrl: 'transaction.html' },
         { title: 'Timer', state: 'timer', url: '/timer', controller: 'TimerController', templateUrl: 'timer.html' },
         { title: 'System Info', state: 'system_info', url: '/system_info', controller: 'SystemInfoController', templateUrl: 'system_info.html' }
     ];
 
-    var thisModule = angular.module('appCoreServices', 
+    var thisModule = angular.module('appServices', 
         [
             // 3rd Party Modules
             'ui.router', 'ui.utils', 'ngResource', 'ngAria', 'ngCookies', 'ngSanitize', 'ngMessages',
             'ngMaterial', 'wu.masonry', 'LocalStorageModule', 'angularFileUpload', 'ngAnimate', 
 			'pipServices',
-            'appCoreServices.Error', 'appCoreServices.Timer',
-            'appCoreServices.Transaction', 'appCoreServices.Translate',
-            'appCoreServices.SystemInfo'
+            'appServices.Timer',
+            'appServices.Transaction', 'appServices.Translate',
+            'appServices.SystemInfo'
         ]
     );
 
     thisModule.config(function (pipTranslateProvider, $stateProvider, $urlRouterProvider, $mdIconProvider, $mdThemingProvider) {
 
             $mdIconProvider.iconSet('icons', 'images/icons.svg', 512);
-//             $mdThemingProvider.theme('blue')
-//                 .primaryPalette('blue')
-//                 .accentPalette('green');
-// 
-//             $mdThemingProvider.theme('pink')
-//                 .primaryPalette('pink')
-//                 .accentPalette('orange');
-// 
-//             $mdThemingProvider.theme('green')
-//                 .primaryPalette('green')
-//                 .accentPalette('purple');
-// 
-//             $mdThemingProvider.theme('grey')
-//                 .primaryPalette('grey')
-//                 .accentPalette('yellow');
-// 
-//             $mdThemingProvider.setDefaultTheme('blue');
 
             // String translations
             pipTranslateProvider.translations('en', {
@@ -77,14 +59,10 @@
     );
 
     thisModule.controller('AppController', 
-        function ($scope, $rootScope, $state, $mdSidenav, pipTranslate) {
-            $scope.languages = ['en', 'ru'];
-            $scope.themes = ['blue', 'green', 'pink', 'grey'];
+        function ($scope, $rootScope, $state, $mdSidenav, $mdMedia, pipTranslate) {
 
-            $scope.selected = {
-                theme: 'blue',
-                tab: 0  
-            };
+            $scope.$mdMedia = $mdMedia;
+            $scope.languages = ['en', 'ru'];
 
             $scope.content = content;
             $scope.menuOpened = false;
@@ -92,11 +70,6 @@
             $scope.onLanguageClick = function(language) {
                 pipTranslate.use(language);
             };
-
-            $scope.onThemeClick = function(theme) {
-                $rootScope.$theme = theme;
-            };
-
                         
             $scope.onSwitchPage = function(state) {
                 $mdSidenav('left').close();

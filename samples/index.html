@@ -15,14 +15,13 @@
     <script src="../../dist/pip-webui-services.js"></script>
 
     <script src="index.js"></script>
-    <script src="error.js"></script>
     <script src="timer.js"></script>
     <script src="transaction.js"></script>
     <script src="translate.js"></script>
     <script src="system_info.js"></script>
 </head>
 
-<body class="layout-column" ng-app="appCoreServices" ng-controller="AppController">
+<body class="layout-column" ng-app="appServices" ng-controller="AppController">
     <md-toolbar ng-if="!$partialReset">
         <div class="md-toolbar-tools">
             <md-button class="md-icon-button" aria-label="menu"
@@ -31,12 +30,15 @@
             </md-button>
             <span>Core Services - {{ 'APPLICATION_TITLE' | translate }}</span>
             <md-menu md-position-mode="target-right target">
-                <span class="pip-appbar-language"
+                <div class="layout-row layout-align-start-center" style="  cursor: pointer;outline: none; margin-right: 16px;"
                       ng-click="$mdOpenMenu()"
-                      aria-label="language selection">
-                    {{ $language | translate}}
-                    <md-icon md-svg-icon="icons:triangle-down"></md-icon>
-                </span>
+                      aria-label="theme selection">
+
+                        <span style="white-space:nowrap;">
+                             {{ $language | translate}}</span>
+                        </span>
+                        <md-icon md-svg-icon="icons:triangle-down"></md-icon>
+                </div>
                 <md-menu-content width="3">
                     <md-menu-item ng-repeat="lang in languages">
                         <md-button ng-click="onLanguageClick(lang)">{{lang | translate}}</md-button>
@@ -58,7 +60,7 @@
             </md-list>
         </md-sidenav>
 
-        <md-content id="content" class="p16 flex">
+        <md-content id="content" class="flex" style="padding: 16px;">
             <div ui-view></div>
         </md-content>
     </div>

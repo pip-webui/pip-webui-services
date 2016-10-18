@@ -3,7 +3,7 @@
 (function () {
     'use strict';
 
-    var thisModule = angular.module('appCoreServices.Translate', []);
+    var thisModule = angular.module('appServices.Translate', []);
 
     thisModule.config(function (pipTranslateProvider) {
         // This is used for translate sample

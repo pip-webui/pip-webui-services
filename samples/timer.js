@@ -3,7 +3,7 @@
 (function () {
     'use strict';
 
-    var thisModule = angular.module('appCoreServices.Timer', ['pipTimer']);
+    var thisModule = angular.module('appServices.Timer', ['pipTimer']);
 
     thisModule.config(function (pipTranslateProvider) {
         // This is used for translate sample

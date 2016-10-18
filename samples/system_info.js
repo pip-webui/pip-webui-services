@@ -3,7 +3,7 @@
 (function () {
     'use strict';
 
-    var thisModule = angular.module('appCoreServices.SystemInfo', []);
+    var thisModule = angular.module('appServices.SystemInfo', []);
 
     thisModule.controller('SystemInfoController',
         function($scope, pipSystemInfo) {

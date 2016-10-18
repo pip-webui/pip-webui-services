@@ -7,6 +7,10 @@
 .p24 { padding: 24px; }
 .p16 { padding: 16px; }
 
+.top-space {
+	margin-top: 24px;
+}
+
 .selected-state {
 	background-color: rgba(0, 0, 0, 0.1);
 }
