@@ -23,6 +23,16 @@
             return value.substring(0, length);
         }
 
+        function strRepeat(str, qty) {
+            if (qty < 1) return '';
+            var result = '';
+            while (qty > 0) {
+                if (qty & 1) result += str;
+                qty >>= 1, str += str;
+            }
+            return result;
+        }
+        
         function sprintf() {
             function get_type(variable) {
                 return toString.call(variable).slice(8, -1).toLowerCase();
@@ -139,13 +149,11 @@
             return str_format;
         }
 
-        // Return function as the service
-        result = sprintf;
-        result.sample = sample;
-        result.format = sprintf;
-        result.sprintf = sprintf;
-
-        return result;
+        return {
+            sprintf: sprintf,
+            format: sprintf,
+            sample: sample
+        };
     });
 
 })();
