@@ -8,7 +8,7 @@
 (function (angular, _) {
     'use strict';
 
-    var thisModule = angular.module('pipSession', []);
+    var thisModule = angular.module('pipSession', ['pipPageReset']);
 
     thisModule.provider('pipSession', function(pipAssertProvider) {
         var 
@@ -18,24 +18,11 @@
         this.setRoot = initSetRoot;
         this.session = initSession;
 
-        this.$get = function ($rootScope, $timeout, pipAssert) {
+        this.$get = function ($rootScope, $timeout, pipAssert, pipPageReset) {
             // Set root variable
             if (setRoot)
                 $rootScope.$session = session;
             
-            // Resetting root scope to force update language on the screen
-            function resetContent(fullReset, partialReset) {
-                fullReset = fullReset !== undefined ? !!fullReset : true;
-                partialReset = partialReset !== undefined ? !!partialReset : true;
-
-                $rootScope.$reset = fullReset;
-                $rootScope.$partialReset = partialReset;
-                $timeout(function() {
-                    $rootScope.$reset = false;
-                    $rootScope.$partialReset = false;
-                }, 0);
-            }
-
             function openSession(newSession, fullReset, partialReset) {
                 pipAssert.isObject(newSession || '', "pipSession.open: argument should be an object");
 
@@ -44,7 +31,7 @@
                 if (setRoot)
                     $rootScope.$session = session;
 
-                resetContent(fullReset, partialReset);
+                pipPageReset.reset(fullReset, partialReset);
 
                 $rootScope.$broadcast('pipSessionOpened', session);
             }
@@ -56,7 +43,7 @@
                 if (setRoot)
                     $rootScope.$session = session;
 
-                resetContent(fullReset, partialReset);
+                pipPageReset.reset(fullReset, partialReset);
 
                 $rootScope.$broadcast('pipSessionClosed', oldSession);
             }

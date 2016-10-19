@@ -21,6 +21,7 @@
         'pipSystemInfo',
         'pipFormat',
         'pipScroll',
+        'pipPageReset',        
         'pipTags'
     ]);
     

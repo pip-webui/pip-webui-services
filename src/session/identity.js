@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    var thisModule = angular.module('pipIdentity', []);
+    var thisModule = angular.module('pipIdentity', ['pipPageReset']);
 
     thisModule.provider('pipIdentity', function(pipAssertProvider) {
         var 
@@ -18,26 +18,13 @@
         this.setRoot = initSetRoot;
         this.identity = initIdentity;
 
-        this.$get = function ($rootScope, $timeout, pipAssert) {
+        this.$get = function ($rootScope, $timeout, pipAssert, pipPageReset) {
             // Set root variable
             if (setRoot)
                 $rootScope.$identity = identity;
 
             function getIdentity() {
                 return identity;
-            }
-
-            // Resetting root scope to force update language on the screen
-            function resetContent(fullReset, partialReset) {
-                fullReset = fullReset !== undefined ? !!fullReset : true;
-                partialReset = partialReset !== undefined ? !!partialReset : true;
-
-                $rootScope.$reset = fullReset;
-                $rootScope.$partialReset = partialReset;
-                $timeout(function() {
-                    $rootScope.$reset = false;
-                    $rootScope.$partialReset = false;
-                }, 0);
             }
 
             function setIdentity(newIdentity, fullReset, partialReset) {
@@ -49,7 +36,7 @@
                 if (setRoot)
                     $rootScope.$identity = identity;
 
-                resetContent(fullReset, partialReset);
+                pipPageReset.reset(fullReset, partialReset);
 
                 $rootScope.$broadcast('pipIdentityChanged', identity);
             }

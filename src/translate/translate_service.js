@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    var thisModule = angular.module('pipTranslate.Service', ['LocalStorageModule', 'pipAssert']);
+    var thisModule = angular.module('pipTranslate.Service', ['LocalStorageModule', 'pipAssert', 'pipPageReset']);
 
     thisModule.provider('pipTranslate', function(pipAssertProvider) {
         var 
@@ -40,7 +40,7 @@
         this.persist = initPersist;
         this.setRoot = initSetRoot;
 
-        this.$get = function ($rootScope, $timeout, localStorageService, pipAssert) {
+        this.$get = function ($rootScope, $timeout, localStorageService, pipAssert, pipPageReset) {
             // Read language from persistent storage
             if (persist)
                 language = localStorageService.get('language') || language;
@@ -49,19 +49,6 @@
             if (setRoot) 
                 $rootScope.$language = language;
             
-            // Resetting root scope to force update language on the screen
-            function resetContent(fullReset, partialReset) {
-                fullReset = fullReset !== undefined ? !!fullReset : true;
-                partialReset = partialReset !== undefined ? !!partialReset : true;
-
-                $rootScope.$reset = fullReset;
-                $rootScope.$partialReset = partialReset;
-                $timeout(function() {
-                    $rootScope.$reset = false;
-                    $rootScope.$partialReset = false;
-                }, 0);
-            }
-
             function setLanguage(newLanguage, fullReset, partialReset) {
                 pipAssert.isString(newLanguage || '', "pipTranslate.use: argument should be a string");
 
@@ -74,7 +61,7 @@
                         $rootScope.$language = language;
                     
                     // Resetting content.
-                    resetContent(fullReset, partialReset);
+                    pipPageReset.reset(fullReset, partialReset);
 
                     // Sending notification
                     $rootScope.$broadcast('pipLanguageChanged', newLanguage);
