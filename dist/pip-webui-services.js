@@ -25,330 +25,6 @@
     ]);
     
 })();
-
- /* global angular */
-
-(function () {
-    'use strict';
-
-    angular.module('pipScope', ['pipScope.Error', 'pipScope.Transaction']);
-    angular.module('pipTransactions', ['pipScope']);
-
-})();
-/**
- * @file Error context
- * @description
- * Error context decouples business components that throw errors
- * and visualization components that show them to users
- * @copyright Digital Living Software Corp. 2014-2016
- */
- 
-/* global angular */
- 
-(function () {
-    'use strict';
-
-    var thisModule = angular.module('pipScope.Error', ['pipAssert']);
-
-    /*
-     * Error is designed to assist with error handling
-     * within different application scopes & controllers without overlap.
-     *
-     * A unique identification of the scope/controller is passed to the service
-     * when it is initialized to identify the error for that scope.
-     * */
-    thisModule.factory('pipError',
-        ['$rootScope', 'pipAssert', function ($rootScope, pipAssert) {
-
-            // Initialize error scope
-            $rootScope.errors = {};
-
-            return createError;
-
-            //----------------------------
-
-            function initError(scope) {
-                $rootScope.errors[scope] = {
-                    message: undefined,
-                    code: undefined,
-                    details: undefined
-                };
-            };
-
-            function errorMessage(error) {
-                if (_.isNull(error)) {
-                    return null;
-                }
-
-                // Process regular messages
-                if (error.message) {
-                    return error.message;
-                }
-
-                // Process server application errors
-                if (error.data) {
-                    if (error.data.code) {
-                        // process server error codes here
-                        return 'ERROR_' + error.data.code;
-                    }
-
-                    if (error.data.message) {
-                        return error.data.message;
-                    }
-                }
-
-                // Process standard HTTP errors
-                if (error.statusText) {
-                    return error.statusText;
-                }
-
-                if (error.status) {
-                    return 'ERROR_' + error.status;
-                }
-                
-                return error.data ? error.data : error;
-            };
-
-            function errorCode(error) {
-                if (_.isNull(error)) {
-                    return null;
-                }
-
-                if (error.data && error.data.code) {
-                    return error.data.code;
-                }
-
-                if (error.status) {
-                    return error.status;
-                }
-                
-                return null;
-            };
-
-            function errorDetails(error) {
-                return error && error.data ? error.data : error;
-            };
-
-            function createError(scope, scopeObject) {
-                scope = scope || 'global';
-
-                var error = {
-                    reset: function () {
-                        initError(scope);
-                    },
-
-                    empty: function() {
-                        var error = $rootScope.errors[scope];
-                        return _.isNull(error) || (_.isNull(error.message) && _.isNull(error.code));
-                    },
-
-                    get: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope];
-                        }
-                        return '';
-                    },
-
-                    message: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope].message;
-                        }
-                        return null;
-                    },
-
-                    code: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope].code;
-                        }
-                        return null;
-                    },
-
-                    details: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope].details;
-                        }
-                        return null;
-                    },
-
-                    set: function (error) {
-                        if (error) {
-                            pipAssert.isObject(error, "Setting error: error should be an object");
-
-                            $rootScope.errors[scope] = {
-                                message: errorMessage(error),
-                                code: errorCode(error),
-                                details: errorDetails(error)
-                            };
-                            console.error($rootScope.errors[scope]);
-                        } else {
-                            initError(scope);
-                        }
-                    }
-                };
-
-                // Assign error into scope
-                if (_.isObject(scopeObject)) scopeObject.error = error;
-
-                return error;
-            };
-        }]
-    );
-    
-})();
-/**
- * @file Transaction context
- * @description
- * Transaction context helps to wrap multiple server requests
- * into one logical transaction. It decouples transaction
- * management and progress visualization to the user
- * @copyright Digital Living Software Corp. 2014-2016
- */
- 
- /* global angular */
-
-(function () {
-    'use strict';
-
-    var thisModule = angular.module('pipScope.Transaction', ['pipTranslate', 'pipScope.Error']);
-
-	thisModule.config(['pipTranslateProvider', function(pipTranslateProvider) {
-        
-        pipTranslateProvider.translations('en', {
-            'ENTERING': 'Entering...',
-            'PROCESSING': 'Processing...',
-            'LOADING': 'Loading...',
-            'SAVING': 'Saving...'
-        });
-
-        pipTranslateProvider.translations('ru', {
-            'ENTERING': 'Вход в систему...',
-            'PROCESSING': 'Обрабатывается...',
-            'LOADING': 'Загружается...',
-            'SAVING': 'Сохраняется...'
-        });
-		
-	}]);
-
-    /*
-     * Transaction is designed to assist with transaction processing
-     * within different application scopes & controllers without overlap.
-     *
-     * A unique identification of the scope/controller is passed to the service
-     * when it is initialized to identify the error for that scope.
-     * 
-     * Transaction is also integrated with Error service. So you don't need to double it
-     * */
-    thisModule.factory('pipTransaction',
-        ['$rootScope', 'pipError', function ($rootScope, pipError) {
-
-            // Initialize transaction scope
-            $rootScope.transactions = {};
-
-            return createTransaction;
-
-            //---------------------------------
-
-            function initTransaction(scope) {
-                $rootScope.transactions[scope] = {
-                    id: undefined,
-                    operation: undefined
-                };
-            }
-            
-            function createTransaction(scope, scopeObject) {
-                scope = scope || 'global';
-
-                var error = pipError(scope);
-                var transaction = {
-                    error: error,
-
-                    reset: function () {
-                        initTransaction();
-                        error.reset();
-                    },
-
-                    busy: function() {
-                        var transaction = $rootScope.transactions[scope];
-                        return transaction != null && transaction.id;
-                    },
-
-                    failed: function() {
-                        return !error.empty();
-                    },
-
-                    aborted: function(id) {
-                        var transaction = $rootScope.transactions[scope];
-                        return _.isNull(transaction) || transaction.id != id;
-                    },
-
-                    get: function () {
-                        if (_.isNull($rootScope.transactions[scope])) {
-                            initTransaction(scope);
-                        }
-                        return $rootScope.transactions[scope];
-                    },
-
-                    id: function () {
-                        var transaction = $rootScope.transactions[scope];
-                        return transaction ? transaction.id : null;
-                    },
-
-                    operation: function () {
-                        var transaction = $rootScope.transactions[scope];
-                        return transaction ? transaction.operation : null;
-                    },
-
-                    errorMessage: function () {
-                        return error.message();
-                    },
-
-                    begin: function (operation) {
-                        var transaction = $rootScope.transactions[scope];
-                        // Transaction already in progress
-                        if (transaction != null && transaction.id) {
-                            return null;
-                        }                      
-
-                        transaction = $rootScope.transactions[scope] = {
-                            id: new Date().getTime(),
-                            operation: operation || 'PROCESSING'
-                        };
-                        error.reset();
-
-                        return transaction.id;
-                    },
-
-                    abort: function() {
-                        var transaction = $rootScope.transactions[scope];
-                        if (transaction) {
-                            transaction.id = null;
-                        }
-                        error.reset();
-                    },
-
-                    end: function (err) {
-                        if (err) error.set(err);
-                        else error.reset();
-
-                        var transaction = $rootScope.transactions[scope];
-                        if (transaction != null) {
-                            transaction.id = null;
-                        }                      
-                    }
-                };
-
-                if (_.isObject(scopeObject)) {
-                    scopeObject.error = error;
-                    scopeObject.transaction = transaction;
-                }
-
-                return transaction;
-            }
-        }]
-    );
-
-})();
-
 /**
  * @file Assertion utilities
  * @copyright Digital Living Software Corp. 2014-2016
@@ -733,6 +409,330 @@
     }]);
 
 })();
+
+ /* global angular */
+
+(function () {
+    'use strict';
+
+    angular.module('pipScope', ['pipScope.Error', 'pipScope.Transaction']);
+    angular.module('pipTransactions', ['pipScope']);
+
+})();
+/**
+ * @file Error context
+ * @description
+ * Error context decouples business components that throw errors
+ * and visualization components that show them to users
+ * @copyright Digital Living Software Corp. 2014-2016
+ */
+ 
+/* global angular */
+ 
+(function () {
+    'use strict';
+
+    var thisModule = angular.module('pipScope.Error', ['pipAssert']);
+
+    /*
+     * Error is designed to assist with error handling
+     * within different application scopes & controllers without overlap.
+     *
+     * A unique identification of the scope/controller is passed to the service
+     * when it is initialized to identify the error for that scope.
+     * */
+    thisModule.factory('pipError',
+        ['$rootScope', 'pipAssert', function ($rootScope, pipAssert) {
+
+            // Initialize error scope
+            $rootScope.errors = {};
+
+            return createError;
+
+            //----------------------------
+
+            function initError(scope) {
+                $rootScope.errors[scope] = {
+                    message: undefined,
+                    code: undefined,
+                    details: undefined
+                };
+            };
+
+            function errorMessage(error) {
+                if (_.isNull(error)) {
+                    return null;
+                }
+
+                // Process regular messages
+                if (error.message) {
+                    return error.message;
+                }
+
+                // Process server application errors
+                if (error.data) {
+                    if (error.data.code) {
+                        // process server error codes here
+                        return 'ERROR_' + error.data.code;
+                    }
+
+                    if (error.data.message) {
+                        return error.data.message;
+                    }
+                }
+
+                // Process standard HTTP errors
+                if (error.statusText) {
+                    return error.statusText;
+                }
+
+                if (error.status) {
+                    return 'ERROR_' + error.status;
+                }
+                
+                return error.data ? error.data : error;
+            };
+
+            function errorCode(error) {
+                if (_.isNull(error)) {
+                    return null;
+                }
+
+                if (error.data && error.data.code) {
+                    return error.data.code;
+                }
+
+                if (error.status) {
+                    return error.status;
+                }
+                
+                return null;
+            };
+
+            function errorDetails(error) {
+                return error && error.data ? error.data : error;
+            };
+
+            function createError(scope, scopeObject) {
+                scope = scope || 'global';
+
+                var error = {
+                    reset: function () {
+                        initError(scope);
+                    },
+
+                    empty: function() {
+                        var error = $rootScope.errors[scope];
+                        return _.isNull(error) || (_.isNull(error.message) && _.isNull(error.code));
+                    },
+
+                    get: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope];
+                        }
+                        return '';
+                    },
+
+                    message: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope].message;
+                        }
+                        return null;
+                    },
+
+                    code: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope].code;
+                        }
+                        return null;
+                    },
+
+                    details: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope].details;
+                        }
+                        return null;
+                    },
+
+                    set: function (error) {
+                        if (error) {
+                            pipAssert.isObject(error, "Setting error: error should be an object");
+
+                            $rootScope.errors[scope] = {
+                                message: errorMessage(error),
+                                code: errorCode(error),
+                                details: errorDetails(error)
+                            };
+                            console.error($rootScope.errors[scope]);
+                        } else {
+                            initError(scope);
+                        }
+                    }
+                };
+
+                // Assign error into scope
+                if (_.isObject(scopeObject)) scopeObject.error = error;
+
+                return error;
+            };
+        }]
+    );
+    
+})();
+/**
+ * @file Transaction context
+ * @description
+ * Transaction context helps to wrap multiple server requests
+ * into one logical transaction. It decouples transaction
+ * management and progress visualization to the user
+ * @copyright Digital Living Software Corp. 2014-2016
+ */
+ 
+ /* global angular */
+
+(function () {
+    'use strict';
+
+    var thisModule = angular.module('pipScope.Transaction', ['pipTranslate', 'pipScope.Error']);
+
+	thisModule.config(['pipTranslateProvider', function(pipTranslateProvider) {
+        
+        pipTranslateProvider.translations('en', {
+            'ENTERING': 'Entering...',
+            'PROCESSING': 'Processing...',
+            'LOADING': 'Loading...',
+            'SAVING': 'Saving...'
+        });
+
+        pipTranslateProvider.translations('ru', {
+            'ENTERING': 'Вход в систему...',
+            'PROCESSING': 'Обрабатывается...',
+            'LOADING': 'Загружается...',
+            'SAVING': 'Сохраняется...'
+        });
+		
+	}]);
+
+    /*
+     * Transaction is designed to assist with transaction processing
+     * within different application scopes & controllers without overlap.
+     *
+     * A unique identification of the scope/controller is passed to the service
+     * when it is initialized to identify the error for that scope.
+     * 
+     * Transaction is also integrated with Error service. So you don't need to double it
+     * */
+    thisModule.factory('pipTransaction',
+        ['$rootScope', 'pipError', function ($rootScope, pipError) {
+
+            // Initialize transaction scope
+            $rootScope.transactions = {};
+
+            return createTransaction;
+
+            //---------------------------------
+
+            function initTransaction(scope) {
+                $rootScope.transactions[scope] = {
+                    id: undefined,
+                    operation: undefined
+                };
+            }
+            
+            function createTransaction(scope, scopeObject) {
+                scope = scope || 'global';
+
+                var error = pipError(scope);
+                var transaction = {
+                    error: error,
+
+                    reset: function () {
+                        initTransaction();
+                        error.reset();
+                    },
+
+                    busy: function() {
+                        var transaction = $rootScope.transactions[scope];
+                        return transaction != null && transaction.id;
+                    },
+
+                    failed: function() {
+                        return !error.empty();
+                    },
+
+                    aborted: function(id) {
+                        var transaction = $rootScope.transactions[scope];
+                        return _.isNull(transaction) || transaction.id != id;
+                    },
+
+                    get: function () {
+                        if (_.isNull($rootScope.transactions[scope])) {
+                            initTransaction(scope);
+                        }
+                        return $rootScope.transactions[scope];
+                    },
+
+                    id: function () {
+                        var transaction = $rootScope.transactions[scope];
+                        return transaction ? transaction.id : null;
+                    },
+
+                    operation: function () {
+                        var transaction = $rootScope.transactions[scope];
+                        return transaction ? transaction.operation : null;
+                    },
+
+                    errorMessage: function () {
+                        return error.message();
+                    },
+
+                    begin: function (operation) {
+                        var transaction = $rootScope.transactions[scope];
+                        // Transaction already in progress
+                        if (transaction != null && transaction.id) {
+                            return null;
+                        }                      
+
+                        transaction = $rootScope.transactions[scope] = {
+                            id: new Date().getTime(),
+                            operation: operation || 'PROCESSING'
+                        };
+                        error.reset();
+
+                        return transaction.id;
+                    },
+
+                    abort: function() {
+                        var transaction = $rootScope.transactions[scope];
+                        if (transaction) {
+                            transaction.id = null;
+                        }
+                        error.reset();
+                    },
+
+                    end: function (err) {
+                        if (err) error.set(err);
+                        else error.reset();
+
+                        var transaction = $rootScope.transactions[scope];
+                        if (transaction != null) {
+                            transaction.id = null;
+                        }                      
+                    }
+                };
+
+                if (_.isObject(scopeObject)) {
+                    scopeObject.error = error;
+                    scopeObject.transaction = transaction;
+                }
+
+                return transaction;
+            }
+        }]
+    );
+
+})();
+
 /**
  * @file Identity service
  * @copyright Digital Living Software Corp. 2014-2016
@@ -1515,7 +1515,7 @@
             return result;
         }
         
-        function sprintf() {
+        var sprintf = (function sprintf() {
             function get_type(variable) {
                 return toString.call(variable).slice(8, -1).toLowerCase();
             }
@@ -1629,7 +1629,7 @@
             };
 
             return str_format;
-        }
+        })();
 
         return {
             sprintf: sprintf,

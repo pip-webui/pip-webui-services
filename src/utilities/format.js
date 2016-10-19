@@ -33,7 +33,7 @@
             return result;
         }
         
-        function sprintf() {
+        var sprintf = (function sprintf() {
             function get_type(variable) {
                 return toString.call(variable).slice(8, -1).toLowerCase();
             }
@@ -147,7 +147,7 @@
             };
 
             return str_format;
-        }
+        })();
 
         return {
             sprintf: sprintf,
