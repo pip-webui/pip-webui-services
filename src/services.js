@@ -9,7 +9,7 @@
     'use strict';
 
     angular.module('pipServices', [
-        'pipUtils',
+        //'pipUtils',
         'pipAssert',
         'pipDebug',
         'pipScope',

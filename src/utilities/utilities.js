@@ -1,13 +1,13 @@
-/**
- * @file Collection of utilities
- * @copyright Digital Living Software Corp. 2014-2016
- */
+// /**
+//  * @file Collection of utilities
+//  * @copyright Digital Living Software Corp. 2014-2016
+//  */
 
-/* global angular */
+// /* global angular */
 
-(function () {
-    'use strict';
+// (function () {
+//     'use strict';
 
-    angular.module('pipUtils', 
-		['pipUtils.General', 'pipUtils.Collections']);
-})();
+//     angular.module('pipUtils', 
+// 		['pipUtils.General', 'pipUtils.Collections']);
+// })();
