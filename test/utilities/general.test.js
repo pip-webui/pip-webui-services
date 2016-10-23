@@ -9,7 +9,7 @@ describe('pipUtils', function () {
         stateProvider,
         $rootScope;
     
-    beforeEach(module('pipUtils.General', 'pipState', function ($stateProvider) {
+    beforeEach(module('pipUtils.General', 'pipRouting', function ($stateProvider) {
         stateProvider = $stateProvider;
     }));
     

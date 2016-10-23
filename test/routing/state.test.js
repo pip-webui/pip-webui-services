@@ -3,11 +3,11 @@
 //  @copyright Digital Living Software Corp. 2014-2016
 
 
-describe('pipState', function() {
+describe('pipRouting', function() {
     describe('config block', function () {
         var pipTranslateProvider;
 
-        describebeforeEach(module('pipState', function (_pipTranslateProvider_) {
+        describebeforeEach(module('pipRouting', function (_pipTranslateProvider_) {
             pipTranslateProvider = _pipTranslateProvider_;
         }));
 
@@ -19,12 +19,12 @@ describe('pipState', function() {
             service,
             provider;
 
-        beforeEach(module('pipState', function (pipStateProvider) {
-            provider = pipStateProvider;
+        beforeEach(module('pipRouting', function ($stateProvider) {
+            provider = $stateProvider;
         }));
 
-        beforeEach(inject(function (pipState, _$rootScope_, _$state_) {
-            service = pipState;
+        beforeEach(inject(function ($state, _$rootScope_, _$state_) {
+            service = $state;
             $state = _$state_;
             $rootScope = _$rootScope_;
         }));
@@ -96,12 +96,12 @@ describe('pipState', function() {
             service,
             provider;
 
-        beforeEach(module('pipState', function (pipStateProvider) {
-            provider = pipStateProvider;
+        beforeEach(module('pipRouting', function ($stateProvider) {
+            provider = $stateProvider;
         }));
 
-        beforeEach(inject(function (pipState, _$rootScope_, _$state_) {
-            service = pipState;
+        beforeEach(inject(function ($state, _$rootScope_, _$state_) {
+            service = $state;
             $state = _$state_;
             $rootScope = _$rootScope_;
         }));
