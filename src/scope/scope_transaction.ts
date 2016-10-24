@@ -3,23 +3,25 @@
 module pip.scope {
     'use strict';
 
-    var thisModule = angular.module('pipScope.Transaction', []);
+    var thisModule = angular.module('pipScope.Transaction', ['pipTranslate']);
 
-	thisModule.config(function(pipTranslateProvider) {
-        
-        pipTranslateProvider.translations('en', {
-            'ENTERING': 'Entering...',
-            'PROCESSING': 'Processing...',
-            'LOADING': 'Loading...',
-            'SAVING': 'Saving...'
-        });
+	thisModule.run(function($injector) {
+        var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
+        if (pipTranslate) {
+            pipTranslate.setTranslations('en', {
+                'ENTERING': 'Entering...',
+                'PROCESSING': 'Processing...',
+                'LOADING': 'Loading...',
+                'SAVING': 'Saving...'
+            });
 
-        pipTranslateProvider.translations('ru', {
-            'ENTERING': 'Вход в систему...',
-            'PROCESSING': 'Обрабатывается...',
-            'LOADING': 'Загружается...',
-            'SAVING': 'Сохраняется...'
-        });
+            pipTranslate.setTranslations('ru', {
+                'ENTERING': 'Вход в систему...',
+                'PROCESSING': 'Обрабатывается...',
+                'LOADING': 'Загружается...',
+                'SAVING': 'Сохраняется...'
+            });   
+        }
 		
 	});
 

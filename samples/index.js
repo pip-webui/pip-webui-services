@@ -4,30 +4,59 @@
     'use strict';
 
     var content = [
-        { title: 'Translate', state: 'translate', url: '/translate', controller: 'TranslateController', templateUrl: 'translate.html' },
-        { title: 'Transaction', state: 'transaction', url: '/transaction', controller: 'TransactionController', templateUrl: 'transaction.html' },
-        { title: 'Timer', state: 'timer', url: '/timer', controller: 'TimerController', templateUrl: 'timer.html' },
-        { title: 'System Info', state: 'system_info', url: '/system_info', controller: 'SystemInfoController', templateUrl: 'system_info.html' }
+        {
+            title: 'Translate',
+            state: 'translate',
+            url: '/translate',
+            controller: 'TranslateController',
+            templateUrl: 'translate.html'
+        },
+        {
+            title: 'Transaction',
+            state: 'transaction',
+            url: '/transaction',
+            controller: 'TransactionController',
+            templateUrl: 'transaction.html'
+        },
+        {title: 'Timer', state: 'timer', url: '/timer', controller: 'TimerController', templateUrl: 'timer.html'},
+        {
+            title: 'System Info',
+            state: 'system_info',
+            url: '/system_info',
+            controller: 'SystemInfoController',
+            templateUrl: 'system_info.html'
+        }
     ];
 
-    var thisModule = angular.module('appServices', 
+    var thisModule = angular.module('appServices',
         [
             // 3rd Party Modules
             'ui.router', 'ui.utils', 'ngResource', 'ngAria', 'ngCookies', 'ngSanitize', 'ngMessages',
-            'ngMaterial', 'wu.masonry', 'LocalStorageModule', 'angularFileUpload', 'ngAnimate', 
-			'pipServices',
+            'ngMaterial', 'wu.masonry', 'LocalStorageModule', 'ngAnimate',
+            'pipServices',
             'appServices.Timer',
             'appServices.Transaction', 'appServices.Translate',
             'appServices.SystemInfo'
         ]
     );
-
     thisModule.config(function (pipTranslateProvider, $stateProvider, $urlRouterProvider, $mdIconProvider, $mdThemingProvider) {
 
             $mdIconProvider.iconSet('icons', 'images/icons.svg', 512);
 
+            for (var i = 0; i < content.length; i++) {
+                var contentItem = content[i];
+                $stateProvider.state(contentItem.state, contentItem);
+            }
+
+            $urlRouterProvider.otherwise('/translate');
+        }
+    );
+
+    thisModule.run(function ($injector) {
+        var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
+        if (pipTranslate) {
             // String translations
-            pipTranslateProvider.translations('en', {
+            pipTranslate.setTranslations('en', {
                 'APPLICATION_TITLE': 'WebUI Sampler',
 
                 'blue': 'Blue Theme',
@@ -38,7 +67,7 @@
                 'ru': 'Russian'
             });
 
-            pipTranslateProvider.translations('ru', {
+            pipTranslate.setTranslations('ru', {
                 'APPLICATION_TITLE': 'WebUI Демонстратор',
 
                 'blue': 'Голубая тема',
@@ -48,17 +77,10 @@
                 'en': 'Английский',
                 'ru': 'Русский'
             });
+        }
+    })
 
-            for (var i = 0; i < content.length; i++) {
-                var contentItem = content[i];
-                $stateProvider.state(contentItem.state, contentItem);
-            }
-                
-            $urlRouterProvider.otherwise('/translate');
-        } 
-    );
-
-    thisModule.controller('AppController', 
+    thisModule.controller('AppController',
         function ($scope, $rootScope, $state, $mdSidenav, $mdMedia, pipTranslate) {
 
             $scope.$mdMedia = $mdMedia;
@@ -67,21 +89,21 @@
             $scope.content = content;
             $scope.menuOpened = false;
 
-            $scope.onLanguageClick = function(language) {
+            $scope.onLanguageClick = function (language) {
                 pipTranslate.use(language);
             };
-                        
-            $scope.onSwitchPage = function(state) {
+
+            $scope.onSwitchPage = function (state) {
                 $mdSidenav('left').close();
                 $state.go(state);
             };
-            
-            $scope.onToggleMenu = function() {
+
+            $scope.onToggleMenu = function () {
                 $mdSidenav('left').toggle();
             };
-                        
-            $scope.isActiveState = function(state) {
-                return $state.current.name == state;  
+
+            $scope.isActiveState = function (state) {
+                return $state.current.name == state;
             };
         }
     );

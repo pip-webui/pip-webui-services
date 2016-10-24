@@ -23,7 +23,7 @@ module pip.routing {
     function addRedirectStateProviderDecorator($provide) {
         "ngInject";
 
-        $provide.decorator('$stateProvider', decorateRedirectStateProvider);
+        $provide.decorator('$state', decorateRedirectStateProvider);
     }
 
     function decorateRedirectStateService($delegate, $timeout) {
@@ -65,7 +65,7 @@ module pip.routing {
     }
 
     angular
-        .module('pipRouting.Redirect', [])
+        .module('pipRouting.Redirect', ['ui.router'])
         .config(addRedirectStateProviderDecorator)
         .config(addRedirectStateDecorator);
 

@@ -5,29 +5,33 @@
 
     var thisModule = angular.module('appServices.Timer', ['pipTimer']);
 
-    thisModule.config(function (pipTranslateProvider) {
+    thisModule.run(function ($injector) {
         // This is used for translate sample
-        pipTranslateProvider.translations('en', {
-            START: 'Start',
-            STOP: 'Stop',
-            SECONDS: 'Seconds',
-            AUTO_UPDATE: 'Auto update page',
-            AUTO_PULL: 'Auto pull',
-            BROADCAST_COUNT: 'broadcasts count: '
-        });
-        pipTranslateProvider.translations('ru', {
-            START: 'Старт',
-            STOP: 'Стоп',
-            SECONDS: 'секунд(ы)',
-            AUTO_UPDATE: 'Автообновление',
-            AUTO_PULL: 'Автодобавление',
-            BROADCAST_COUNT: 'кол-во broadcast: '
-        });
+        var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
+        if (pipTranslate && pipTranslate.translations) {
+            pipTranslate.translations('en', {
+                START: 'Start',
+                STOP: 'Stop',
+                SECONDS: 'Seconds',
+                AUTO_UPDATE: 'Auto update page',
+                AUTO_PULL: 'Auto pull',
+                BROADCAST_COUNT: 'broadcasts count: '
+            });
+            pipTranslate.translations('ru', {
+                START: 'Старт',
+                STOP: 'Стоп',
+                SECONDS: 'секунд(ы)',
+                AUTO_UPDATE: 'Автообновление',
+                AUTO_PULL: 'Автодобавление',
+                BROADCAST_COUNT: 'кол-во broadcast: '
+            });
+        }
+        
 
     });
 
     thisModule.controller('TimerController',
-        function($scope, pipTimer) {
+        function ($scope, pipTimer) {
             var startTimePull = null,
                 startTimeUpdate = null;
 
@@ -63,11 +67,11 @@
             }
 
             $scope.$on('pipAutoPullChanges', function () {
-                $scope.autoPullCount ++;
+                $scope.autoPullCount++;
             });
 
             $scope.$on('pipAutoUpdatePage', function () {
-                $scope.autoUpdateCount ++;
+                $scope.autoUpdateCount++;
             });
         }
     );

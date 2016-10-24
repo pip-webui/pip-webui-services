@@ -5,19 +5,21 @@
 
     var thisModule = angular.module('appServices.Transaction', []);
 
-    thisModule.config(function (pipTranslateProvider) {
+    thisModule.run(function ($injector) {
         // This is used for translate sample
-        pipTranslateProvider.translations('en', {
-            TRANSACTION_SAMPLE: 'Login',
-            START_BUT: 'Start transaction',
-            ABORT: 'Abort'
-        });
-        pipTranslateProvider.translations('ru', {
-            TRANSACTION_SAMPLE: 'Пример для транзакций',
-            START_BUT: 'Начать транзакцию',
-            ABORT: 'Отмена'
-        });
-
+        var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
+        if (pipTranslate) {
+            pipTranslate.setTranslations('en', {
+                TRANSACTION_SAMPLE: 'Login',
+                START_BUT: 'Start transaction',
+                ABORT: 'Abort'
+            });
+            pipTranslate.setTranslations('ru', {
+                TRANSACTION_SAMPLE: 'Пример для транзакций',
+                START_BUT: 'Начать транзакцию',
+                ABORT: 'Отмена'
+            });
+        }
     });
 
     thisModule.controller('TransactionController',
