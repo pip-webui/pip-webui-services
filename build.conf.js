@@ -15,8 +15,7 @@ module.exports = {
 
     typescript: {
         noImplicitAny: false,
-        declaration: true,
-        removeComments: false
+        declaration: true
     },
 
     file: {
