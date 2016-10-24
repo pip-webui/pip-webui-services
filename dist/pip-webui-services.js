@@ -21,6 +21,165 @@
 
 var pip;
 (function (pip) {
+    var routing;
+    (function (routing) {
+        'use strict';
+        captureStateTranslations.$inject = ['$rootScope'];
+        decorateBackStateService.$inject = ['$delegate', '$window'];
+        addBackStateDecorator.$inject = ['$provide'];
+        function captureStateTranslations($rootScope) {
+            "ngInject";
+            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+                pip.routing.CurrentState = {
+                    name: toState.name,
+                    url: toState.url,
+                    params: toParams
+                };
+                pip.routing.PreviousState = {
+                    name: fromState.name,
+                    url: fromState.url,
+                    params: fromParams
+                };
+            });
+        }
+        function decorateBackStateService($delegate, $window) {
+            "ngInject";
+            $delegate.goBack = goBack;
+            $delegate.goBackAndSelect = goBackAndSelect;
+            return $delegate;
+            function goBack() {
+                $window.history.back();
+            }
+            function goBackAndSelect(params) {
+                if (pip.routing.PreviousState != null
+                    && pip.routing.PreviousState.name != null) {
+                    var state = _.cloneDeep(pip.routing.PreviousState);
+                    state.params = _.extend(state.params, params);
+                    $delegate.go(state.name, state.params);
+                }
+                else {
+                    $window.history.back();
+                }
+            }
+        }
+        function addBackStateDecorator($provide) {
+            $provide.decorator('$state', decorateBackStateService);
+        }
+        angular
+            .module('pipRouting.Back', [])
+            .config(addBackStateDecorator)
+            .run(captureStateTranslations);
+    })(routing = pip.routing || (pip.routing = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
+    var routing;
+    (function (routing) {
+        'use strict';
+        decorateRedirectStateProvider.$inject = ['$delegate'];
+        addRedirectStateProviderDecorator.$inject = ['$provide'];
+        decorateRedirectStateService.$inject = ['$delegate', '$timeout'];
+        addRedirectStateDecorator.$inject = ['$provide'];
+        routing.RedirectedStates = {};
+        function decorateRedirectStateProvider($delegate) {
+            "ngInject";
+            $delegate.redirect = redirect;
+            return $delegate;
+            function redirect(fromState, toState) {
+                pip.routing.RedirectedStates[fromState] = toState;
+                return this;
+            }
+        }
+        function addRedirectStateProviderDecorator($provide) {
+            "ngInject";
+            $provide.decorator('$state', decorateRedirectStateProvider);
+        }
+        function decorateRedirectStateService($delegate, $timeout) {
+            "ngInject";
+            $delegate.redirect = redirect;
+            return $delegate;
+            function redirect(event, state, params) {
+                var toState = pip.routing.RedirectedStates[state.name];
+                if (_.isFunction(toState)) {
+                    toState = toState(state.name, params);
+                    if (_.isNull(toState))
+                        throw new Error('Redirected toState cannot be null');
+                }
+                if (!!toState) {
+                    $timeout(function () {
+                        event.preventDefault();
+                        $delegate.transitionTo(toState, params, { location: 'replace' });
+                    });
+                    return true;
+                }
+                return false;
+            }
+        }
+        function addRedirectStateDecorator($provide) {
+            "ngInject";
+            $provide.decorator('$state', decorateRedirectStateService);
+        }
+        angular
+            .module('pipRouting.Redirect', ['ui.router'])
+            .config(addRedirectStateProviderDecorator)
+            .config(addRedirectStateDecorator);
+    })(routing = pip.routing || (pip.routing = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
+    var routing;
+    (function (routing) {
+        'use strict';
+        angular.module('pipRouting', [
+            'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
+        ]);
+    })(routing = pip.routing || (pip.routing = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
+    var routing;
+    (function (routing) {
+        'use strict';
+        hookRoutingEvents.$inject = ['$log', '$rootScope', '$state'];
+        routing.RoutingVar = "$routing";
+        function hookRoutingEvents($log, $rootScope, $state) {
+            "ngInject";
+            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+                $rootScope[routing.RoutingVar] = true;
+            });
+            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+                $rootScope[routing.RoutingVar] = false;
+            });
+            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                $rootScope[routing.RoutingVar] = false;
+                $log.error('Error while switching route to ' + toState.name);
+                $log.error(error);
+                console.error('Error while switching route to ' + toState.name);
+                console.error(error);
+            });
+            $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {
+                event.preventDefault();
+                $rootScope[routing.RoutingVar] = false;
+                $state.go('errors_missing_route', {
+                    unfoundState: unfoundState,
+                    fromState: {
+                        to: fromState ? fromState.name : '',
+                        fromParams: fromParams
+                    }
+                });
+            });
+        }
+        angular
+            .module('pipRouting.Events', [])
+            .run(hookRoutingEvents);
+    })(routing = pip.routing || (pip.routing = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
     var scope;
     (function (scope) {
         'use strict';
@@ -251,165 +410,6 @@ var pip;
             }
         }]);
     })(scope = pip.scope || (pip.scope = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var routing;
-    (function (routing) {
-        'use strict';
-        captureStateTranslations.$inject = ['$rootScope'];
-        decorateBackStateService.$inject = ['$delegate', '$window'];
-        addBackStateDecorator.$inject = ['$provide'];
-        function captureStateTranslations($rootScope) {
-            "ngInject";
-            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-                pip.routing.CurrentState = {
-                    name: toState.name,
-                    url: toState.url,
-                    params: toParams
-                };
-                pip.routing.PreviousState = {
-                    name: fromState.name,
-                    url: fromState.url,
-                    params: fromParams
-                };
-            });
-        }
-        function decorateBackStateService($delegate, $window) {
-            "ngInject";
-            $delegate.goBack = goBack;
-            $delegate.goBackAndSelect = goBackAndSelect;
-            return $delegate;
-            function goBack() {
-                $window.history.back();
-            }
-            function goBackAndSelect(params) {
-                if (pip.routing.PreviousState != null
-                    && pip.routing.PreviousState.name != null) {
-                    var state = _.cloneDeep(pip.routing.PreviousState);
-                    state.params = _.extend(state.params, params);
-                    $delegate.go(state.name, state.params);
-                }
-                else {
-                    $window.history.back();
-                }
-            }
-        }
-        function addBackStateDecorator($provide) {
-            $provide.decorator('$state', decorateBackStateService);
-        }
-        angular
-            .module('pipRouting.Back', [])
-            .config(addBackStateDecorator)
-            .run(captureStateTranslations);
-    })(routing = pip.routing || (pip.routing = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var routing;
-    (function (routing) {
-        'use strict';
-        decorateRedirectStateProvider.$inject = ['$delegate'];
-        addRedirectStateProviderDecorator.$inject = ['$provide'];
-        decorateRedirectStateService.$inject = ['$delegate', '$timeout'];
-        addRedirectStateDecorator.$inject = ['$provide'];
-        routing.RedirectedStates = {};
-        function decorateRedirectStateProvider($delegate) {
-            "ngInject";
-            $delegate.redirect = redirect;
-            return $delegate;
-            function redirect(fromState, toState) {
-                pip.routing.RedirectedStates[fromState] = toState;
-                return this;
-            }
-        }
-        function addRedirectStateProviderDecorator($provide) {
-            "ngInject";
-            $provide.decorator('$state', decorateRedirectStateProvider);
-        }
-        function decorateRedirectStateService($delegate, $timeout) {
-            "ngInject";
-            $delegate.redirect = redirect;
-            return $delegate;
-            function redirect(event, state, params) {
-                var toState = pip.routing.RedirectedStates[state.name];
-                if (_.isFunction(toState)) {
-                    toState = toState(state.name, params);
-                    if (_.isNull(toState))
-                        throw new Error('Redirected toState cannot be null');
-                }
-                if (!!toState) {
-                    $timeout(function () {
-                        event.preventDefault();
-                        $delegate.transitionTo(toState, params, { location: 'replace' });
-                    });
-                    return true;
-                }
-                return false;
-            }
-        }
-        function addRedirectStateDecorator($provide) {
-            "ngInject";
-            $provide.decorator('$state', decorateRedirectStateService);
-        }
-        angular
-            .module('pipRouting.Redirect', ['ui.router'])
-            .config(addRedirectStateProviderDecorator)
-            .config(addRedirectStateDecorator);
-    })(routing = pip.routing || (pip.routing = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var routing;
-    (function (routing) {
-        'use strict';
-        angular.module('pipRouting', [
-            'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
-        ]);
-    })(routing = pip.routing || (pip.routing = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var routing;
-    (function (routing) {
-        'use strict';
-        hookRoutingEvents.$inject = ['$log', '$rootScope', '$state'];
-        routing.RoutingVar = "$routing";
-        function hookRoutingEvents($log, $rootScope, $state) {
-            "ngInject";
-            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-                $rootScope[routing.RoutingVar] = true;
-            });
-            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-                $rootScope[routing.RoutingVar] = false;
-            });
-            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
-                $rootScope[routing.RoutingVar] = false;
-                $log.error('Error while switching route to ' + toState.name);
-                $log.error(error);
-                console.error('Error while switching route to ' + toState.name);
-                console.error(error);
-            });
-            $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {
-                event.preventDefault();
-                $rootScope[routing.RoutingVar] = false;
-                $state.go('errors_missing_route', {
-                    unfoundState: unfoundState,
-                    fromState: {
-                        to: fromState ? fromState.name : '',
-                        fromParams: fromParams
-                    }
-                });
-            });
-        }
-        angular
-            .module('pipRouting.Events', [])
-            .run(hookRoutingEvents);
-    })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
 
 var pip;
