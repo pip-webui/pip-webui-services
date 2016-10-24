@@ -38,7 +38,7 @@ module pip.translate {
     }
 
     angular
-        .module('pipTranslate')
+        .module('pipTranslate.Directive', [])
         .directive('pipTranslate', pipTranslateDirective)
         .directive('pipTranslateHtml', pipTranslateHtmlDirective);
 

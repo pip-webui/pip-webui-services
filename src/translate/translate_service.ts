@@ -312,7 +312,7 @@ module pip.translate {
     }
 
     angular
-        .module('pipTranslate')
+        .module('pipTranslate.Service', [])
         .provider('pipTranslate', TranslateProvider);
 
 }

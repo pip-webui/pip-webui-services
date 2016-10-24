@@ -61,7 +61,7 @@ module pip.routing {
     }
 
     angular
-        .module('pipRouting')
+        .module('pipRouting.Back', [])
         .config(addBackStateDecorator)
         .run(captureStateTranslations);
 

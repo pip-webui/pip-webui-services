@@ -57,7 +57,7 @@ module pip.routing {
     }
     
     angular
-        .module('pipRouting')
+        .module('pipRouting.Events', [])
         .run(hookRoutingEvents);
 
 }

@@ -65,7 +65,7 @@ module pip.routing {
     }
 
     angular
-        .module('pipRouting')
+        .module('pipRouting.Redirect', [])
         .config(addRedirectStateProviderDecorator)
         .config(addRedirectStateDecorator);
 

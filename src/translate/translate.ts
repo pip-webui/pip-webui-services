@@ -4,7 +4,7 @@ module pip.translate {
     'use strict';
 
     angular.module('pipTranslate', [
-        'LocalStorageModule'
+        'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
     ]);
 
 }

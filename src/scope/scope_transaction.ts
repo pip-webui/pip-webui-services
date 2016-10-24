@@ -3,7 +3,7 @@
 module pip.scope {
     'use strict';
 
-    var thisModule = angular.module('pipScope');
+    var thisModule = angular.module('pipScope.Transaction', []);
 
 	thisModule.config(function(pipTranslateProvider) {
         

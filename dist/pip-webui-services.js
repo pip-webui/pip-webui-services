@@ -66,7 +66,7 @@ var pip;
             $provide.decorator('$state', decorateBackStateService);
         }
         angular
-            .module('pipRouting')
+            .module('pipRouting.Back', [])
             .config(addBackStateDecorator)
             .run(captureStateTranslations);
     })(routing = pip.routing || (pip.routing = {}));
@@ -121,7 +121,7 @@ var pip;
             $provide.decorator('$state', decorateRedirectStateService);
         }
         angular
-            .module('pipRouting')
+            .module('pipRouting.Redirect', [])
             .config(addRedirectStateProviderDecorator)
             .config(addRedirectStateDecorator);
     })(routing = pip.routing || (pip.routing = {}));
@@ -132,7 +132,9 @@ var pip;
     var routing;
     (function (routing) {
         'use strict';
-        angular.module('pipRouting', ['ui.router']);
+        angular.module('pipRouting', [
+            'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
+        ]);
     })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
 
@@ -171,7 +173,7 @@ var pip;
             });
         }
         angular
-            .module('pipRouting')
+            .module('pipRouting.Events', [])
             .run(hookRoutingEvents);
     })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
@@ -181,7 +183,7 @@ var pip;
     var scope;
     (function (scope) {
         'use strict';
-        angular.module('pipScope', ['pipTranslate']);
+        angular.module('pipScope', ['pipTranslate', 'pipScope.Error', 'pipScope.Transaction']);
         angular.module('pipTransactions', ['pipScope']);
     })(scope = pip.scope || (pip.scope = {}));
 })(pip || (pip = {}));
@@ -191,7 +193,7 @@ var pip;
     var scope;
     (function (scope_1) {
         'use strict';
-        var thisModule = angular.module('pipScope');
+        var thisModule = angular.module('pipScope.Error', []);
         thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
             $rootScope.errors = {};
             return createError;
@@ -306,7 +308,7 @@ var pip;
     var scope;
     (function (scope_1) {
         'use strict';
-        var thisModule = angular.module('pipScope');
+        var thisModule = angular.module('pipScope.Transaction', []);
         thisModule.config(['pipTranslateProvider', function (pipTranslateProvider) {
             pipTranslateProvider.translations('en', {
                 'ENTERING': 'Entering...',
@@ -576,7 +578,7 @@ var pip;
     (function (translate) {
         'use strict';
         angular.module('pipTranslate', [
-            'LocalStorageModule'
+            'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
         ]);
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));
@@ -619,7 +621,7 @@ var pip;
             };
         }
         angular
-            .module('pipTranslate')
+            .module('pipTranslate.Directive', [])
             .directive('pipTranslate', pipTranslateDirective)
             .directive('pipTranslateHtml', pipTranslateHtmlDirective);
     })(translate = pip.translate || (pip.translate = {}));
@@ -647,7 +649,7 @@ var pip;
             };
         }
         angular
-            .module('pipTranslate')
+            .module('pipTranslate.Filter', [])
             .filter('translate', translateFilter);
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));
@@ -890,7 +892,7 @@ var pip;
             return TranslateProvider;
         }(Translation));
         angular
-            .module('pipTranslate')
+            .module('pipTranslate.Service', [])
             .provider('pipTranslate', TranslateProvider);
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));

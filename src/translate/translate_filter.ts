@@ -23,7 +23,7 @@ module pip.translate {
     }
 
     angular
-        .module('pipTranslate')
+        .module('pipTranslate.Filter', [])
         .filter('translate', translateFilter);
 
 }

@@ -3,7 +3,7 @@
 module pip.scope {
     'use strict';
 
-    var thisModule = angular.module('pipScope');
+    var thisModule = angular.module('pipScope.Error', []);
 
     /*
      * Error is designed to assist with error handling
