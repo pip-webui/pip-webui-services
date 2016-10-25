@@ -21,240 +21,6 @@
 
 var pip;
 (function (pip) {
-    var scope;
-    (function (scope) {
-        'use strict';
-        angular.module('pipScope', ['pipTranslate', 'pipScope.Error', 'pipScope.Transaction']);
-        angular.module('pipTransactions', ['pipScope']);
-    })(scope = pip.scope || (pip.scope = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var scope;
-    (function (scope_1) {
-        'use strict';
-        var thisModule = angular.module('pipScope.Error', []);
-        thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
-            $rootScope.errors = {};
-            return createError;
-            function initError(scope) {
-                $rootScope.errors[scope] = {
-                    message: undefined,
-                    code: undefined,
-                    details: undefined
-                };
-            }
-            ;
-            function errorMessage(error) {
-                if (_.isNull(error)) {
-                    return null;
-                }
-                if (error.message) {
-                    return error.message;
-                }
-                if (error.data) {
-                    if (error.data.code) {
-                        return 'ERROR_' + error.data.code;
-                    }
-                    if (error.data.message) {
-                        return error.data.message;
-                    }
-                }
-                if (error.statusText) {
-                    return error.statusText;
-                }
-                if (error.status) {
-                    return 'ERROR_' + error.status;
-                }
-                return error.data ? error.data : error;
-            }
-            ;
-            function errorCode(error) {
-                if (_.isNull(error)) {
-                    return null;
-                }
-                if (error.data && error.data.code) {
-                    return error.data.code;
-                }
-                if (error.status) {
-                    return error.status;
-                }
-                return null;
-            }
-            ;
-            function errorDetails(error) {
-                return error && error.data ? error.data : error;
-            }
-            ;
-            function createError(scope, scopeObject) {
-                scope = scope || 'global';
-                var error = {
-                    reset: function () {
-                        initError(scope);
-                    },
-                    empty: function () {
-                        var error = $rootScope.errors[scope];
-                        return _.isNull(error) || (_.isNull(error.message) && _.isNull(error.code));
-                    },
-                    get: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope];
-                        }
-                        return '';
-                    },
-                    message: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope].message;
-                        }
-                        return null;
-                    },
-                    code: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope].code;
-                        }
-                        return null;
-                    },
-                    details: function () {
-                        if ($rootScope.errors[scope]) {
-                            return $rootScope.errors[scope].details;
-                        }
-                        return null;
-                    },
-                    set: function (error) {
-                        if (error) {
-                            $rootScope.errors[scope] = {
-                                message: errorMessage(error),
-                                code: errorCode(error),
-                                details: errorDetails(error)
-                            };
-                            console.error($rootScope.errors[scope]);
-                        }
-                        else {
-                            initError(scope);
-                        }
-                    }
-                };
-                if (_.isObject(scopeObject))
-                    scopeObject.error = error;
-                return error;
-            }
-            ;
-        }]);
-    })(scope = pip.scope || (pip.scope = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var scope;
-    (function (scope_1) {
-        'use strict';
-        var thisModule = angular.module('pipScope.Transaction', ['pipTranslate']);
-        thisModule.run(['$injector', function ($injector) {
-            var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
-            if (pipTranslate) {
-                pipTranslate.setTranslations('en', {
-                    'ENTERING': 'Entering...',
-                    'PROCESSING': 'Processing...',
-                    'LOADING': 'Loading...',
-                    'SAVING': 'Saving...'
-                });
-                pipTranslate.setTranslations('ru', {
-                    'ENTERING': 'Вход в систему...',
-                    'PROCESSING': 'Обрабатывается...',
-                    'LOADING': 'Загружается...',
-                    'SAVING': 'Сохраняется...'
-                });
-            }
-        }]);
-        thisModule.factory('pipTransaction', ['$rootScope', 'pipError', function ($rootScope, pipError) {
-            $rootScope.transactions = {};
-            return createTransaction;
-            function initTransaction(scope) {
-                $rootScope.transactions[scope] = {
-                    id: undefined,
-                    operation: undefined
-                };
-            }
-            function createTransaction(scope, scopeObject) {
-                scope = scope || 'global';
-                var error = pipError(scope);
-                var transaction = {
-                    error: error,
-                    reset: function () {
-                        initTransaction("");
-                        error.reset();
-                    },
-                    busy: function () {
-                        var transaction = $rootScope.transactions[scope];
-                        return transaction != null && transaction.id;
-                    },
-                    failed: function () {
-                        return !error.empty();
-                    },
-                    aborted: function (id) {
-                        var transaction = $rootScope.transactions[scope];
-                        return _.isNull(transaction) || transaction.id != id;
-                    },
-                    get: function () {
-                        if (_.isNull($rootScope.transactions[scope])) {
-                            initTransaction(scope);
-                        }
-                        return $rootScope.transactions[scope];
-                    },
-                    id: function () {
-                        var transaction = $rootScope.transactions[scope];
-                        return transaction ? transaction.id : null;
-                    },
-                    operation: function () {
-                        var transaction = $rootScope.transactions[scope];
-                        return transaction ? transaction.operation : null;
-                    },
-                    errorMessage: function () {
-                        return error.message();
-                    },
-                    begin: function (operation) {
-                        var transaction = $rootScope.transactions[scope];
-                        if (transaction != null && transaction.id) {
-                            return null;
-                        }
-                        transaction = $rootScope.transactions[scope] = {
-                            id: new Date().getTime(),
-                            operation: operation || 'PROCESSING'
-                        };
-                        error.reset();
-                        return transaction.id;
-                    },
-                    abort: function () {
-                        var transaction = $rootScope.transactions[scope];
-                        if (transaction) {
-                            transaction.id = null;
-                        }
-                        error.reset();
-                    },
-                    end: function (err) {
-                        if (err)
-                            error.set(err);
-                        else
-                            error.reset();
-                        var transaction = $rootScope.transactions[scope];
-                        if (transaction != null) {
-                            transaction.id = null;
-                        }
-                    }
-                };
-                if (_.isObject(scopeObject)) {
-                    scopeObject.error = error;
-                    scopeObject.transaction = transaction;
-                }
-                return transaction;
-            }
-        }]);
-    })(scope = pip.scope || (pip.scope = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
     var routing;
     (function (routing) {
         'use strict';
@@ -577,327 +343,236 @@ var pip;
 
 var pip;
 (function (pip) {
-    var translate;
-    (function (translate) {
+    var scope;
+    (function (scope) {
         'use strict';
-        angular.module('pipTranslate', [
-            'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
-        ]);
-    })(translate = pip.translate || (pip.translate = {}));
+        angular.module('pipScope', ['pipTranslate', 'pipScope.Error', 'pipScope.Transaction']);
+        angular.module('pipTransactions', ['pipScope']);
+    })(scope = pip.scope || (pip.scope = {}));
 })(pip || (pip = {}));
 
 var pip;
 (function (pip) {
-    var translate;
-    (function (translate) {
+    var scope;
+    (function (scope_1) {
         'use strict';
-        pipTranslateDirective.$inject = ['pipTranslate'];
-        pipTranslateHtmlDirective.$inject = ['pipTranslate'];
-        function pipTranslateDirective(pipTranslate) {
-            "ngInject";
-            return {
-                restrict: 'EA',
-                scope: {
-                    key1: '@pipTranslate',
-                    key2: '@key'
-                },
-                link: function (scope, element, attrs) {
-                    var key = scope.key1 || scope.key2;
-                    var value = pipTranslate.translate(key);
-                    element.text(value);
-                }
-            };
-        }
-        function pipTranslateHtmlDirective(pipTranslate) {
-            "ngInject";
-            return {
-                restrict: 'EA',
-                scope: {
-                    key1: '@pipTranslateHtml',
-                    key2: '@key'
-                },
-                link: function (scope, element, attrs) {
-                    var key = scope.key1 || scope.key2;
-                    var value = pipTranslate.translate(key);
-                    element.html(value);
-                }
-            };
-        }
-        angular
-            .module('pipTranslate.Directive', [])
-            .directive('pipTranslate', pipTranslateDirective)
-            .directive('pipTranslateHtml', pipTranslateHtmlDirective);
-    })(translate = pip.translate || (pip.translate = {}));
-})(pip || (pip = {}));
-
-var pip;
-(function (pip) {
-    var translate;
-    (function (translate) {
-        'use strict';
-        translateFilter.$inject = ['pipTranslate'];
-        optionalTranslateFilter.$inject = ['$injector'];
-        function translateFilter(pipTranslate) {
-            "ngInject";
-            return function (key) {
-                return pipTranslate.translate(key) || key;
-            };
-        }
-        function optionalTranslateFilter($injector) {
-            "ngInject";
-            var pipTranslate = $injector.has('pipTranslate')
-                ? $injector.get('pipTranslate') : null;
-            return function (key) {
-                return pipTranslate ? pipTranslate.translate(key) || key : key;
-            };
-        }
-        angular
-            .module('pipTranslate.Filter', [])
-            .filter('translate', translateFilter);
-    })(translate = pip.translate || (pip.translate = {}));
-})(pip || (pip = {}));
-
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var pip;
-(function (pip) {
-    var translate;
-    (function (translate) {
-        'use strict';
-        translate.LanguageRootVar = "$language";
-        translate.LanguageChangedEvent = "pipLanguageChanged";
-        var Translation = (function () {
-            function Translation() {
-                this._language = 'en';
-                this._translations = {
-                    en: {
-                        'en': 'English',
-                        'ru': 'Russian',
-                        'es': 'Spanish',
-                        'pt': 'Portuguese',
-                        'de': 'German',
-                        'fr': 'French'
-                    },
-                    ru: {
-                        'en': 'Английский',
-                        'ru': 'Русский',
-                        'es': 'Испанский',
-                        'pt': 'Португальский',
-                        'de': 'Немецкий',
-                        'fr': 'Французский'
-                    }
+        var thisModule = angular.module('pipScope.Error', []);
+        thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
+            $rootScope.errors = {};
+            return createError;
+            function initError(scope) {
+                $rootScope.errors[scope] = {
+                    message: undefined,
+                    code: undefined,
+                    details: undefined
                 };
             }
-            Object.defineProperty(Translation.prototype, "language", {
-                get: function () { return this._language; },
-                set: function (value) { this._language = value; },
-                enumerable: true,
-                configurable: true
-            });
-            Translation.prototype.use = function (language) {
-                if (language != null)
-                    this._language = language;
-                return this._language;
-            };
-            Translation.prototype.setTranslations = function (language, translations) {
-                var map = this._translations[language] || {};
-                this._translations[language] = _.extend(map, translations);
-            };
-            Translation.prototype.translate = function (key) {
-                if (_.isNull(key) || _.isUndefined(key))
-                    return '';
-                var translations = this._translations[this._language] || {};
-                return translations[key] || key;
-            };
-            Translation.prototype.translateArray = function (keys) {
-                if (_.isNull(keys) || keys.length == 0)
-                    return [];
-                var values = [];
-                var translations = this._translations[this._language] || {};
-                _.each(keys, function (k) {
-                    var key = k || '';
-                    values.push(translations[key] || key);
-                });
-                return values;
-            };
-            Translation.prototype.translateSet = function (keys, keyProp, valueProp) {
-                if (_.isNull(keys) || keys.length == 0)
-                    return [];
-                keyProp = keyProp || 'id';
-                valueProp = valueProp || 'name';
-                var values = [];
-                var translations = this._translations[this._language] || {};
-                _.each(keys, function (key) {
-                    var value = {};
-                    key = key || '';
-                    value[keyProp] = key;
-                    value[valueProp] = translations[key] || key;
-                    values.push(value);
-                });
-                return values;
-            };
-            Translation.prototype.translateObjects = function (items, keyProp, valueProp) {
-                if (_.isNull(items) || items.length == 0)
-                    return [];
-                keyProp = keyProp || 'name';
-                valueProp = valueProp || 'nameLocal';
-                var translations = this._translations[this._language] || {};
-                _.each(items, function (item) {
-                    var key = item[keyProp] || '';
-                    item[valueProp] = translations[key] || key;
-                });
-                return items;
-            };
-            Translation.prototype.translateWithPrefix = function (prefix, key) {
-                prefix = prefix ? prefix + '_' : '';
-                key = (prefix + key).replace(/ /g, '_').toUpperCase();
-                if (key == null)
-                    return '';
-                var translations = this._translations[this._language] || {};
-                return translations[key] || key;
-            };
             ;
-            Translation.prototype.translateSetWithPrefix = function (prefix, keys, keyProp, valueProp) {
-                if (_.isNull(keys) || keys.length == 0)
-                    return [];
-                prefix = prefix ? prefix.replace(/ /g, '_').toUpperCase() : '';
-                keyProp = keyProp || 'id';
-                valueProp = valueProp || 'name';
-                var values = [];
-                var translations = this._translations[this._language] || {};
-                _.each(keys, function (key) {
-                    var value = {};
-                    key = key || '';
-                    value[keyProp] = key;
-                    value[valueProp] = translations[prefix + '_' + key] || key;
-                    values.push(value);
-                });
-                return values;
-            };
-            Translation.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
-                if (_.isNull(keys) || keys.length == 0)
-                    return [];
-                keyProp = keyProp || 'id';
-                valueProp = valueProp || 'name';
-                prefix = prefix ? prefix.replace(/ /g, '_').toUpperCase() + '_' : '';
-                var values = [];
-                var translations = this._translations[this._language] || {};
-                _.each(keys, function (key) {
-                    var value = {};
-                    key = key || '';
-                    value[keyProp] = key;
-                    value[valueProp] = translations[prefix + key.replace(/ /g, '_').toUpperCase()]
-                        || (prefix + key.replace(/ /g, '_').toUpperCase());
-                    values.push(value);
-                });
-                return values;
-            };
-            return Translation;
-        }());
-        var TranslateService = (function () {
-            function TranslateService(translation, setRootVar, persist, $rootScope, localStorageService) {
-                this._setRootVar = setRootVar;
-                this._persist = persist;
-                this._translation = translation;
-                this._rootScope = $rootScope;
-                this._storage = localStorageService;
-                if (this._persist) {
-                    this._translation.language = localStorageService.get('language')
-                        || this._translation.language;
+            function errorMessage(error) {
+                if (_.isNull(error)) {
+                    return null;
                 }
-                this.save();
-            }
-            TranslateService.prototype.save = function () {
-                if (this._setRootVar)
-                    this._rootScope[pip.translate.LanguageRootVar] = this._translation.language;
-                if (this._persist)
-                    this._storage.set('language', this._translation.language);
-            };
-            Object.defineProperty(TranslateService.prototype, "language", {
-                get: function () {
-                    return this._translation.language;
-                },
-                set: function (value) {
-                    if (value != this._translation.language) {
-                        this._translation.language = value;
-                        this.save();
-                        this._rootScope.$broadcast(pip.translate.LanguageChangedEvent, value);
+                if (error.message) {
+                    return error.message;
+                }
+                if (error.data) {
+                    if (error.data.code) {
+                        return 'ERROR_' + error.data.code;
                     }
-                },
-                enumerable: true,
-                configurable: true
-            });
-            TranslateService.prototype.use = function (language) {
-                if (language != null)
-                    this.language = language;
-                return this.language;
-            };
-            TranslateService.prototype.setTranslations = function (language, translations) {
-                return this._translation.setTranslations(language, translations);
-            };
-            TranslateService.prototype.translate = function (key) {
-                return this._translation.translate(key);
-            };
-            TranslateService.prototype.translateArray = function (keys) {
-                return this._translation.translateArray(keys);
-            };
-            TranslateService.prototype.translateSet = function (keys, keyProp, valueProp) {
-                return this._translation.translateSet(keys, keyProp, valueProp);
-            };
-            TranslateService.prototype.translateObjects = function (items, keyProp, valueProp) {
-                return this._translation.translateObjects(items, keyProp, valueProp);
-            };
-            TranslateService.prototype.translateWithPrefix = function (prefix, key) {
-                return this._translation.translateWithPrefix(prefix, key);
-            };
-            TranslateService.prototype.translateSetWithPrefix = function (prefix, keys, keyProp, valueProp) {
-                return this._translation.translateSetWithPrefix(prefix, keys, keyProp, valueProp);
-            };
-            TranslateService.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
-                return this._translation.translateSetWithPrefix2(prefix, keys, keyProp, valueProp);
-            };
-            return TranslateService;
-        }());
-        var TranslateProvider = (function (_super) {
-            __extends(TranslateProvider, _super);
-            function TranslateProvider() {
-                _super.call(this);
+                    if (error.data.message) {
+                        return error.data.message;
+                    }
+                }
+                if (error.statusText) {
+                    return error.statusText;
+                }
+                if (error.status) {
+                    return 'ERROR_' + error.status;
+                }
+                return error.data ? error.data : error;
             }
-            Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
-                get: function () {
-                    return this._setRootVar;
-                },
-                set: function (value) {
-                    this._setRootVar = !!value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(TranslateProvider.prototype, "persist", {
-                get: function () {
-                    return this._persist;
-                },
-                set: function (value) {
-                    this._persist = !!value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            TranslateProvider.prototype.$get = ['$rootScope', 'localStorageService', function ($rootScope, localStorageService) {
-                "ngInject";
-                if (this._service == null)
-                    this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, localStorageService);
-                return this._service;
-            }];
-            return TranslateProvider;
-        }(Translation));
-        angular
-            .module('pipTranslate.Service', [])
-            .provider('pipTranslate', TranslateProvider);
-    })(translate = pip.translate || (pip.translate = {}));
+            ;
+            function errorCode(error) {
+                if (_.isNull(error)) {
+                    return null;
+                }
+                if (error.data && error.data.code) {
+                    return error.data.code;
+                }
+                if (error.status) {
+                    return error.status;
+                }
+                return null;
+            }
+            ;
+            function errorDetails(error) {
+                return error && error.data ? error.data : error;
+            }
+            ;
+            function createError(scope, scopeObject) {
+                scope = scope || 'global';
+                var error = {
+                    reset: function () {
+                        initError(scope);
+                    },
+                    empty: function () {
+                        var error = $rootScope.errors[scope];
+                        return _.isNull(error) || (_.isNull(error.message) && _.isNull(error.code));
+                    },
+                    get: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope];
+                        }
+                        return '';
+                    },
+                    message: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope].message;
+                        }
+                        return null;
+                    },
+                    code: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope].code;
+                        }
+                        return null;
+                    },
+                    details: function () {
+                        if ($rootScope.errors[scope]) {
+                            return $rootScope.errors[scope].details;
+                        }
+                        return null;
+                    },
+                    set: function (error) {
+                        if (error) {
+                            $rootScope.errors[scope] = {
+                                message: errorMessage(error),
+                                code: errorCode(error),
+                                details: errorDetails(error)
+                            };
+                            console.error($rootScope.errors[scope]);
+                        }
+                        else {
+                            initError(scope);
+                        }
+                    }
+                };
+                if (_.isObject(scopeObject))
+                    scopeObject.error = error;
+                return error;
+            }
+            ;
+        }]);
+    })(scope = pip.scope || (pip.scope = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
+    var scope;
+    (function (scope_1) {
+        'use strict';
+        var thisModule = angular.module('pipScope.Transaction', ['pipTranslate']);
+        thisModule.run(['$injector', function ($injector) {
+            var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
+            if (pipTranslate) {
+                pipTranslate.setTranslations('en', {
+                    'ENTERING': 'Entering...',
+                    'PROCESSING': 'Processing...',
+                    'LOADING': 'Loading...',
+                    'SAVING': 'Saving...'
+                });
+                pipTranslate.setTranslations('ru', {
+                    'ENTERING': 'Вход в систему...',
+                    'PROCESSING': 'Обрабатывается...',
+                    'LOADING': 'Загружается...',
+                    'SAVING': 'Сохраняется...'
+                });
+            }
+        }]);
+        thisModule.factory('pipTransaction', ['$rootScope', 'pipError', function ($rootScope, pipError) {
+            $rootScope.transactions = {};
+            return createTransaction;
+            function initTransaction(scope) {
+                $rootScope.transactions[scope] = {
+                    id: undefined,
+                    operation: undefined
+                };
+            }
+            function createTransaction(scope, scopeObject) {
+                scope = scope || 'global';
+                var error = pipError(scope);
+                var transaction = {
+                    error: error,
+                    reset: function () {
+                        initTransaction("");
+                        error.reset();
+                    },
+                    busy: function () {
+                        var transaction = $rootScope.transactions[scope];
+                        return transaction != null && transaction.id;
+                    },
+                    failed: function () {
+                        return !error.empty();
+                    },
+                    aborted: function (id) {
+                        var transaction = $rootScope.transactions[scope];
+                        return _.isNull(transaction) || transaction.id != id;
+                    },
+                    get: function () {
+                        if (_.isNull($rootScope.transactions[scope])) {
+                            initTransaction(scope);
+                        }
+                        return $rootScope.transactions[scope];
+                    },
+                    id: function () {
+                        var transaction = $rootScope.transactions[scope];
+                        return transaction ? transaction.id : null;
+                    },
+                    operation: function () {
+                        var transaction = $rootScope.transactions[scope];
+                        return transaction ? transaction.operation : null;
+                    },
+                    errorMessage: function () {
+                        return error.message();
+                    },
+                    begin: function (operation) {
+                        var transaction = $rootScope.transactions[scope];
+                        if (transaction != null && transaction.id) {
+                            return null;
+                        }
+                        transaction = $rootScope.transactions[scope] = {
+                            id: new Date().getTime(),
+                            operation: operation || 'PROCESSING'
+                        };
+                        error.reset();
+                        return transaction.id;
+                    },
+                    abort: function () {
+                        var transaction = $rootScope.transactions[scope];
+                        if (transaction) {
+                            transaction.id = null;
+                        }
+                        error.reset();
+                    },
+                    end: function (err) {
+                        if (err)
+                            error.set(err);
+                        else
+                            error.reset();
+                        var transaction = $rootScope.transactions[scope];
+                        if (transaction != null) {
+                            transaction.id = null;
+                        }
+                    }
+                };
+                if (_.isObject(scopeObject)) {
+                    scopeObject.error = error;
+                    scopeObject.transaction = transaction;
+                }
+                return transaction;
+            }
+        }]);
+    })(scope = pip.scope || (pip.scope = {}));
 })(pip || (pip = {}));
 
 (function () {
@@ -1433,6 +1108,331 @@ var pip;
 })(pip || (pip = {}));
 
 
+
+var pip;
+(function (pip) {
+    var translate;
+    (function (translate) {
+        'use strict';
+        angular.module('pipTranslate', [
+            'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
+        ]);
+    })(translate = pip.translate || (pip.translate = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
+    var translate;
+    (function (translate) {
+        'use strict';
+        pipTranslateDirective.$inject = ['pipTranslate'];
+        pipTranslateHtmlDirective.$inject = ['pipTranslate'];
+        function pipTranslateDirective(pipTranslate) {
+            "ngInject";
+            return {
+                restrict: 'EA',
+                scope: {
+                    key1: '@pipTranslate',
+                    key2: '@key'
+                },
+                link: function (scope, element, attrs) {
+                    var key = scope.key1 || scope.key2;
+                    var value = pipTranslate.translate(key);
+                    element.text(value);
+                }
+            };
+        }
+        function pipTranslateHtmlDirective(pipTranslate) {
+            "ngInject";
+            return {
+                restrict: 'EA',
+                scope: {
+                    key1: '@pipTranslateHtml',
+                    key2: '@key'
+                },
+                link: function (scope, element, attrs) {
+                    var key = scope.key1 || scope.key2;
+                    var value = pipTranslate.translate(key);
+                    element.html(value);
+                }
+            };
+        }
+        angular
+            .module('pipTranslate.Directive', [])
+            .directive('pipTranslate', pipTranslateDirective)
+            .directive('pipTranslateHtml', pipTranslateHtmlDirective);
+    })(translate = pip.translate || (pip.translate = {}));
+})(pip || (pip = {}));
+
+var pip;
+(function (pip) {
+    var translate;
+    (function (translate) {
+        'use strict';
+        translateFilter.$inject = ['pipTranslate'];
+        optionalTranslateFilter.$inject = ['$injector'];
+        function translateFilter(pipTranslate) {
+            "ngInject";
+            return function (key) {
+                return pipTranslate.translate(key) || key;
+            };
+        }
+        function optionalTranslateFilter($injector) {
+            "ngInject";
+            var pipTranslate = $injector.has('pipTranslate')
+                ? $injector.get('pipTranslate') : null;
+            return function (key) {
+                return pipTranslate ? pipTranslate.translate(key) || key : key;
+            };
+        }
+        angular
+            .module('pipTranslate.Filter', [])
+            .filter('translate', translateFilter);
+    })(translate = pip.translate || (pip.translate = {}));
+})(pip || (pip = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var pip;
+(function (pip) {
+    var translate;
+    (function (translate) {
+        'use strict';
+        translate.LanguageRootVar = "$language";
+        translate.LanguageChangedEvent = "pipLanguageChanged";
+        var Translation = (function () {
+            function Translation() {
+                this._language = 'en';
+                this._translations = {
+                    en: {
+                        'en': 'English',
+                        'ru': 'Russian',
+                        'es': 'Spanish',
+                        'pt': 'Portuguese',
+                        'de': 'German',
+                        'fr': 'French'
+                    },
+                    ru: {
+                        'en': 'Английский',
+                        'ru': 'Русский',
+                        'es': 'Испанский',
+                        'pt': 'Португальский',
+                        'de': 'Немецкий',
+                        'fr': 'Французский'
+                    }
+                };
+            }
+            Object.defineProperty(Translation.prototype, "language", {
+                get: function () { return this._language; },
+                set: function (value) { this._language = value; },
+                enumerable: true,
+                configurable: true
+            });
+            Translation.prototype.use = function (language) {
+                if (language != null)
+                    this._language = language;
+                return this._language;
+            };
+            Translation.prototype.setTranslations = function (language, translations) {
+                var map = this._translations[language] || {};
+                this._translations[language] = _.extend(map, translations);
+            };
+            Translation.prototype.translate = function (key) {
+                if (_.isNull(key) || _.isUndefined(key))
+                    return '';
+                var translations = this._translations[this._language] || {};
+                return translations[key] || key;
+            };
+            Translation.prototype.translateArray = function (keys) {
+                if (_.isNull(keys) || keys.length == 0)
+                    return [];
+                var values = [];
+                var translations = this._translations[this._language] || {};
+                _.each(keys, function (k) {
+                    var key = k || '';
+                    values.push(translations[key] || key);
+                });
+                return values;
+            };
+            Translation.prototype.translateSet = function (keys, keyProp, valueProp) {
+                if (_.isNull(keys) || keys.length == 0)
+                    return [];
+                keyProp = keyProp || 'id';
+                valueProp = valueProp || 'name';
+                var values = [];
+                var translations = this._translations[this._language] || {};
+                _.each(keys, function (key) {
+                    var value = {};
+                    key = key || '';
+                    value[keyProp] = key;
+                    value[valueProp] = translations[key] || key;
+                    values.push(value);
+                });
+                return values;
+            };
+            Translation.prototype.translateObjects = function (items, keyProp, valueProp) {
+                if (_.isNull(items) || items.length == 0)
+                    return [];
+                keyProp = keyProp || 'name';
+                valueProp = valueProp || 'nameLocal';
+                var translations = this._translations[this._language] || {};
+                _.each(items, function (item) {
+                    var key = item[keyProp] || '';
+                    item[valueProp] = translations[key] || key;
+                });
+                return items;
+            };
+            Translation.prototype.translateWithPrefix = function (prefix, key) {
+                prefix = prefix ? prefix + '_' : '';
+                key = (prefix + key).replace(/ /g, '_').toUpperCase();
+                if (key == null)
+                    return '';
+                var translations = this._translations[this._language] || {};
+                return translations[key] || key;
+            };
+            ;
+            Translation.prototype.translateSetWithPrefix = function (prefix, keys, keyProp, valueProp) {
+                if (_.isNull(keys) || keys.length == 0)
+                    return [];
+                prefix = prefix ? prefix.replace(/ /g, '_').toUpperCase() : '';
+                keyProp = keyProp || 'id';
+                valueProp = valueProp || 'name';
+                var values = [];
+                var translations = this._translations[this._language] || {};
+                _.each(keys, function (key) {
+                    var value = {};
+                    key = key || '';
+                    value[keyProp] = key;
+                    value[valueProp] = translations[prefix + '_' + key] || key;
+                    values.push(value);
+                });
+                return values;
+            };
+            Translation.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
+                if (_.isNull(keys) || keys.length == 0)
+                    return [];
+                keyProp = keyProp || 'id';
+                valueProp = valueProp || 'name';
+                prefix = prefix ? prefix.replace(/ /g, '_').toUpperCase() + '_' : '';
+                var values = [];
+                var translations = this._translations[this._language] || {};
+                _.each(keys, function (key) {
+                    var value = {};
+                    key = key || '';
+                    value[keyProp] = key;
+                    value[valueProp] = translations[prefix + key.replace(/ /g, '_').toUpperCase()]
+                        || (prefix + key.replace(/ /g, '_').toUpperCase());
+                    values.push(value);
+                });
+                return values;
+            };
+            return Translation;
+        }());
+        var TranslateService = (function () {
+            function TranslateService(translation, setRootVar, persist, $rootScope, localStorageService) {
+                this._setRootVar = setRootVar;
+                this._persist = persist;
+                this._translation = translation;
+                this._rootScope = $rootScope;
+                this._storage = localStorageService;
+                if (this._persist) {
+                    this._translation.language = localStorageService.get('language')
+                        || this._translation.language;
+                }
+                this.save();
+            }
+            TranslateService.prototype.save = function () {
+                if (this._setRootVar)
+                    this._rootScope[pip.translate.LanguageRootVar] = this._translation.language;
+                if (this._persist)
+                    this._storage.set('language', this._translation.language);
+            };
+            Object.defineProperty(TranslateService.prototype, "language", {
+                get: function () {
+                    return this._translation.language;
+                },
+                set: function (value) {
+                    if (value != this._translation.language) {
+                        this._translation.language = value;
+                        this.save();
+                        this._rootScope.$broadcast(pip.translate.LanguageChangedEvent, value);
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            TranslateService.prototype.use = function (language) {
+                if (language != null)
+                    this.language = language;
+                return this.language;
+            };
+            TranslateService.prototype.setTranslations = function (language, translations) {
+                return this._translation.setTranslations(language, translations);
+            };
+            TranslateService.prototype.translate = function (key) {
+                return this._translation.translate(key);
+            };
+            TranslateService.prototype.translateArray = function (keys) {
+                return this._translation.translateArray(keys);
+            };
+            TranslateService.prototype.translateSet = function (keys, keyProp, valueProp) {
+                return this._translation.translateSet(keys, keyProp, valueProp);
+            };
+            TranslateService.prototype.translateObjects = function (items, keyProp, valueProp) {
+                return this._translation.translateObjects(items, keyProp, valueProp);
+            };
+            TranslateService.prototype.translateWithPrefix = function (prefix, key) {
+                return this._translation.translateWithPrefix(prefix, key);
+            };
+            TranslateService.prototype.translateSetWithPrefix = function (prefix, keys, keyProp, valueProp) {
+                return this._translation.translateSetWithPrefix(prefix, keys, keyProp, valueProp);
+            };
+            TranslateService.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
+                return this._translation.translateSetWithPrefix2(prefix, keys, keyProp, valueProp);
+            };
+            return TranslateService;
+        }());
+        var TranslateProvider = (function (_super) {
+            __extends(TranslateProvider, _super);
+            function TranslateProvider() {
+                _super.call(this);
+            }
+            Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
+                get: function () {
+                    return this._setRootVar;
+                },
+                set: function (value) {
+                    this._setRootVar = !!value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(TranslateProvider.prototype, "persist", {
+                get: function () {
+                    return this._persist;
+                },
+                set: function (value) {
+                    this._persist = !!value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            TranslateProvider.prototype.$get = ['$rootScope', 'localStorageService', function ($rootScope, localStorageService) {
+                "ngInject";
+                if (this._service == null)
+                    this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, localStorageService);
+                return this._service;
+            }];
+            return TranslateProvider;
+        }(Translation));
+        angular
+            .module('pipTranslate.Service', [])
+            .provider('pipTranslate', TranslateProvider);
+    })(translate = pip.translate || (pip.translate = {}));
+})(pip || (pip = {}));
 
 
 
