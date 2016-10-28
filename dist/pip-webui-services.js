@@ -1,4 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
 (function () {
     'use strict';
     angular.module('pipServices', [
@@ -16,190 +15,10 @@
     ]);
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
-// (function () {
-//     'use strict';
-//     var thisModule = angular.module('pipAssert', ['pipDebug']);
-//     thisModule.provider('pipAssert', function (pipDebugProvider) {
-//         return {
-//             isEmpty: pipDebugProvider.enabled() ? isEmpty : noop,
-//             isObjectId: pipDebugProvider.enabled() ? isObjectId : noop,
-//             isDefined: pipDebugProvider.enabled() ? isDefined : noop,
-//             isDef: pipDebugProvider.enabled() ? isDefined : noop,
-//             contains: pipDebugProvider.enabled() ? contains : noop,
-//             equal: pipDebugProvider.enabled() ? equal : noop,
-//             notEqual: pipDebugProvider.enabled() ? notEqual : noop,
-//             strictEqual: pipDebugProvider.enabled() ? strictEqual : noop,
-//             notStrictEqual: pipDebugProvider.enabled() ? notStrictEqual : noop,
-//             isArray: pipDebugProvider.enabled() ? isArray : noop,
-//             isBoolean: pipDebugProvider.enabled() ? isBoolean : noop,
-//             isNumber: pipDebugProvider.enabled() ? isNumber : noop,
-//             isString: pipDebugProvider.enabled() ? isString : noop,
-//             isObject: pipDebugProvider.enabled() ? isObject : noop,
-//             isDate: pipDebugProvider.enabled() ? isDate : noop,
-//             isError: pipDebugProvider.enabled() ? isError : noop,
-//             isFunction: pipDebugProvider.enabled() ? isFunction : noop,
-//             isNotNull: pipDebugProvider.enabled() ? isNotNull : noop,
-//             $get: function(pipDebug) {
-//                 return {
-//                     isEmpty: pipDebug.enabled() ? isEmpty : noop,
-//                     isObjectId: pipDebug.enabled() ? isObjectId : noop,
-//                     isDefined: pipDebug.enabled() ? isDefined : noop,
-//                     isDef: pipDebug.enabled() ? isDefined : noop,
-//                     contains: pipDebug.enabled() ? contains : noop,
-//                     equal: pipDebug.enabled() ? equal :  noop,
-//                     notEqual: pipDebug.enabled() ? notEqual : noop,
-//                     strictEqual: pipDebug.enabled() ? strictEqual : noop,
-//                     notStrictEqual: pipDebug.enabled() ? notStrictEqual :  noop,
-//                     isArray: pipDebug.enabled() ? isArray : noop,
-//                     isBoolean: pipDebug.enabled() ? isBoolean : noop,
-//                     isNumber: pipDebug.enabled() ? isNumber : noop,
-//                     isString: pipDebug.enabled() ? isString : noop,
-//                     isObject: pipDebug.enabled() ? isObject : noop,
-//                     isDate: pipDebug.enabled() ? isDate : noop,
-//                     isError: pipDebug.enabled() ? isError : noop,
-//                     isFunction: pipDebug.enabled() ? isFunction : noop,
-//                     isNotNull: pipDebug.enabled() ? isNotNull : noop
-//                 }
-//             }
-//         };
-//         function noop() {}
-//         function objectToString(o) {
-//             return Object.prototype.toString.call(o);
-//         }
-//         function isArray(arg, message) {
-//             if (!Array.isArray(arg)) {
-//                 throw new Error(message || arg + ' should be array');
-//             }
-//         }
-//         function isBoolean(arg, message) {
-//             if (typeof arg !== 'boolean') {
-//                 throw new Error(message || arg + ' should be boolean');
-//             }
-//         }
-//         function isNotNull(arg, message) {
-//             if (arg === null) {
-//                 throw new Error(message || arg + ' should be not null');
-//             }
-//         }
-//         function isNumber(arg, message) {
-//             if (typeof arg !== 'number') {
-//                 throw new Error(message || arg + ' should be number');
-//             }
-//         }
-//         function isString(arg, message) {
-//             if (typeof arg !== 'string') {
-//                 throw new Error(message || arg + ' should be string');
-//             }
-//         }
-//         function isObject(arg, message) {
-//             if (typeof arg !== 'object') {
-//                 throw new Error(message || arg + ' should be an object');
-//             }
-//         }
-//         function isDate(d, message) {
-//             if (typeof d === 'object' && objectToString(d) !== '[object Date]') {
-//                 throw new Error(message || d + ' should be a date');
-//             }
-//         }
-//         function isError(e, message) {
-//             if (typeof e === 'object' && (objectToString(e) !== '[object Error]' || e instanceof Error)) {
-//                 throw new Error(message || e + ' should be an error');
-//             }
-//         }
-//         function isFunction(arg, message) {
-//             if (typeof arg !== 'function') {
-//                 throw new Error(message || arg + ' should be a function');
-//             }
-//         }
-//         function isDefined(arg, message) {
-//            if (typeof arg === "undefined") {
-//                throw new Error(message || arg + ' should be defined');
-//            }
-//         }
-//         function isEmpty(arg, message) {
-//             if (arg === null || arg === undefined || arg === false) {
-//                 throw new Error(message || arg + ' should be not null or undefined or false');
-//             }
-//         }
-//         function contains(obj, prop, message) {
-//             if (typeof obj !== 'object') {
-//                 throw new Error(obj + ' should be an object');
-//             }
-//             if (obj[prop] === null || obj[prop] === undefined) {
-//                 throw new Error(message || prop + ' should be in object ' + obj);
-//             }
-//         }
-//         // Compares args with ==
-//         function equal(actual, expected, message) {
-//             if (actual != expected) {
-//                 throw new Error(message || actual + ' should be not equal ' + expected);
-//             }
-//         }
-//         // Compares args with !=
-//         function notEqual(actual, expected, message) {
-//             if (actual == expected) {
-//                 throw new Error(message || actual + ' should be equal ' + expected);
-//             }
-//         }
-//         // Compares args with ===
-//         function strictEqual(actual, expected, message) {
-//             if (actual !== expected) {
-//                 throw new Error(message || actual + ' should not be strict equal ' + expected);
-//             }
-//         }
-//         // Compares args with !==
-//         function notStrictEqual(actual, expected, message) {
-//             if (actual === expected) {
-//                 throw new Error(message || actual + ' should not strict equal ' + expected);
-//             }
-//         }
-//         // Checks if value is a valid ObjectId
-//         function isObjectId(value, message) {
-//             var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
-//             if (!checkForHexRegExp.test(value)) {
-//                 throw new Error(message || value + ' should be an object id');
-//             }
-//         }
-//     });
-// })();
 
-/// <reference path="../../typings/tsd.d.ts" />
-// (function () {
-//     'use strict';
-//     var thisModule = angular.module('pipDebug', []);
-//     thisModule.provider('pipDebug', function ($logProvider) {
-//         this.enabled = true;
-//         return {
-//             enable: enable,
-//             disable: disable,
-//             enabled: enabled,
-//             $get: function($log) {
-//                 return {
-//                     enabled: enabled,
-//                     log: $log.log,
-//                     info: $log.info,
-//                     warn: $log.warn,
-//                     error: $log.error,
-//                     debug: $log.debug
-//                 }
-//             }
-//         };
-//         function enabled() {
-//             return this.enabled;
-//         }
-//         function enable() {
-//             this.enabled = true;
-//             $logProvider.debugEnabled(true);
-//         }
-//         function disable() {
-//             this.enabled = false;
-//             $logProvider.debugEnabled(false);
-//         }
-//     });
-// })();
 
-/// <reference path="../../typings/tsd.d.ts" />
+
+
 var pip;
 (function (pip) {
     var routing;
@@ -228,7 +47,6 @@ var pip;
             $delegate.goBack = goBack;
             $delegate.goBackAndSelect = goBackAndSelect;
             return $delegate;
-            //////////////////////////////////////////////////
             function goBack() {
                 $window.history.back();
             }
@@ -236,7 +54,6 @@ var pip;
                 if (pip.routing.PreviousState != null
                     && pip.routing.PreviousState.name != null) {
                     var state = _.cloneDeep(pip.routing.PreviousState);
-                    // Override selected parameters
                     state.params = _.extend(state.params, params);
                     $delegate.go(state.name, state.params);
                 }
@@ -255,7 +72,6 @@ var pip;
     })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var routing;
@@ -270,8 +86,6 @@ var pip;
             "ngInject";
             $delegate.redirect = redirect;
             return $delegate;
-            /////////////////////////////////////////////
-            // Specify automatic redirect from one state to another
             function redirect(fromState, toState) {
                 pip.routing.RedirectedStates[fromState] = toState;
                 return this;
@@ -285,9 +99,6 @@ var pip;
             "ngInject";
             $delegate.redirect = redirect;
             return $delegate;
-            ////////////////////////////////
-            // Todo: Move this code directly to event handler?
-            // Todo: Nothing calls this code!!
             function redirect(event, state, params) {
                 var toState = pip.routing.RedirectedStates[state.name];
                 if (_.isFunction(toState)) {
@@ -316,7 +127,6 @@ var pip;
     })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var routing;
@@ -328,7 +138,6 @@ var pip;
     })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var routing;
@@ -342,23 +151,18 @@ var pip;
                 $rootScope[routing.RoutingVar] = true;
             });
             $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-                // Unset routing variable to disable page transition
                 $rootScope[routing.RoutingVar] = false;
             });
-            // Intercept route error
             $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
-                // Unset routing variable to disable page transition
                 $rootScope[routing.RoutingVar] = false;
                 $log.error('Error while switching route to ' + toState.name);
                 $log.error(error);
                 console.error('Error while switching route to ' + toState.name);
                 console.error(error);
             });
-            // Intercept route error
             $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {
                 event.preventDefault();
                 $rootScope[routing.RoutingVar] = false;
-                // Todo: Move to errors
                 $state.go('errors_missing_route', {
                     unfoundState: unfoundState,
                     fromState: {
@@ -374,7 +178,6 @@ var pip;
     })(routing = pip.routing || (pip.routing = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var scope;
@@ -385,25 +188,15 @@ var pip;
     })(scope = pip.scope || (pip.scope = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var scope;
     (function (scope_1) {
         'use strict';
         var thisModule = angular.module('pipScope.Error', []);
-        /*
-         * Error is designed to assist with error handling
-         * within different application scopes & controllers without overlap.
-         *
-         * A unique identification of the scope/controller is passed to the service
-         * when it is initialized to identify the error for that scope.
-         * */
         thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
-            // Initialize error scope
             $rootScope.errors = {};
             return createError;
-            //----------------------------
             function initError(scope) {
                 $rootScope.errors[scope] = {
                     message: undefined,
@@ -416,21 +209,17 @@ var pip;
                 if (_.isNull(error)) {
                     return null;
                 }
-                // Process regular messages
                 if (error.message) {
                     return error.message;
                 }
-                // Process server application errors
                 if (error.data) {
                     if (error.data.code) {
-                        // process server error codes here
                         return 'ERROR_' + error.data.code;
                     }
                     if (error.data.message) {
                         return error.data.message;
                     }
                 }
-                // Process standard HTTP errors
                 if (error.statusText) {
                     return error.statusText;
                 }
@@ -493,7 +282,6 @@ var pip;
                     },
                     set: function (error) {
                         if (error) {
-                            //pipAssert.isObject(error, "Setting error: error should be an object");
                             $rootScope.errors[scope] = {
                                 message: errorMessage(error),
                                 code: errorCode(error),
@@ -506,7 +294,6 @@ var pip;
                         }
                     }
                 };
-                // Assign error into scope
                 if (_.isObject(scopeObject))
                     scopeObject.error = error;
                 return error;
@@ -516,7 +303,6 @@ var pip;
     })(scope = pip.scope || (pip.scope = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var scope;
@@ -540,20 +326,9 @@ var pip;
                 });
             }
         }]);
-        /*
-         * Transaction is designed to assist with transaction processing
-         * within different application scopes & controllers without overlap.
-         *
-         * A unique identification of the scope/controller is passed to the service
-         * when it is initialized to identify the error for that scope.
-         *
-         * Transaction is also integrated with Error service. So you don't need to double it
-         * */
         thisModule.factory('pipTransaction', ['$rootScope', 'pipError', function ($rootScope, pipError) {
-            // Initialize transaction scope
             $rootScope.transactions = {};
             return createTransaction;
-            //---------------------------------
             function initTransaction(scope) {
                 $rootScope.transactions[scope] = {
                     id: undefined,
@@ -599,7 +374,6 @@ var pip;
                     },
                     begin: function (operation) {
                         var transaction = $rootScope.transactions[scope];
-                        // Transaction already in progress
                         if (transaction != null && transaction.id) {
                             return null;
                         }
@@ -638,7 +412,6 @@ var pip;
     })(scope = pip.scope || (pip.scope = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var session;
@@ -711,7 +484,6 @@ var pip;
     })(session = pip.session || (pip.session = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var session;
@@ -803,7 +575,6 @@ var pip;
     })(session = pip.session || (pip.session = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var translate;
@@ -815,7 +586,6 @@ var pip;
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var translate;
@@ -860,7 +630,6 @@ var pip;
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var translate;
@@ -888,7 +657,6 @@ var pip;
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -934,19 +702,16 @@ var pip;
                     this._language = language;
                 return this._language;
             };
-            // Set translation strings for specific language
             Translation.prototype.setTranslations = function (language, translations) {
                 var map = this._translations[language] || {};
                 this._translations[language] = _.extend(map, translations);
             };
-            // Translate a string by key using set language
             Translation.prototype.translate = function (key) {
                 if (_.isNull(key) || _.isUndefined(key))
                     return '';
                 var translations = this._translations[this._language] || {};
                 return translations[key] || key;
             };
-            // Translate an array of strings
             Translation.prototype.translateArray = function (keys) {
                 if (_.isNull(keys) || keys.length == 0)
                     return [];
@@ -958,7 +723,6 @@ var pip;
                 });
                 return values;
             };
-            // Translate an array of strings into array of objects (set)
             Translation.prototype.translateSet = function (keys, keyProp, valueProp) {
                 if (_.isNull(keys) || keys.length == 0)
                     return [];
@@ -975,7 +739,6 @@ var pip;
                 });
                 return values;
             };
-            // Translate a collection of objects
             Translation.prototype.translateObjects = function (items, keyProp, valueProp) {
                 if (_.isNull(items) || items.length == 0)
                     return [];
@@ -988,7 +751,6 @@ var pip;
                 });
                 return items;
             };
-            // Translate a string by key  with prefix using set language todo
             Translation.prototype.translateWithPrefix = function (prefix, key) {
                 prefix = prefix ? prefix + '_' : '';
                 key = (prefix + key).replace(/ /g, '_').toUpperCase();
@@ -1015,7 +777,6 @@ var pip;
                 });
                 return values;
             };
-            // Translate an array of strings, apply uppercase and replace ' ' => '_'
             Translation.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
                 if (_.isNull(keys) || keys.length == 0)
                     return [];
@@ -1139,7 +900,6 @@ var pip;
     })(translate = pip.translate || (pip.translate = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
 (function () {
     'use strict';
     var thisModule = angular.module('pipCodes', []);
@@ -1148,7 +908,6 @@ var pip;
             hash: hash,
             verification: verification
         };
-        // Simple version of string hashcode
         function hash(value) {
             if (value == null)
                 return 0;
@@ -1158,98 +917,18 @@ var pip;
             }
             return result;
         }
-        // Generates random big number for verification codes
         function verification() {
-            return Math.random().toString(36).substr(2, 10).toUpperCase(); // remove `0.`
+            return Math.random().toString(36).substr(2, 10).toUpperCase();
         }
     });
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
-// // Todo: Deprecate
-// (function () {
-//     'use strict';
-//     var thisModule = angular.module('pipUtils.Collections', []);
-//     thisModule.factory('pipCollections', function () {
-//         var collections = {};
-//         // Index of element in array by key
-//         collections.indexBy = function (items, key, value) {
-//             if (!items || !items.length)
-//                 return null;
-//             for (var i = 0; i < items.length; i++) {
-//                 if (items[i][key] == value) {
-//                     return i;
-//                 }
-//             }
-//             return null;
-//         };
-//         // Find element in array by key
-//         collections.findBy = function (items, key, value) {
-//             if (!items || !items.length)
-//                 return null;
-//             for (var i = 0; i < items.length; i++) {
-//                 if (items[i][key] == value) {
-//                     return items[i];
-//                 }
-//             }
-//             return null;
-//         };
-//         // Remove element from array by value
-//         collections.remove = function (items, item) {
-//             if (!items || !items.length)
-//                 return null;
-//             for (var i = 0; i < items.length; i++) {
-//                 if (items[i] == item) {
-//                     items.splice(i, 1);
-//                     i--;
-//                 }
-//             }
-//         };
-//         // Removes element from array by key
-//         collections.removeBy = function (items, key, value) {
-//             if (!items || !items.length)
-//                 return null;
-//             for (var i = 0; i < items.length; i++) {
-//                 if (items[i][key] == value) {
-//                     items.splice(i, 1);
-//                     i--;
-//                 }
-//             }
-//         };
-//         // Replaced element by key
-//         collections.replaceBy = function (items, key, value, data) {
-//             if (!items || !items.length)
-//                 return null;
-//             for (var i = 0; i < items.length; i++) {
-//                 if (items[i][key] == value) {
-//                     items[i] = data;
-//                     return;
-//                 }
-//             }
-//         };
-//         // Calculate difference between two collections
-//         collections.difference = function (a1, a2, comparator) {
-//             var result = [];
-//             _.each(a1, function (e1) {
-//                 var e2 = _.find(a2, function (e) {
-//                     return comparator(e1, e);
-//                 });
-//                 if (e2 == null) {
-//                     result.push(e1);
-//                 }
-//             })
-//             return result;
-//         };
-//         return collections;
-//     });
-// })();
 
-/// <reference path="../../typings/tsd.d.ts" />
+
 (function () {
     'use strict';
     var thisModule = angular.module('pipFormat', []);
     thisModule.factory('pipFormat', function () {
-        // Creates a sample line from a text
         function sample(value, maxLength) {
             if (!value || value == '')
                 return '';
@@ -1292,7 +971,7 @@ var pip;
                         output.push(parse_tree[i]);
                     }
                     else if (node_type === 'array') {
-                        match = parse_tree[i]; // convenience purposes only
+                        match = parse_tree[i];
                         if (match[2]) {
                             arg = argv[cursor];
                             for (k = 0; k < match[2].length; k++) {
@@ -1410,138 +1089,8 @@ var pip;
     });
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
-// (function () {
-//     'use strict';
-//     var thisModule = angular.module('pipUtils.General', ['pipState', 'pipAssert']);
-//     thisModule.factory('pipUtils', function ($rootScope, $window, $state, pipAssert) {
-//         function strRepeat(str, qty) {
-//             if (qty < 1) return '';
-//             var result = '';
-//             while (qty > 0) {
-//                 if (qty & 1) result += str;
-//                 qty >>= 1, str += str;
-//             }
-//             return result;
-//         }
-//         var toString = Object.prototype.toString;
-//         return {
-//             copyProperty: copyProperty,
-//             copy: copyProperty,
-//             swapProperties: swapProperties,
-//             swap: swapProperties,
-//             convertToBoolean: convertToBoolean,
-//             toBoolean: convertToBoolean,
-//             toBool: convertToBoolean,
-//             convertObjectIdsToString: convertObjectIdsToString,
-//             OidToString: convertObjectIdsToString,
-//             // generateVerificationCode: generateVerificationCode,
-//             // vercode: generateVerificationCode,
-//             equalObjectIds: equalObjectIds,
-//             eqOid: equalObjectIds,
-//             notEqualObjectIds: notEqualObjectIds,
-//             neqOid: notEqualObjectIds,
-//             containsObjectId: containsObjectId,
-//             hasOid: containsObjectId,
-//             isObjectId: isObjectId,
-//             // Strings functions. No analogues in lodash.strings
-//             // hashCode: hashCode,
-//             makeString: makeString,
-//             // Collection function. No analogues in lodash. It may be in lodash later. Look gitHub/lodash issue #1022
-//             replaceBy: replaceBy
-//         };
-//         //--------------------
-//         function replaceBy(items, key, value, data) {
-//             if (!items || !items.length)
-//                 return null;
-//             for (var i = 0; i < items.length; i++) {
-//                 if (items[i][key] == value) {
-//                     items[i] = data;
-//                     return;
-//                 }
-//             }
-//         };
-//         // Ensure some object is a coerced to a string
-//         function makeString(object) {
-//             if (object == null) return '';
-//             return '' + object;
-//         };
-//         function isObjectId(value) {
-//             var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
-//             return checkForHexRegExp.test(value);
-//         }
-//         // Compares two ObjectIds (they are not equal by '==')
-//         function equalObjectIds(value1, value2) {
-//             if (value1 == null && value2 == null)
-//                 return true;
-//             if (value1 == null || value2 == null)
-//                 return false;
-//             return value1.toString() == value2.toString();
-//         };
-//         // Compares two ObjectIds (they are always not equal by '!=')
-//         function notEqualObjectIds(value1, value2) {
-//             if (value1 == null && value2 == null)
-//                 return false;
-//             if (value1 == null || value2 == null)
-//                 return true;
-//             return value1.toString() != value2.toString();
-//         };
-//         // Checks if array contains concrete objectId
-//         function containsObjectId(values, value) {
-//             return _.some(values, function (value1) {
-//                 return equalObjectIds(value1, value);
-//             });
-//         };
-//         // Copy property from one object to another if it exists (not null)
-//         function copyProperty(dest, destProperty, orig, origProperty) {
-//             // Shift if only 3 arguments set
-//             if (_.isObject(destProperty)
-//                 && typeof (origProperty) == 'undefined') {
-//                 origProperty = orig;
-//                 orig = destProperty;
-//                 destProperty = origProperty;
-//             }
-//             if (orig[origProperty] || (typeof (orig[origProperty]) === 'number' && orig[origProperty] % 1 == 0)) {
-//                 dest[destProperty] = orig[origProperty];
-//                 return true;
-//             }
-//             return false;
-//         };
-//         // Swaps values of two properties
-//         function swapProperties(obj, prop1, prop2) {
-//             var 
-//                 temp1 = obj[prop1],
-//                 temp2 = obj[prop2];
-//             if (temp1) {
-//                 obj[prop2] = temp1;
-//             }
-//             else {
-//                 delete obj[prop2];
-//             }
-//             if (temp2) {
-//                 obj[prop1] = temp2;
-//             }
-//             else {
-//                 delete obj[prop1];
-//             }
-//         };
-//         // Converts value into boolean
-//         function convertToBoolean(value) {
-//             if (value == null) return false;
-//             if (!value) return false;
-//             value = value.toString().toLowerCase();
-//             return value == '1' || value == 'true';
-//         };
-//         // Converts array of object ids to strings (for comparison)
-//         function convertObjectIdsToString(values) {
-//             return _.map(values, function (value) {
-//                 return value ? value.toString() : 0;
-//             });
-//         };
-//     });
-// })();
 
-/// <reference path="../../typings/tsd.d.ts" />
+
 (function () {
     'use strict';
     var thisModule = angular.module('pipPageReset', []);
@@ -1553,7 +1102,6 @@ var pip;
             resetAll: resetAll,
             reset: reset
         };
-        //------------------------------------------
         function resetPartial() {
             reset(false, true);
         }
@@ -1578,7 +1126,6 @@ var pip;
     }]);
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
 (function () {
     'use strict';
     var thisModule = angular.module('pipScroll', []);
@@ -1586,7 +1133,6 @@ var pip;
         return {
             scrollTo: scrollTo
         };
-        //-------------------------------------
         function scrollTo(parentElement, childElement, animationDuration) {
             if (!parentElement || !childElement)
                 return;
@@ -1608,7 +1154,6 @@ var pip;
     });
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
 (function () {
     'use strict';
     var thisModule = angular.module('pipSystemInfo', []);
@@ -1623,7 +1168,6 @@ var pip;
             getOS: getOS,
             isSupported: isSupported
         };
-        // todo add support for iPhone
         function getBrowserName() {
             var ua = $window.navigator.userAgent;
             if (ua.search(/Edge/) > -1)
@@ -1699,7 +1243,6 @@ var pip;
         function isMobile() {
             return getPlatform() == 'mobile';
         }
-        // Todo: complete implementation
         function isCordova() {
             return null;
         }
@@ -1713,7 +1256,6 @@ var pip;
                 return 'unknown';
             }
         }
-        // Todo: Move to errors
         function isSupported(supported) {
             if (!supported)
                 supported = {
@@ -1734,7 +1276,6 @@ var pip;
     }]);
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
 (function () {
     'use strict';
     var thisModule = angular.module('pipTags', []);
@@ -1749,7 +1290,6 @@ var pip;
             compress: compressAll,
             extract: extract
         };
-        //------------------------------
         function normalizeOne(tag) {
             return tag
                 ? _.trim(tag.replace(/(_|#)+/g, ' '))
@@ -1799,7 +1339,6 @@ var pip;
     });
 })();
 
-/// <reference path="../../typings/tsd.d.ts" />
 var pip;
 (function (pip) {
     var utilities;
@@ -1813,7 +1352,7 @@ var pip;
         var DefaultEvents = [
             { event: 'pipAutoPullChanges', timeout: 60000 },
             { event: 'pipAutoUpdatePage', timeout: 15000 },
-            { event: 'pipAutoUpdateCollection', timeout: 300000 } // 5 min
+            { event: 'pipAutoUpdateCollection', timeout: 300000 }
         ];
         var TimerService = (function () {
             TimerService.$inject = ['$rootScope', '$interval'];
@@ -1893,12 +1432,7 @@ var pip;
     })(utilities = pip.utilities || (pip.utilities = {}));
 })(pip || (pip = {}));
 
-/// <reference path="../../typings/tsd.d.ts" />
-// (function () {
-//     'use strict';
-//     angular.module('pipUtils', 
-// 		['pipUtils.General', 'pipUtils.Collections']);
-// })();
+
 
 
 
