@@ -5,6 +5,18 @@
 
 
 
+declare module pip.scope {
+}
+
+
+declare module pip.scope {
+}
+
+
+declare module pip.scope {
+}
+
+
 declare module pip.routing {
     let CurrentState: any;
     let PreviousState: any;
@@ -22,18 +34,6 @@ declare module pip.routing {
 
 declare module pip.routing {
     let RoutingVar: string;
-}
-
-
-declare module pip.scope {
-}
-
-
-declare module pip.scope {
-}
-
-
-declare module pip.scope {
 }
 
 
