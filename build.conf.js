@@ -1,7 +1,8 @@
 module.exports = {
     module: {
         name: 'pipServices',
-        export: 'pip'
+        export: 'pip',
+        standalone: 'pip.services'
     },
 
     build: {
