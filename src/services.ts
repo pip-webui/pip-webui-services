@@ -1,20 +1,15 @@
-﻿/// <reference path="../typings/tsd.d.ts" />
+﻿'use strict';
 
-(function () {
-    'use strict';
-
-    angular.module('pipServices', [
-        'pipScope',
-	    'pipTranslate',
-        'pipRouting',
-        'pipTimer',
-        'pipSession',
-        'pipIdentity',
-        'pipSystemInfo',
-        'pipFormat',
-        'pipScroll',
-        'pipPageReset',        
-        'pipTags'
-    ]);
-    
-})();
+angular.module('pipServices', [
+    'pipScope',
+    'pipTranslate',
+    'pipRouting',
+    'pipTimer',
+    'pipSession',
+    'pipIdentity',
+    'pipSystemInfo',
+    'pipFormat',
+    'pipScroll',
+    'pipPageReset',        
+    'pipTags'
+]);

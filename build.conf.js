@@ -1,13 +1,16 @@
 module.exports = {
     module: {
-        name: 'pipServices'
+        name: 'pipServices',
+        export: 'pip'
     },
 
     build: {
-        js: true,
-        ts: true,
+        js: false,
+        ts: false,
+        tsd: true,
+        bundle: true,
         html: false,
-        css: false,
+        less: false,
         lib: true,
         images: false,
         dist: false

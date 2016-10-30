@@ -1,10 +1,5 @@
-/// <reference path="../../typings/tsd.d.ts" />
+'use strict';
 
-module pip.translate {
-    'use strict';
-
-    angular.module('pipTranslate', [
-        'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
-    ]);
-
-}
+angular.module('pipTranslate', [
+    'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
+]);

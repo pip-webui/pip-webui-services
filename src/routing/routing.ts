@@ -1,9 +1,5 @@
-/// <reference path="../../typings/tsd.d.ts" />
+'use strict';
 
-module pip.routing {
-    'use strict';
-    
-    angular.module('pipRouting', [
-        'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
-    ]);
-}
+angular.module('pipRouting', [
+    'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
+]);
