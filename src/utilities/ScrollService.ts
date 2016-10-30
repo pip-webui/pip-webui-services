@@ -1,16 +1,13 @@
 'use strict';
 
-var thisModule = angular.module('pipScroll', []);
+export interface IScrollService {
+    scrollTo(parentElement, childElement, animationDuration): void;
+}
 
-thisModule.factory('pipScroll', function () {
-    return {
-        scrollTo: scrollTo
-    };
-    
-    //-------------------------------------
+export class ScrollService implements IScrollService {
 
-    function scrollTo(parentElement, childElement, animationDuration) {
-        if(!parentElement || !childElement) return;
+    public scrollTo(parentElement, childElement, animationDuration): void {
+        if (!parentElement || !childElement) return;
         if (animationDuration == undefined) animationDuration = 300;
 
         setTimeout(function () {
@@ -25,4 +22,4 @@ thisModule.factory('pipScroll', function () {
         }, 100);
     }
 
-});
+}

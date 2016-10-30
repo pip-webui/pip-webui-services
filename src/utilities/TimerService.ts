@@ -1,7 +1,7 @@
 'use strict';
 
 export interface ITimerService {
-    isStarted: boolean;
+    isStarted(): boolean;
 
     addEvent(event: string, timeout: number): void;
     removeEvent(event: string): void;
@@ -12,29 +12,42 @@ export interface ITimerService {
 }
 
 class TimerEvent {
-    event: string;
-    timeout: number;
-    interval: any;
+    public event: string;
+    public timeout: number;
+    public interval: any;
+
+    public constructor(event: string, timeout: number) {
+        this.event = event;
+        this.timeout = timeout;
+    }
 }
 
 let DefaultEvents: TimerEvent[] = [
-    <TimerEvent> { event: 'pipAutoPullChanges', timeout: 60000 }, // 1 min
-    <TimerEvent> { event: 'pipAutoUpdatePage', timeout: 15000 }, // 15 sec
-    <TimerEvent> { event: 'pipAutoUpdateCollection', timeout: 300000 } // 5 min
-]
+    new TimerEvent('pipAutoPullChanges', 60000), // 1 min
+    new TimerEvent('pipAutoUpdatePage', 15000), // 15 sec
+    new TimerEvent('pipAutoUpdateCollection', 300000) // 5 min
+];
 
-class TimerService {
+export class TimerService implements ITimerService {
     private _rootScope: ng.IRootScopeService;
+    private _log: ng.ILogService;
     private _interval: ng.IIntervalService;        
     private _started = false;
     private _events: TimerEvent[] = _.cloneDeep(DefaultEvents);
 
-    public constructor($rootScope, $interval) {
+    public constructor(
+        $rootScope: ng.IRootScopeService,
+        $log: ng.ILogService, 
+        $interval: ng.IIntervalService
+    ) {
+        "ngInject";
+
         this._rootScope = $rootScope;
+        this._log = $log;
         this._interval = $interval;
     }
 
-    public get isStarted() {
+    public isStarted(): boolean {
         return this._started;
     }
 
@@ -69,7 +82,10 @@ class TimerService {
 
     private startEvent(event: TimerEvent): void {
         event.interval = this._interval(
-            () => { this._rootScope.$broadcast(event.event) },
+            () => { 
+                this._log.debug('Generated timer event ' + event.event); 
+                this._rootScope.$emit(event.event)
+            },
             event.timeout
         )
     }
@@ -103,7 +119,3 @@ class TimerService {
         this._started = false;
     }
 }
-
-angular
-    .module('pipTimer', [])
-    .service('pipTimer', TimerService);

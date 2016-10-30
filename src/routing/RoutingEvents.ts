@@ -2,7 +2,11 @@
 
 export let RoutingVar: string = "$routing";
 
-function hookRoutingEvents($log, $rootScope, $state) {
+export function hookRoutingEvents(
+    $rootScope: ng.IRootScopeService,
+    $log: ng.ILogService,
+    $state: ng.ui.IStateService
+) {
     "ngInject";
 
     $rootScope.$on('$stateChangeStart',
@@ -26,9 +30,6 @@ function hookRoutingEvents($log, $rootScope, $state) {
 
             $log.error('Error while switching route to ' + toState.name);
             $log.error(error);
-
-            console.error('Error while switching route to ' + toState.name);
-            console.error(error);
         }
     );
 
@@ -52,8 +53,4 @@ function hookRoutingEvents($log, $rootScope, $state) {
     );
 
 }
-
-angular
-    .module('pipRouting.Events', [])
-    .run(hookRoutingEvents);
 

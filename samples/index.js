@@ -32,15 +32,16 @@
         [
             // 3rd Party Modules
             'ui.router', 'ui.utils', 'ngResource', 'ngAria', 'ngCookies', 'ngSanitize', 'ngMessages',
-            'ngMaterial', 'wu.masonry', 'LocalStorageModule', 'ngAnimate',
+            'ngMaterial', 'ngAnimate', 'pipServices',
             'pipServices',
             'appServices.Timer',
             'appServices.Transaction', 'appServices.Translate',
             'appServices.SystemInfo'
         ]
     );
-    thisModule.config(function (pipTranslateProvider, $stateProvider, $urlRouterProvider, $mdIconProvider, $mdThemingProvider) {
+    thisModule.config(function (pipTranslateProvider, $stateProvider, $urlRouterProvider, $mdIconProvider, $mdThemingProvider, $logProvider) {
 
+            $logProvider.debugEnabled(true);
             $mdIconProvider.iconSet('icons', 'images/icons.svg', 512);
 
             for (var i = 0; i < content.length; i++) {

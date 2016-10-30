@@ -3,7 +3,7 @@
 export let CurrentState: any;
 export let PreviousState: any;
 
-function captureStateTranslations($rootScope) {
+export function captureStateTranslations($rootScope: ng.IRootScopeService) {
     "ngInject";
 
     $rootScope.$on('$stateChangeSuccess',
@@ -24,7 +24,7 @@ function captureStateTranslations($rootScope) {
 
 }
 
-function decorateBackStateService($delegate, $window) {
+function decorateBackStateService($delegate, $window: ng.IWindowService) {
     "ngInject";
 
     $delegate.goBack = goBack;
@@ -53,11 +53,7 @@ function decorateBackStateService($delegate, $window) {
     }
 }
 
-function addBackStateDecorator($provide) {
+export function addBackStateDecorator($provide) {
     $provide.decorator('$state', decorateBackStateService);
 }
 
-angular
-    .module('pipRouting.Back', [])
-    .config(addBackStateDecorator)
-    .run(captureStateTranslations);

@@ -1,21 +1,21 @@
 <h2 class="top-space">Translate Samples</h2>
 <md-menu md-position-mode="target">
-	            <div class="layout-row layout-align-start-center" style="cursor: pointer;outline: none; margin-right: 16px;"
-                      ng-click="$mdOpenMenu()"
-                      aria-label="language selection">
+	<div class="layout-row layout-align-start-center" style="cursor: pointer;outline: none; margin-right: 16px;"
+			ng-click="$mdOpenMenu()"
+			aria-label="language selection">
 
-                        <span style="white-space:nowrap;">
-                             {{ $language | translate}}</span>
-                        </span>
-                        <md-icon md-svg-icon="icons:triangle-down"></md-icon>
-                </div>
+			<span style="white-space:nowrap;">
+					{{ $language | translate}}</span>
+			</span>
+			<md-icon md-svg-icon="icons:triangle-down"></md-icon>
+	</div>
 	<md-menu-content width="3">
 		<md-menu-item ng-repeat="lang in languages">
 			<md-button ng-click="onLanguageClick(lang)">{{lang | translate}}</md-button>
 		</md-menu-item>
 	</md-menu-content>
 </md-menu>
-<div>
+<div>	
 	<span>{{ 'SCOPE1_TEXT' | translate }}</span>
 </div>
 <div>

@@ -1,23 +1,29 @@
 'use strict';
 
-var thisModule = angular.module('pipSystemInfo', []);
+export interface ISystemInfo {
+    browserName: string;
+    browserVersion: string;
+    platform: string;
+    os: string;
 
-thisModule.factory('pipSystemInfo', function ($rootScope, $window) {
+    isDesktop(): boolean;
+    isMobile(): boolean;
+    isCordova(): boolean;
+    isSupported(supported?: any): boolean;
+}
 
-    return {
-        getBrowserName: getBrowserName,
-        getBrowserVersion: getBrowserVersion,
-        getPlatform: getPlatform,
-        isDesktop: isDesktop,
-        isMobile: isMobile,
-        isCordova: isCordova,
-        getOS: getOS,            
-        isSupported: isSupported
-    };
+export class SystemInfo implements ISystemInfo {
+    private _window: ng.IWindowService;
+
+    public constructor($window: ng.IWindowService) {
+        "ngInject";
+
+        this._window = $window;
+    }
 
     // todo add support for iPhone
-    function getBrowserName() {
-        var ua = $window.navigator.userAgent;
+    public get browserName(): string {
+        let ua = this._window.navigator.userAgent;
 
         if (ua.search(/Edge/) > -1) return "edge";
         if (ua.search(/MSIE/) > -1) return "ie";
@@ -33,11 +39,10 @@ thisModule.factory('pipSystemInfo', function ($rootScope, $window) {
         return "unknown";
     }
 
-    function getBrowserVersion() {
-        var browser, version;
-        var ua = $window.navigator.userAgent;
-
-        browser = getBrowserName();
+    public get browserVersion(): string {
+        let version;
+        let ua = this._window.navigator.userAgent;
+        let browser = this.browserName;
 
         switch (browser) {
             case "edge":
@@ -76,8 +81,8 @@ thisModule.factory('pipSystemInfo', function ($rootScope, $window) {
         return version;
     }
     
-    function getPlatform() {
-        var ua = $window.navigator.userAgent;
+    public get platform(): string {
+        let ua = this._window.navigator.userAgent;
 
         if (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(ua.toLowerCase())) 
             return 'mobile';
@@ -85,50 +90,51 @@ thisModule.factory('pipSystemInfo', function ($rootScope, $window) {
         return 'desktop';
     }
 
-    function isDesktop() {
-        return getPlatform() == 'desktop';
-    }
-
-    function isMobile() {
-        return getPlatform() == 'mobile';
-    }
-
-    // Todo: complete implementation
-    function isCordova() {
-        return null;
-    }
-
-    function getOS() {
-        var ua = $window.navigator.userAgent;
+    public get os(): string {
+        let ua = this._window.navigator.userAgent;
 
         try {
-            var osAll = (/(windows|mac|android|linux|blackberry|sunos|solaris|iphone)/.exec(ua.toLowerCase()) || [ua])[0].replace('sunos', 'solaris'),
-            osAndroid = (/(android)/.exec(ua.toLowerCase()) || '');
+            let osAll = (/(windows|mac|android|linux|blackberry|sunos|solaris|iphone)/.exec(ua.toLowerCase()) || [ua])[0].replace('sunos', 'solaris');
+            let osAndroid = (/(android)/.exec(ua.toLowerCase()) || '');
             return osAndroid && (osAndroid == 'android' || (osAndroid[0] == 'android')) ? 'android' : osAll;
         } catch (err) {
             return 'unknown'
         }
     }
 
-    // Todo: Move to errors
-    function isSupported(supported) {
-        if (!supported) supported = {
-            edge: 11,
-            ie: 11,
-            firefox: 43, //4, for testing
-            opera: 35,
-            chrome: 47
-        };
+    public isDesktop(): boolean {
+        return this.platform == 'desktop';
+    }
 
-        var browser = getBrowserName();
-        var version = getBrowserVersion();
+    public isMobile(): boolean {
+        return this.platform == 'mobile';
+    }
+
+    // Todo: complete implementation
+    public isCordova(): boolean {
+        return false;
+    }
+
+    // Todo: Move to errors
+    public isSupported(supported?: any): boolean {
+        if (!supported) 
+            supported = {
+                edge: 11,
+                ie: 11,
+                firefox: 43, //4, for testing
+                opera: 35,
+                chrome: 47
+            };
+
+        let browser = this.browserName;
+        let version = this.browserVersion;
         version = version.split(".")[0]
 
         if (browser && supported[browser] && version >= supported[browser]) 
             return true;
 
         return true;
-    };
+    }
+}
 
-});
 

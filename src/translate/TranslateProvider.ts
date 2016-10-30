@@ -9,8 +9,8 @@ export interface ITranslateProvider extends ITranslateService, ng.IServiceProvid
 
 export class TranslateProvider extends Translation implements ITranslateProvider {
     private _translation: Translation;
-    private _setRootVar: boolean;
-    private _persist: boolean;
+    private _setRootVar: boolean = true;
+    private _persist: boolean = true;
     private _service: TranslateService;
     
     public constructor() {
@@ -34,13 +34,14 @@ export class TranslateProvider extends Translation implements ITranslateProvider
     }
 
     public $get(
-        $rootScope: ng.IRootScopeService, 
+        $rootScope: ng.IRootScopeService,
+        $log: ng.ILogService, 
         $window: ng.IWindowService
     ): any {
         "ngInject";
 
         if (this._service == null) 
-            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $window);
+            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
 
         return this._service;
     }

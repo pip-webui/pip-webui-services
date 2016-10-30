@@ -8,8 +8,8 @@
     thisModule.controller('SystemInfoController',
         function($scope, pipSystemInfo) {
 
-            $scope.browserName = pipSystemInfo.getBrowserName();
-            $scope.browserVersion = pipSystemInfo.getBrowserVersion();
+            $scope.browserName = pipSystemInfo.browserName;
+            $scope.browserVersion = pipSystemInfo.browserVersion;
 
             $scope.checkSupported = pipSystemInfo.isSupported();
         }

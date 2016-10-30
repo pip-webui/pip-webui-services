@@ -1,28 +1,20 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.pip || (g.pip = {})).services = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 require('./translate/TranslateModule');
+require('./session/SessionModule');
+require('./routing/RoutingModule');
+require('./utilities/UtilitiesModule');
 angular.module('pipServices', [
-    'pipScope',
     'pipTranslate',
-    'pipRouting',
-    'pipTimer',
     'pipSession',
-    'pipIdentity',
-    'pipSystemInfo',
-    'pipFormat',
-    'pipScroll',
-    'pipPageReset',
-    'pipTags'
+    'pipScope',
+    'pipRouting',
+    'pipUtils'
 ]);
-},{"./translate/TranslateModule":15}],2:[function(require,module,exports){
-
-},{}],3:[function(require,module,exports){
-
-},{}],4:[function(require,module,exports){
+},{"./routing/RoutingModule":5,"./session/SessionModule":11,"./translate/TranslateModule":16,"./utilities/UtilitiesModule":27}],2:[function(require,module,exports){
 'use strict';
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window'];
-addBackStateDecorator.$inject = ['$provide'];
 function captureStateTranslations($rootScope) {
     "ngInject";
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -38,6 +30,7 @@ function captureStateTranslations($rootScope) {
         };
     });
 }
+exports.captureStateTranslations = captureStateTranslations;
 function decorateBackStateService($delegate, $window) {
     "ngInject";
     $delegate.goBack = goBack;
@@ -61,11 +54,8 @@ function decorateBackStateService($delegate, $window) {
 function addBackStateDecorator($provide) {
     $provide.decorator('$state', decorateBackStateService);
 }
-angular
-    .module('pipRouting.Back', [])
-    .config(addBackStateDecorator)
-    .run(captureStateTranslations);
-},{}],5:[function(require,module,exports){
+exports.addBackStateDecorator = addBackStateDecorator;
+},{}],3:[function(require,module,exports){
 'use strict';
 decorateRedirectStateProvider.$inject = ['$delegate'];
 addRedirectStateProviderDecorator.$inject = ['$provide'];
@@ -85,6 +75,7 @@ function addRedirectStateProviderDecorator($provide) {
     "ngInject";
     $provide.decorator('$state', decorateRedirectStateProvider);
 }
+exports.addRedirectStateProviderDecorator = addRedirectStateProviderDecorator;
 function decorateRedirectStateService($delegate, $timeout) {
     "ngInject";
     $delegate.redirect = redirect;
@@ -110,20 +101,12 @@ function addRedirectStateDecorator($provide) {
     "ngInject";
     $provide.decorator('$state', decorateRedirectStateService);
 }
-angular
-    .module('pipRouting.Redirect', ['ui.router'])
-    .config(addRedirectStateProviderDecorator)
-    .config(addRedirectStateDecorator);
-},{}],6:[function(require,module,exports){
+exports.addRedirectStateDecorator = addRedirectStateDecorator;
+},{}],4:[function(require,module,exports){
 'use strict';
-angular.module('pipRouting', [
-    'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
-]);
-},{}],7:[function(require,module,exports){
-'use strict';
-hookRoutingEvents.$inject = ['$log', '$rootScope', '$state'];
+hookRoutingEvents.$inject = ['$rootScope', '$log', '$state'];
 exports.RoutingVar = "$routing";
-function hookRoutingEvents($log, $rootScope, $state) {
+function hookRoutingEvents($rootScope, $log, $state) {
     "ngInject";
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
         $rootScope[exports.RoutingVar] = true;
@@ -135,8 +118,6 @@ function hookRoutingEvents($log, $rootScope, $state) {
         $rootScope[exports.RoutingVar] = false;
         $log.error('Error while switching route to ' + toState.name);
         $log.error(error);
-        console.error('Error while switching route to ' + toState.name);
-        console.error(error);
     });
     $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {
         event.preventDefault();
@@ -150,14 +131,26 @@ function hookRoutingEvents($log, $rootScope, $state) {
         });
     });
 }
+exports.hookRoutingEvents = hookRoutingEvents;
+},{}],5:[function(require,module,exports){
+'use strict';
+var BackDecorator_1 = require('./BackDecorator');
+var BackDecorator_2 = require('./BackDecorator');
+var RedirectDecorator_1 = require('./RedirectDecorator');
+var RedirectDecorator_2 = require('./RedirectDecorator');
+var RoutingEvents_1 = require('./RoutingEvents');
 angular
-    .module('pipRouting.Events', [])
-    .run(hookRoutingEvents);
-},{}],8:[function(require,module,exports){
+    .module('pipRouting', ['ui.router'])
+    .config(BackDecorator_1.addBackStateDecorator)
+    .run(BackDecorator_2.captureStateTranslations)
+    .config(RedirectDecorator_2.addRedirectStateProviderDecorator)
+    .config(RedirectDecorator_1.addRedirectStateDecorator)
+    .run(RoutingEvents_1.hookRoutingEvents);
+},{"./BackDecorator":2,"./RedirectDecorator":3,"./RoutingEvents":4}],6:[function(require,module,exports){
 'use strict';
 angular.module('pipScope', ['pipTranslate', 'pipScope.Error', 'pipScope.Transaction']);
 angular.module('pipTransactions', ['pipScope']);
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipScope.Error', []);
 thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
@@ -266,7 +259,7 @@ thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
     }
     ;
 }]);
-},{}],10:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipScope.Transaction', ['pipTranslate']);
 thisModule.run(['$injector', function ($injector) {
@@ -369,35 +362,9 @@ thisModule.factory('pipTransaction', ['$rootScope', 'pipError', function ($rootS
         return transaction;
     }
 }]);
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
-exports.IdentityRootVar = "$identity";
-exports.IdentityChangedEvent = "pipIdentityChanged";
-var IdentityService = (function () {
-    function IdentityService(setRootVar, identity, $rootScope) {
-        this._setRootVar = setRootVar;
-        this._identity = identity;
-        this._rootScope = $rootScope;
-        this.setRootVar();
-    }
-    IdentityService.prototype.setRootVar = function () {
-        if (this._setRootVar)
-            this._rootScope[exports.IdentityRootVar] = this._identity;
-    };
-    Object.defineProperty(IdentityService.prototype, "identity", {
-        get: function () {
-            return this._identity;
-        },
-        set: function (value) {
-            this._identity = value;
-            this.setRootVar();
-            this._rootScope.$broadcast(exports.IdentityChangedEvent, this._identity);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return IdentityService;
-}());
+var IdentityService_1 = require('./IdentityService');
 var IdentityProvider = (function () {
     function IdentityProvider() {
         this._setRootVar = true;
@@ -424,66 +391,59 @@ var IdentityProvider = (function () {
         enumerable: true,
         configurable: true
     });
-    IdentityProvider.prototype.$get = ['$rootScope', function ($rootScope) {
+    IdentityProvider.prototype.$get = ['$rootScope', '$log', function ($rootScope, $log) {
         "ngInject";
         if (this._service == null)
-            this._service = new IdentityService(this._setRootVar, this._identity, $rootScope);
+            this._service = new IdentityService_1.IdentityService(this._setRootVar, this._identity, $rootScope, $log);
         return this._service;
     }];
     return IdentityProvider;
 }());
-angular
-    .module('pipIdentity', [])
-    .provider('pipIdentity', IdentityProvider);
-},{}],12:[function(require,module,exports){
+exports.IdentityProvider = IdentityProvider;
+},{"./IdentityService":10}],10:[function(require,module,exports){
 'use strict';
-exports.SessionRootVar = "$session";
-exports.SessionOpenedEvent = "pipSessionOpened";
-exports.SessionClosedEvent = "pipSessionClosed";
-var SessionService = (function () {
-    function SessionService(setRootVar, session, $rootScope) {
+exports.IdentityRootVar = "$identity";
+exports.IdentityChangedEvent = "pipIdentityChanged";
+var IdentityService = (function () {
+    function IdentityService(setRootVar, identity, $rootScope, $log) {
         this._setRootVar = setRootVar;
-        this._session = session;
+        this._identity = identity;
         this._rootScope = $rootScope;
+        this._log = $log;
         this.setRootVar();
     }
-    SessionService.prototype.setRootVar = function () {
+    IdentityService.prototype.setRootVar = function () {
         if (this._setRootVar)
-            this._rootScope[exports.SessionRootVar] = this._session;
+            this._rootScope[exports.IdentityRootVar] = this._identity;
     };
-    Object.defineProperty(SessionService.prototype, "session", {
+    Object.defineProperty(IdentityService.prototype, "identity", {
         get: function () {
-            return this._session;
+            return this._identity;
+        },
+        set: function (value) {
+            this._identity = value;
+            this.setRootVar();
+            this._rootScope.$emit(exports.IdentityChangedEvent, this._identity);
+            var identity = value || {};
+            this._log.debug("Changed identity to " + identity.id + " " + identity.full_name);
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SessionService.prototype, "isOpened", {
-        get: function () {
-            return this._session != null;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SessionService.prototype.open = function (session, fullReset, partialReset) {
-        if (fullReset === void 0) { fullReset = false; }
-        if (partialReset === void 0) { partialReset = false; }
-        if (session == null)
-            throw new Error("Session cannot be null");
-        this._session = session;
-        this.setRootVar();
-        this._rootScope.$broadcast(exports.SessionOpenedEvent, session);
-    };
-    SessionService.prototype.close = function (fullReset, partialReset) {
-        if (fullReset === void 0) { fullReset = false; }
-        if (partialReset === void 0) { partialReset = false; }
-        var oldSession = this._session;
-        this._session = null;
-        this.setRootVar();
-        this._rootScope.$broadcast(exports.SessionClosedEvent, oldSession);
-    };
-    return SessionService;
+    return IdentityService;
 }());
+exports.IdentityService = IdentityService;
+},{}],11:[function(require,module,exports){
+'use strict';
+var IdentityProvider_1 = require('./IdentityProvider');
+var SessionProvider_1 = require('./SessionProvider');
+angular
+    .module('pipSession', [])
+    .provider('pipIdentity', IdentityProvider_1.IdentityProvider)
+    .provider('pipSession', SessionProvider_1.SessionProvider);
+},{"./IdentityProvider":9,"./SessionProvider":12}],12:[function(require,module,exports){
+'use strict';
+var SessionService_1 = require('./SessionService');
 var SessionProvider = (function () {
     function SessionProvider() {
         this._setRootVar = true;
@@ -510,17 +470,65 @@ var SessionProvider = (function () {
         enumerable: true,
         configurable: true
     });
-    SessionProvider.prototype.$get = ['$rootScope', function ($rootScope) {
+    SessionProvider.prototype.$get = ['$rootScope', '$log', function ($rootScope, $log) {
         "ngInject";
         if (this._service == null)
-            this._service = new SessionService(this._setRootVar, this._session, $rootScope);
+            this._service = new SessionService_1.SessionService(this._setRootVar, this._session, $rootScope, $log);
         return this._service;
     }];
     return SessionProvider;
 }());
-angular.module('pipSession', ['pipPageReset'])
-    .provider('pipSession', SessionProvider);
-},{}],13:[function(require,module,exports){
+exports.SessionProvider = SessionProvider;
+},{"./SessionService":13}],13:[function(require,module,exports){
+'use strict';
+exports.SessionRootVar = "$session";
+exports.SessionOpenedEvent = "pipSessionOpened";
+exports.SessionClosedEvent = "pipSessionClosed";
+var SessionService = (function () {
+    function SessionService(setRootVar, session, $rootScope, $log) {
+        this._setRootVar = setRootVar;
+        this._session = session;
+        this._rootScope = $rootScope;
+        this._log = $log;
+        this.setRootVar();
+    }
+    SessionService.prototype.setRootVar = function () {
+        if (this._setRootVar)
+            this._rootScope[exports.SessionRootVar] = this._session;
+    };
+    Object.defineProperty(SessionService.prototype, "session", {
+        get: function () {
+            return this._session;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SessionService.prototype.isOpened = function () {
+        return this._session != null;
+    };
+    SessionService.prototype.open = function (session, fullReset, partialReset) {
+        if (fullReset === void 0) { fullReset = false; }
+        if (partialReset === void 0) { partialReset = false; }
+        if (session == null)
+            throw new Error("Session cannot be null");
+        this._session = session;
+        this.setRootVar();
+        this._rootScope.$emit(exports.SessionOpenedEvent, session);
+        this._log.debug("Opened session " + session);
+    };
+    SessionService.prototype.close = function (fullReset, partialReset) {
+        if (fullReset === void 0) { fullReset = false; }
+        if (partialReset === void 0) { partialReset = false; }
+        var oldSession = this._session;
+        this._session = null;
+        this.setRootVar();
+        this._rootScope.$emit(exports.SessionClosedEvent, oldSession);
+        this._log.debug("Closed session " + oldSession);
+    };
+    return SessionService;
+}());
+exports.SessionService = SessionService;
+},{}],14:[function(require,module,exports){
 'use strict';
 translateDirective.$inject = ['pipTranslate'];
 translateHtmlDirective.$inject = ['pipTranslate'];
@@ -556,7 +564,7 @@ function translateHtmlDirective(pipTranslate) {
     };
 }
 exports.translateHtmlDirective = translateHtmlDirective;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 translateFilter.$inject = ['pipTranslate'];
 optionalTranslateFilter.$inject = ['$injector'];
@@ -576,7 +584,7 @@ function optionalTranslateFilter($injector) {
     };
 }
 exports.optionalTranslateFilter = optionalTranslateFilter;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 var TranslateProvider_1 = require('./TranslateProvider');
 var TranslateFilter_1 = require('./TranslateFilter');
@@ -588,7 +596,7 @@ angular
     .filter('translate', TranslateFilter_1.translateFilter)
     .directive('pipTranslate', TranslateDirective_1.translateDirective)
     .directive('pipTranslateHtml', TranslateDirective_2.translateHtmlDirective);
-},{"./TranslateDirective":13,"./TranslateFilter":14,"./TranslateProvider":16}],16:[function(require,module,exports){
+},{"./TranslateDirective":14,"./TranslateFilter":15,"./TranslateProvider":17}],17:[function(require,module,exports){
 'use strict';
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -601,6 +609,8 @@ var TranslateProvider = (function (_super) {
     __extends(TranslateProvider, _super);
     function TranslateProvider() {
         _super.call(this);
+        this._setRootVar = true;
+        this._persist = true;
     }
     Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
         get: function () {
@@ -622,28 +632,31 @@ var TranslateProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    TranslateProvider.prototype.$get = ['$rootScope', '$window', function ($rootScope, $window) {
+    TranslateProvider.prototype.$get = ['$rootScope', '$log', '$window', function ($rootScope, $log, $window) {
         "ngInject";
         if (this._service == null)
-            this._service = new TranslateService_1.TranslateService(this, this._setRootVar, this._persist, $rootScope, $window);
+            this._service = new TranslateService_1.TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
         return this._service;
     }];
     return TranslateProvider;
 }(Translation_1.Translation));
 exports.TranslateProvider = TranslateProvider;
-},{"./TranslateService":17,"./Translation":18}],17:[function(require,module,exports){
+},{"./TranslateService":18,"./Translation":19}],18:[function(require,module,exports){
 'use strict';
+var PageResetService_1 = require('../utilities/PageResetService');
 exports.LanguageRootVar = "$language";
 exports.LanguageChangedEvent = "pipLanguageChanged";
 var TranslateService = (function () {
-    function TranslateService(translation, setRootVar, persist, $rootScope, $window) {
+    function TranslateService(translation, setRootVar, persist, $rootScope, $log, $window) {
         this._setRootVar = setRootVar;
         this._persist = persist;
         this._translation = translation;
         this._rootScope = $rootScope;
+        this._log = $log;
         this._window = $window;
         if (this._persist && this._window.localStorage)
             this._translation.language = this._window.localStorage.getItem('language') || this._translation.language;
+        this._log.debug("Set language to " + this._translation.language);
         this.save();
     }
     TranslateService.prototype.save = function () {
@@ -659,8 +672,10 @@ var TranslateService = (function () {
         set: function (value) {
             if (value != this._translation.language) {
                 this._translation.language = value;
+                this._log.debug("Changing language to " + value);
                 this.save();
-                this._rootScope.$broadcast(exports.LanguageChangedEvent, value);
+                this._rootScope.$emit(exports.LanguageChangedEvent, value);
+                this._rootScope.$emit(PageResetService_1.ResetPageEvent);
             }
         },
         enumerable: true,
@@ -701,7 +716,7 @@ var TranslateService = (function () {
     return TranslateService;
 }());
 exports.TranslateService = TranslateService;
-},{}],18:[function(require,module,exports){
+},{"../utilities/PageResetService":22}],19:[function(require,module,exports){
 'use strict';
 var Translation = (function () {
     function Translation() {
@@ -835,42 +850,40 @@ var Translation = (function () {
     return Translation;
 }());
 exports.Translation = Translation;
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
-var thisModule = angular.module('pipCodes', []);
-thisModule.factory('pipCodes', function () {
-    return {
-        hash: hash,
-        verification: verification
-    };
-    function hash(value) {
+var Codes = (function () {
+    function Codes() {
+    }
+    Codes.prototype.hash = function (value) {
         if (value == null)
             return 0;
         var result = 0;
-        for (var i = 0; i < value.length; i++) {
+        for (var i = 0; i < value.length; i++)
             result += value.charCodeAt(i);
-        }
         return result;
-    }
-    function verification() {
+    };
+    Codes.prototype.verification = function () {
         return Math.random().toString(36).substr(2, 10).toUpperCase();
-    }
-});
-},{}],20:[function(require,module,exports){
-
+    };
+    return Codes;
+}());
+exports.Codes = Codes;
 },{}],21:[function(require,module,exports){
 'use strict';
-var thisModule = angular.module('pipFormat', []);
-thisModule.factory('pipFormat', function () {
-    function sample(value, maxLength) {
+var Format = (function () {
+    function Format() {
+        this.cache = {};
+    }
+    Format.prototype.sample = function (value, maxLength) {
         if (!value || value == '')
             return '';
         var length = value.indexOf('\n');
         length = length >= 0 ? length : value.length;
         length = length < maxLength ? value.length : maxLength;
         return value.substring(0, length);
-    }
-    function strRepeat(str, qty) {
+    };
+    Format.prototype.strRepeat = function (str, qty) {
         if (qty < 1)
             return '';
         var result = '';
@@ -880,189 +893,185 @@ thisModule.factory('pipFormat', function () {
             qty >>= 1, str += str;
         }
         return result;
-    }
-    var sprintf = (function sprintf() {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
-        }
-        function get_type(variable) {
-            return toString.call(variable).slice(8, -1).toLowerCase();
-        }
-        var str_repeat = strRepeat;
-        var str_format = function () {
-            if (!str_format.cache.hasOwnProperty(arguments[0])) {
-                str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
+    };
+    Format.prototype.getType = function (variable) {
+        return toString.call(variable).slice(8, -1).toLowerCase();
+    };
+    Format.prototype.parseFormat = function (fmt) {
+        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+        while (_fmt) {
+            if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+                parse_tree.push(match[0]);
             }
-            return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
-        };
-        str_format.format = function (parse_tree, argv) {
-            var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
-            for (i = 0; i < tree_length; i++) {
-                node_type = get_type(parse_tree[i]);
-                if (node_type === 'string') {
-                    output.push(parse_tree[i]);
-                }
-                else if (node_type === 'array') {
-                    match = parse_tree[i];
-                    if (match[2]) {
-                        arg = argv[cursor];
-                        for (k = 0; k < match[2].length; k++) {
-                            if (!arg.hasOwnProperty(match[2][k])) {
-                                throw new Error(sprintf('[_.sprintf] property "%s" does not exist', match[2][k]));
+            else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+                parse_tree.push('%');
+            }
+            else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1;
+                    var field_list = [], replacement_field = match[2], field_match = [];
+                    if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+                        field_list.push(field_match[1]);
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                            if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+                                field_list.push(field_match[1]);
                             }
-                            arg = arg[match[2][k]];
-                        }
-                    }
-                    else if (match[1]) {
-                        arg = argv[match[1]];
-                    }
-                    else {
-                        arg = argv[cursor++];
-                    }
-                    if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
-                        throw new Error(sprintf('[_.sprintf] expecting number but found %s', get_type(arg)));
-                    }
-                    switch (match[8]) {
-                        case 'b':
-                            arg = arg.toString(2);
-                            break;
-                        case 'c':
-                            arg = String.fromCharCode(arg);
-                            break;
-                        case 'd':
-                            arg = parseInt(arg, 10);
-                            break;
-                        case 'e':
-                            arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential();
-                            break;
-                        case 'f':
-                            arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg);
-                            break;
-                        case 'o':
-                            arg = arg.toString(8);
-                            break;
-                        case 's':
-                            arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg);
-                            break;
-                        case 'u':
-                            arg = Math.abs(arg);
-                            break;
-                        case 'x':
-                            arg = arg.toString(16);
-                            break;
-                        case 'X':
-                            arg = arg.toString(16).toUpperCase();
-                            break;
-                    }
-                    arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+' + arg : arg);
-                    pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
-                    pad_length = match[6] - String(arg).length;
-                    pad = match[6] ? str_repeat(pad_character, pad_length) : '';
-                    output.push(match[5] ? arg + pad : pad + arg);
-                }
-            }
-            return output.join('');
-        };
-        str_format.cache = {};
-        str_format.parse = function (fmt) {
-            var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
-            while (_fmt) {
-                if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
-                    parse_tree.push(match[0]);
-                }
-                else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
-                    parse_tree.push('%');
-                }
-                else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
-                    if (match[2]) {
-                        arg_names |= 1;
-                        var field_list = [], replacement_field = match[2], field_match = [];
-                        if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-                            field_list.push(field_match[1]);
-                            while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
-                                if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
-                                    field_list.push(field_match[1]);
-                                }
-                                else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
-                                    field_list.push(field_match[1]);
-                                }
-                                else {
-                                    throw new Error('[_.sprintf] huh?');
-                                }
+                            else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+                                field_list.push(field_match[1]);
+                            }
+                            else {
+                                throw new Error('Unknown error');
                             }
                         }
-                        else {
-                            throw new Error('[_.sprintf] huh?');
-                        }
-                        match[2] = field_list;
                     }
                     else {
-                        arg_names |= 2;
+                        throw new Error('Unknown error');
                     }
-                    if (arg_names === 3) {
-                        throw new Error('[_.sprintf] mixing positional and named placeholders is not (yet) supported');
-                    }
-                    parse_tree.push(match);
+                    match[2] = field_list;
                 }
                 else {
-                    throw new Error('[_.sprintf] huh?');
+                    arg_names |= 2;
                 }
-                _fmt = _fmt.substring(match[0].length);
+                if (arg_names === 3) {
+                    throw new Error('Mixing positional and named placeholders is not (yet) supported');
+                }
+                parse_tree.push(match);
             }
-            return parse_tree;
-        };
-        return str_format;
-    })();
-    return {
-        sprintf: sprintf,
-        format: sprintf,
-        sample: sample
+            else {
+                throw new Error('Unknown error');
+            }
+            _fmt = _fmt.substring(match[0].length);
+        }
+        return parse_tree;
     };
-});
+    Format.prototype.format = function (parse_tree, argv) {
+        var cursor = 0;
+        var tree_length = parse_tree.length;
+        var output = [];
+        for (var i = 0; i < tree_length; i++) {
+            var node_type = this.getType(parse_tree[i]);
+            if (node_type === 'string') {
+                output.push(parse_tree[i]);
+            }
+            else if (node_type === 'array') {
+                var match = parse_tree[i];
+                var arg = void 0;
+                if (match[2]) {
+                    arg = argv[cursor];
+                    for (var k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(this.sprintf('Property "%s" does not exist', match[2][k]));
+                        }
+                        arg = arg[match[2][k]];
+                    }
+                }
+                else if (match[1]) {
+                    arg = argv[match[1]];
+                }
+                else {
+                    arg = argv[cursor++];
+                }
+                if (/[^s]/.test(match[8]) && (this.getType(arg) != 'number')) {
+                    throw new Error(this.sprintf('Expecting number but found %s', this.getType(arg)));
+                }
+                switch (match[8]) {
+                    case 'b':
+                        arg = arg.toString(2);
+                        break;
+                    case 'c':
+                        arg = String.fromCharCode(arg);
+                        break;
+                    case 'd':
+                        arg = parseInt(arg, 10);
+                        break;
+                    case 'e':
+                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential();
+                        break;
+                    case 'f':
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg);
+                        break;
+                    case 'o':
+                        arg = arg.toString(8);
+                        break;
+                    case 's':
+                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg);
+                        break;
+                    case 'u':
+                        arg = Math.abs(arg);
+                        break;
+                    case 'x':
+                        arg = arg.toString(16);
+                        break;
+                    case 'X':
+                        arg = arg.toString(16).toUpperCase();
+                        break;
+                }
+                arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+' + arg : arg);
+                var pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
+                var pad_length = match[6] - String(arg).length;
+                var pad = match[6] ? this.strRepeat(pad_character, pad_length) : '';
+                output.push(match[5] ? arg + pad : pad + arg);
+            }
+        }
+        return output.join('');
+    };
+    Format.prototype.sprintf = function (message) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (!this.cache.hasOwnProperty(message))
+            this.cache[message] = this.parseFormat(message);
+        return this.format(this.cache[message], args);
+    };
+    return Format;
+}());
+exports.Format = Format;
 },{}],22:[function(require,module,exports){
-
+'use strict';
+exports.ResetPageEvent = "pipResetPage";
+exports.ResetAreaEvent = "pipResetArea";
+exports.ResetRootVar = "$reset";
+exports.ResetAreaRootVar = "$resetArea";
+var PageResetService = (function () {
+    function PageResetService($rootScope, $log, $timeout) {
+        this._rootScope = $rootScope;
+        this._log = $log;
+        this._timeout = $timeout;
+        $rootScope[exports.ResetRootVar] = false;
+        $rootScope[exports.ResetAreaRootVar] = null;
+    }
+    PageResetService.prototype.reset = function () {
+        this._log.debug("Resetting the entire page");
+        this.performReset(null);
+    };
+    PageResetService.prototype.resetArea = function (area) {
+        this._log.debug("Resetting the area " + area);
+        this.performReset(area);
+    };
+    PageResetService.prototype.performReset = function (area) {
+        var _this = this;
+        this._rootScope[exports.ResetRootVar] = area == null;
+        this._rootScope[exports.ResetAreaRootVar] = area;
+        this._timeout(function () {
+            _this._rootScope[exports.ResetRootVar] = false;
+            _this._rootScope[exports.ResetAreaRootVar] = null;
+        }, 0);
+    };
+    return PageResetService;
+}());
+exports.PageResetService = PageResetService;
+function hookResetEvents($rootScope, pipPageReset) {
+    $rootScope.$on(exports.ResetPageEvent, function () { pipPageReset.reset(); });
+    $rootScope.$on(exports.ResetAreaEvent, function (event, area) { pipPageReset.resetArea(area); });
+}
+exports.hookResetEvents = hookResetEvents;
 },{}],23:[function(require,module,exports){
 'use strict';
-var thisModule = angular.module('pipPageReset', []);
-thisModule.factory('pipPageReset', ['$rootScope', '$timeout', function ($rootScope, $timeout) {
-    $rootScope.$on('pipResetPage', resetAll);
-    return {
-        resetPartial: resetPartial,
-        resetFull: resetFull,
-        resetAll: resetAll,
-        reset: reset
-    };
-    function resetPartial() {
-        reset(false, true);
+var ScrollService = (function () {
+    function ScrollService() {
     }
-    function resetFull() {
-        reset(true, false);
-    }
-    function resetAll() {
-        reset(true, true);
-    }
-    function reset(full, partial) {
-        full = full !== undefined ? !!full : true;
-        partial = partial !== undefined ? !!partial : true;
-        if (full || partial) {
-            $rootScope.$reset = full;
-            $rootScope.$partialReset = partial;
-            $timeout(function () {
-                $rootScope.$reset = false;
-                $rootScope.$partialReset = false;
-            }, 0);
-        }
-    }
-}]);
-},{}],24:[function(require,module,exports){
-'use strict';
-var thisModule = angular.module('pipScroll', []);
-thisModule.factory('pipScroll', function () {
-    return {
-        scrollTo: scrollTo
-    };
-    function scrollTo(parentElement, childElement, animationDuration) {
+    ScrollService.prototype.scrollTo = function (parentElement, childElement, animationDuration) {
         if (!parentElement || !childElement)
             return;
         if (animationDuration == undefined)
@@ -1079,111 +1088,124 @@ thisModule.factory('pipScroll', function () {
                     scrollTop: scrollTo + 'px'
                 }, animationDuration);
         }, 100);
-    }
-});
-},{}],25:[function(require,module,exports){
-'use strict';
-var thisModule = angular.module('pipSystemInfo', []);
-thisModule.factory('pipSystemInfo', ['$rootScope', '$window', function ($rootScope, $window) {
-    return {
-        getBrowserName: getBrowserName,
-        getBrowserVersion: getBrowserVersion,
-        getPlatform: getPlatform,
-        isDesktop: isDesktop,
-        isMobile: isMobile,
-        isCordova: isCordova,
-        getOS: getOS,
-        isSupported: isSupported
     };
-    function getBrowserName() {
-        var ua = $window.navigator.userAgent;
-        if (ua.search(/Edge/) > -1)
-            return "edge";
-        if (ua.search(/MSIE/) > -1)
-            return "ie";
-        if (ua.search(/Trident/) > -1)
-            return "ie";
-        if (ua.search(/Firefox/) > -1)
-            return "firefox";
-        if (ua.search(/Opera/) > -1)
-            return "opera";
-        if (ua.search(/OPR/) > -1)
-            return "opera";
-        if (ua.search(/YaBrowser/) > -1)
-            return "yabrowser";
-        if (ua.search(/Chrome/) > -1)
-            return "chrome";
-        if (ua.search(/Safari/) > -1)
-            return "safari";
-        if (ua.search(/Maxthon/) > -1)
-            return "maxthon";
-        return "unknown";
+    return ScrollService;
+}());
+exports.ScrollService = ScrollService;
+},{}],24:[function(require,module,exports){
+'use strict';
+var SystemInfo = (function () {
+    SystemInfo.$inject = ['$window'];
+    function SystemInfo($window) {
+        "ngInject";
+        this._window = $window;
     }
-    function getBrowserVersion() {
-        var browser, version;
-        var ua = $window.navigator.userAgent;
-        browser = getBrowserName();
-        switch (browser) {
-            case "edge":
-                version = (ua.split("Edge")[1]).split("/")[1];
-                break;
-            case "ie":
-                version = (ua.split("MSIE ")[1]).split(";")[0];
-                break;
-            case "ie11":
-                browser = "ie";
-                version = (ua.split("; rv:")[1]).split(")")[0];
-                break;
-            case "firefox":
-                version = ua.split("Firefox/")[1];
-                break;
-            case "opera":
-                version = ua.split("Version/")[1];
-                break;
-            case "operaWebkit":
-                version = ua.split("OPR/")[1];
-                break;
-            case "yabrowser":
-                version = (ua.split("YaBrowser/")[1]).split(" ")[0];
-                break;
-            case "chrome":
-                version = (ua.split("Chrome/")[1]).split(" ")[0];
-                break;
-            case "safari":
-                version = (ua.split("Version/")[1]).split(" ")[0];
-                break;
-            case "maxthon":
-                version = ua.split("Maxthon/")[1];
-                break;
-        }
-        return version;
-    }
-    function getPlatform() {
-        var ua = $window.navigator.userAgent;
-        if (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(ua.toLowerCase()))
-            return 'mobile';
-        return 'desktop';
-    }
-    function isDesktop() {
-        return getPlatform() == 'desktop';
-    }
-    function isMobile() {
-        return getPlatform() == 'mobile';
-    }
-    function isCordova() {
-        return null;
-    }
-    function getOS() {
-        var ua = $window.navigator.userAgent;
-        try {
-            var osAll = (/(windows|mac|android|linux|blackberry|sunos|solaris|iphone)/.exec(ua.toLowerCase()) || [ua])[0].replace('sunos', 'solaris'), osAndroid = (/(android)/.exec(ua.toLowerCase()) || '');
-            return osAndroid && (osAndroid == 'android' || (osAndroid[0] == 'android')) ? 'android' : osAll;
-        }
-        catch (err) {
-            return 'unknown';
-        }
-    }
-    function isSupported(supported) {
+    Object.defineProperty(SystemInfo.prototype, "browserName", {
+        get: function () {
+            var ua = this._window.navigator.userAgent;
+            if (ua.search(/Edge/) > -1)
+                return "edge";
+            if (ua.search(/MSIE/) > -1)
+                return "ie";
+            if (ua.search(/Trident/) > -1)
+                return "ie";
+            if (ua.search(/Firefox/) > -1)
+                return "firefox";
+            if (ua.search(/Opera/) > -1)
+                return "opera";
+            if (ua.search(/OPR/) > -1)
+                return "opera";
+            if (ua.search(/YaBrowser/) > -1)
+                return "yabrowser";
+            if (ua.search(/Chrome/) > -1)
+                return "chrome";
+            if (ua.search(/Safari/) > -1)
+                return "safari";
+            if (ua.search(/Maxthon/) > -1)
+                return "maxthon";
+            return "unknown";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SystemInfo.prototype, "browserVersion", {
+        get: function () {
+            var version;
+            var ua = this._window.navigator.userAgent;
+            var browser = this.browserName;
+            switch (browser) {
+                case "edge":
+                    version = (ua.split("Edge")[1]).split("/")[1];
+                    break;
+                case "ie":
+                    version = (ua.split("MSIE ")[1]).split(";")[0];
+                    break;
+                case "ie11":
+                    browser = "ie";
+                    version = (ua.split("; rv:")[1]).split(")")[0];
+                    break;
+                case "firefox":
+                    version = ua.split("Firefox/")[1];
+                    break;
+                case "opera":
+                    version = ua.split("Version/")[1];
+                    break;
+                case "operaWebkit":
+                    version = ua.split("OPR/")[1];
+                    break;
+                case "yabrowser":
+                    version = (ua.split("YaBrowser/")[1]).split(" ")[0];
+                    break;
+                case "chrome":
+                    version = (ua.split("Chrome/")[1]).split(" ")[0];
+                    break;
+                case "safari":
+                    version = (ua.split("Version/")[1]).split(" ")[0];
+                    break;
+                case "maxthon":
+                    version = ua.split("Maxthon/")[1];
+                    break;
+            }
+            return version;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SystemInfo.prototype, "platform", {
+        get: function () {
+            var ua = this._window.navigator.userAgent;
+            if (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(ua.toLowerCase()))
+                return 'mobile';
+            return 'desktop';
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SystemInfo.prototype, "os", {
+        get: function () {
+            var ua = this._window.navigator.userAgent;
+            try {
+                var osAll = (/(windows|mac|android|linux|blackberry|sunos|solaris|iphone)/.exec(ua.toLowerCase()) || [ua])[0].replace('sunos', 'solaris');
+                var osAndroid = (/(android)/.exec(ua.toLowerCase()) || '');
+                return osAndroid && (osAndroid == 'android' || (osAndroid[0] == 'android')) ? 'android' : osAll;
+            }
+            catch (err) {
+                return 'unknown';
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SystemInfo.prototype.isDesktop = function () {
+        return this.platform == 'desktop';
+    };
+    SystemInfo.prototype.isMobile = function () {
+        return this.platform == 'mobile';
+    };
+    SystemInfo.prototype.isCordova = function () {
+        return false;
+    };
+    SystemInfo.prototype.isSupported = function (supported) {
         if (!supported)
             supported = {
                 edge: 11,
@@ -1192,103 +1214,94 @@ thisModule.factory('pipSystemInfo', ['$rootScope', '$window', function ($rootSco
                 opera: 35,
                 chrome: 47
             };
-        var browser = getBrowserName();
-        var version = getBrowserVersion();
+        var browser = this.browserName;
+        var version = this.browserVersion;
         version = version.split(".")[0];
         if (browser && supported[browser] && version >= supported[browser])
             return true;
         return true;
-    }
-    ;
-}]);
-},{}],26:[function(require,module,exports){
-'use strict';
-var thisModule = angular.module('pipTags', []);
-thisModule.factory('pipTags', function () {
-    return {
-        equal: equal,
-        normalizeOne: normalizeOne,
-        normalizeAll: normalizeAll,
-        normalize: normalizeAll,
-        compressOne: compressOne,
-        compressAll: compressAll,
-        compress: compressAll,
-        extract: extract
     };
-    function normalizeOne(tag) {
+    return SystemInfo;
+}());
+exports.SystemInfo = SystemInfo;
+},{}],25:[function(require,module,exports){
+'use strict';
+var Tags = (function () {
+    function Tags() {
+    }
+    Tags.prototype.normalizeOne = function (tag) {
         return tag
             ? _.trim(tag.replace(/(_|#)+/g, ' '))
             : null;
-    }
-    function compressOne(tag) {
+    };
+    Tags.prototype.compressOne = function (tag) {
         return tag
             ? tag.replace(/( |_|#)/g, '').toLowerCase()
             : null;
-    }
-    function equal(tag1, tag2) {
+    };
+    Tags.prototype.equal = function (tag1, tag2) {
         if (tag1 == null && tag2 == null)
             return true;
         if (tag1 == null || tag2 == null)
             return false;
-        return compressOne(tag1) == compressOne(tag2);
-    }
-    function normalizeAll(tags) {
-        if (_.isString(tags)) {
-            tags = tags.split(/( |,|;)+/);
-        }
-        tags = _.map(tags, function (tag) {
-            return normalizeOne(tag);
-        });
-        return tags;
-    }
-    function compressAll(tags) {
+        return this.compressOne(tag1) == this.compressOne(tag2);
+    };
+    Tags.prototype.normalizeAll = function (tags) {
+        var _this = this;
         if (_.isString(tags))
             tags = tags.split(/( |,|;)+/);
-        tags = _.map(tags, function (tag) {
-            return compressOne(tag);
-        });
+        tags = _.map(tags, function (tag) { return _this.normalizeOne(tag); });
         return tags;
-    }
-    ;
-    function extract(entity, searchFields) {
-        var tags = normalizeAll(entity.tags);
+    };
+    Tags.prototype.compressAll = function (tags) {
+        var _this = this;
+        if (_.isString(tags))
+            tags = tags.split(/( |,|;)+/);
+        tags = _.map(tags, function (tag) { return _this.compressOne(tag); });
+        return tags;
+    };
+    Tags.prototype.extract = function (entity, searchFields) {
+        var _this = this;
+        var tags = this.normalizeAll(entity.tags);
         _.each(searchFields, function (field) {
             var text = entity[field] || '';
             if (text != '') {
                 var hashTags = text.match(/#\w+/g);
-                tags = tags.concat(normalizeAll(hashTags));
+                tags = tags.concat(_this.normalizeAll(hashTags));
             }
         });
         return _.uniq(tags);
-    }
-});
-},{}],27:[function(require,module,exports){
+    };
+    return Tags;
+}());
+exports.Tags = Tags;
+},{}],26:[function(require,module,exports){
 'use strict';
 var TimerEvent = (function () {
-    function TimerEvent() {
+    function TimerEvent(event, timeout) {
+        this.event = event;
+        this.timeout = timeout;
     }
     return TimerEvent;
 }());
 var DefaultEvents = [
-    { event: 'pipAutoPullChanges', timeout: 60000 },
-    { event: 'pipAutoUpdatePage', timeout: 15000 },
-    { event: 'pipAutoUpdateCollection', timeout: 300000 }
+    new TimerEvent('pipAutoPullChanges', 60000),
+    new TimerEvent('pipAutoUpdatePage', 15000),
+    new TimerEvent('pipAutoUpdateCollection', 300000)
 ];
 var TimerService = (function () {
-    TimerService.$inject = ['$rootScope', '$interval'];
-    function TimerService($rootScope, $interval) {
+    TimerService.$inject = ['$rootScope', '$log', '$interval'];
+    function TimerService($rootScope, $log, $interval) {
+        "ngInject";
         this._started = false;
         this._events = _.cloneDeep(DefaultEvents);
         this._rootScope = $rootScope;
+        this._log = $log;
         this._interval = $interval;
     }
-    Object.defineProperty(TimerService.prototype, "isStarted", {
-        get: function () {
-            return this._started;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    TimerService.prototype.isStarted = function () {
+        return this._started;
+    };
     TimerService.prototype.addEvent = function (event, timeout) {
         var existingEvent = _.find(this._events, function (e) { return e.event == event; });
         if (existingEvent != null)
@@ -1316,7 +1329,10 @@ var TimerService = (function () {
     };
     TimerService.prototype.startEvent = function (event) {
         var _this = this;
-        event.interval = this._interval(function () { _this._rootScope.$broadcast(event.event); }, event.timeout);
+        event.interval = this._interval(function () {
+            _this._log.debug('Generated timer event ' + event.event);
+            _this._rootScope.$emit(event.event);
+        }, event.timeout);
     };
     TimerService.prototype.stopEvent = function (event) {
         if (event.interval != null) {
@@ -1346,12 +1362,37 @@ var TimerService = (function () {
     };
     return TimerService;
 }());
+exports.TimerService = TimerService;
+},{}],27:[function(require,module,exports){
+'use strict';
+var Format_1 = require('./Format');
+var Tags_1 = require('./Tags');
+var Codes_1 = require('./Codes');
+var SystemInfo_1 = require('./SystemInfo');
+var TimerService_1 = require('./TimerService');
+var ScrollService_1 = require('./ScrollService');
+angular.module('pipFormat', []).service('pipFormat', Format_1.Format);
+angular.module('pipTags', []).service('pipTags', Tags_1.Tags);
+angular.module('pipCodes', []).service('pipCodes', Codes_1.Codes);
+angular.module('pipSystemInfo', []).service('pipSystemInfo', SystemInfo_1.SystemInfo);
+angular.module('pipTimer', []).service('pipTimer', TimerService_1.TimerService);
+angular.module('pipScroll', []).service('pipScroll', ScrollService_1.ScrollService);
+var PageResetService_1 = require('./PageResetService');
+var PageResetService_2 = require('./PageResetService');
+angular.module('pipPageReset', [])
+    .service('pipPageReset', PageResetService_1.PageResetService)
+    .run(PageResetService_2.hookResetEvents);
 angular
-    .module('pipTimer', [])
-    .service('pipTimer', TimerService);
-},{}],28:[function(require,module,exports){
-
-},{}]},{},[2,3,4,5,7,6,9,10,8,1,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])(28)
+    .module('pipUtils', [
+    'pipFormat',
+    'pipTimer',
+    'pipScroll',
+    'pipTags',
+    'pipCodes',
+    'pipSystemInfo',
+    'pipPageReset'
+]);
+},{"./Codes":20,"./Format":21,"./PageResetService":22,"./ScrollService":23,"./SystemInfo":24,"./Tags":25,"./TimerService":26}]},{},[2,3,4,5,7,8,6,1,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27])(27)
 });
 
 

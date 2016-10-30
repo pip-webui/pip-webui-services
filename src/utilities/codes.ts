@@ -1,27 +1,26 @@
 'use strict';
 
-var thisModule = angular.module('pipCodes', []);
-
-thisModule.factory('pipCodes', function () {
-    
-    return {
-        hash: hash,
-        verification: verification
-    }
-
+export interface ICodes {
     // Simple version of string hashcode
-    function hash(value) {
+    hash(value: string): number;
+    // Generates random big number for verification codes
+    verification(): string;
+}
+
+export class Codes implements ICodes {
+    // Simple version of string hashcode
+    public hash(value: string): number {
         if (value == null) return 0;
-        var result = 0;
-        for (var i = 0; i < value.length; i++) {
+        
+        let result = 0;
+        for (let i = 0; i < value.length; i++)
             result += value.charCodeAt(i);
-        }
+
         return result;
     }
 
     // Generates random big number for verification codes
-    function verification() {
+    public verification(): string {
         return Math.random().toString(36).substr(2, 10).toUpperCase(); // remove `0.`
     }
-
-});
+}

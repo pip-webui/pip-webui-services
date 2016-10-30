@@ -1,17 +1,14 @@
 ﻿'use strict';
 
 import './translate/TranslateModule';
+import './session/SessionModule';
+import './routing/RoutingModule';
+import './utilities/UtilitiesModule';
 
 angular.module('pipServices', [
-    'pipScope',
     'pipTranslate',
-    'pipRouting',
-    'pipTimer',
     'pipSession',
-    'pipIdentity',
-    'pipSystemInfo',
-    'pipFormat',
-    'pipScroll',
-    'pipPageReset',        
-    'pipTags'
+    'pipScope',
+    'pipRouting',
+    'pipUtils'
 ]);

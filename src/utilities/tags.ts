@@ -1,77 +1,66 @@
 'use strict';
 
-var thisModule = angular.module('pipTags', []);
+export interface ITags {
+    normalizeOne(tag: string): string;
+    compressOne(tag: string): string;
+    equal(tag1: string, tag2: string): boolean;
+    normalizeAll(tags: any): string[];
+    compressAll(tags: any): string[];
+    extract(entity: any, searchFields?: string[]): string[];
+}
 
-thisModule.factory('pipTags', function () {
-        
-    return {
-        equal: equal,
-        normalizeOne: normalizeOne,
-        normalizeAll: normalizeAll,
-        normalize: normalizeAll,
-        compressOne: compressOne,
-        compressAll: compressAll,
-        compress: compressAll,
-        extract: extract
-    };
+export class Tags implements ITags {
 
-    //------------------------------
-
-    function normalizeOne(tag) {
+    public normalizeOne(tag: string): string {
         return tag 
             ? _.trim(tag.replace(/(_|#)+/g, ' '))
             : null;
     }
 
-    function compressOne(tag) {
+    public compressOne(tag: string): string {
         return tag
             ? tag.replace(/( |_|#)/g, '').toLowerCase()
             : null;
     }
 
-    function equal(tag1, tag2) {
+    public equal(tag1: string, tag2: string): boolean {
         if (tag1 == null && tag2 == null)
             return true;
         if (tag1 == null || tag2 == null)
             return false;
-        return compressOne(tag1) == compressOne(tag2);
+        return this.compressOne(tag1) == this.compressOne(tag2);
     }
 
-    function normalizeAll(tags) {
-        if (_.isString(tags)) {
-            tags = tags.split(/( |,|;)+/);
-        }
-
-        tags = _.map(tags, function (tag) {
-            return normalizeOne(tag);
-        });
-
-        return tags;
-    }
-
-    function compressAll(tags) {
+    public normalizeAll(tags: any): string[] {
         if (_.isString(tags))
             tags = tags.split(/( |,|;)+/);
 
-        tags = _.map(tags, function (tag) {
-            return compressOne(tag);
-        });
+        tags = _.map(tags, (tag: string) => this.normalizeOne(tag));
 
         return tags;
-    };
+    }
 
-    function extract(entity, searchFields) {
-        var tags = normalizeAll(entity.tags);
+    public compressAll(tags: any): string[] {
+        if (_.isString(tags))
+            tags = tags.split(/( |,|;)+/);
 
-        _.each(searchFields, function (field) {
-            var text = entity[field] || '';
+        tags = _.map(tags, (tag: string) => this.compressOne(tag));
+
+        return tags;
+    }
+
+    public extract(entity: any, searchFields?: string[]): string[] {
+        let tags = this.normalizeAll(entity.tags);
+
+        _.each(searchFields, (field) => {
+            let text = entity[field] || '';
 
             if (text != '') {
-                var hashTags = text.match(/#\w+/g);
-                tags = tags.concat(normalizeAll(hashTags));
+                let hashTags = text.match(/#\w+/g);
+                tags = tags.concat(this.normalizeAll(hashTags));
             }
         });
 
         return _.uniq(tags);
     }
-});
+}
