@@ -23,6 +23,10 @@ module.exports = {
         ]
     },
 
+    browserify: {
+        entries: [ './src/ServicesModule.ts' ]
+    },
+
     samples: {
         port: 8040
     },

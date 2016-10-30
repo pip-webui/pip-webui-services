@@ -22,7 +22,10 @@ export interface ITranslateService {
     translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string);
 }
 
-export class TranslateService implements ITranslateService {
+export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
+}
+
+class TranslateService implements ITranslateService {
     private _translation: Translation;
     private _setRootVar: boolean;
     private _persist: boolean;
@@ -120,3 +123,47 @@ export class TranslateService implements ITranslateService {
         return this._translation.translateSetWithPrefix2(prefix, keys, keyProp, valueProp);
     }
 }
+
+class TranslateProvider extends Translation implements ITranslateProvider {
+    private _translation: Translation;
+    private _setRootVar: boolean = true;
+    private _persist: boolean = true;
+    private _service: TranslateService;
+    
+    public constructor() {
+        super();
+    }
+
+    public get setRootVar(): boolean {
+        return this._setRootVar;  
+    }
+
+    public set setRootVar(value: boolean) {
+        this._setRootVar = !!value;
+    }
+
+    public get persist(): boolean {
+        return this._persist;  
+    }
+
+    public set persist(value: boolean) {
+        this._persist = !!value;
+    }
+
+    public $get(
+        $rootScope: ng.IRootScopeService,
+        $log: ng.ILogService, 
+        $window: ng.IWindowService
+    ): any {
+        "ngInject";
+
+        if (this._service == null) 
+            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
+
+        return this._service;
+    }
+}
+
+angular
+    .module('pipTranslate')
+    .provider('pipTranslate', TranslateProvider);

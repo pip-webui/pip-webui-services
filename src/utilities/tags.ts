@@ -9,7 +9,8 @@ export interface ITags {
     extract(entity: any, searchFields?: string[]): string[];
 }
 
-export class Tags implements ITags {
+
+class Tags implements ITags {
 
     public normalizeOne(tag: string): string {
         return tag 
@@ -64,3 +65,8 @@ export class Tags implements ITags {
         return _.uniq(tags);
     }
 }
+
+
+angular
+    .module('pipTags', [])
+    .service('pipTags', Tags);

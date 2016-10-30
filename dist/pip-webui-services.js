@@ -2,19 +2,33 @@
 'use strict';
 require('./translate/TranslateModule');
 require('./session/SessionModule');
+require('./transactions/TransactionModule');
 require('./routing/RoutingModule');
-require('./utilities/UtilitiesModule');
+require('./utilities/Format');
+require('./utilities/TimerService');
+require('./utilities/ScrollService');
+require('./utilities/Tags');
+require('./utilities/Codes');
+require('./utilities/SystemInfo');
+require('./utilities/PageResetService');
 angular.module('pipServices', [
     'pipTranslate',
     'pipSession',
-    'pipScope',
+    'pipTransaction',
     'pipRouting',
-    'pipUtils'
+    'pipFormat',
+    'pipTimer',
+    'pipScroll',
+    'pipTags',
+    'pipCodes',
+    'pipSystemInfo',
+    'pipPageReset'
 ]);
-},{"./routing/RoutingModule":5,"./session/SessionModule":11,"./translate/TranslateModule":16,"./utilities/UtilitiesModule":27}],2:[function(require,module,exports){
+},{"./routing/RoutingModule":5,"./session/SessionModule":7,"./transactions/TransactionModule":11,"./translate/TranslateModule":16,"./utilities/Codes":19,"./utilities/Format":20,"./utilities/PageResetService":21,"./utilities/ScrollService":22,"./utilities/SystemInfo":23,"./utilities/Tags":24,"./utilities/TimerService":25}],2:[function(require,module,exports){
 'use strict';
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window'];
+addBackStateDecorator.$inject = ['$provide'];
 function captureStateTranslations($rootScope) {
     "ngInject";
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -30,7 +44,6 @@ function captureStateTranslations($rootScope) {
         };
     });
 }
-exports.captureStateTranslations = captureStateTranslations;
 function decorateBackStateService($delegate, $window) {
     "ngInject";
     $delegate.goBack = goBack;
@@ -54,20 +67,23 @@ function decorateBackStateService($delegate, $window) {
 function addBackStateDecorator($provide) {
     $provide.decorator('$state', decorateBackStateService);
 }
-exports.addBackStateDecorator = addBackStateDecorator;
+angular
+    .module('pipRouting')
+    .config(addBackStateDecorator)
+    .run(captureStateTranslations);
 },{}],3:[function(require,module,exports){
 'use strict';
 decorateRedirectStateProvider.$inject = ['$delegate'];
 addRedirectStateProviderDecorator.$inject = ['$provide'];
 decorateRedirectStateService.$inject = ['$delegate', '$timeout'];
 addRedirectStateDecorator.$inject = ['$provide'];
-exports.RedirectedStates = {};
+var RedirectedStates = {};
 function decorateRedirectStateProvider($delegate) {
     "ngInject";
     $delegate.redirect = redirect;
     return $delegate;
     function redirect(fromState, toState) {
-        exports.RedirectedStates[fromState] = toState;
+        RedirectedStates[fromState] = toState;
         return this;
     }
 }
@@ -75,13 +91,12 @@ function addRedirectStateProviderDecorator($provide) {
     "ngInject";
     $provide.decorator('$state', decorateRedirectStateProvider);
 }
-exports.addRedirectStateProviderDecorator = addRedirectStateProviderDecorator;
 function decorateRedirectStateService($delegate, $timeout) {
     "ngInject";
     $delegate.redirect = redirect;
     return $delegate;
     function redirect(event, state, params) {
-        var toState = exports.RedirectedStates[state.name];
+        var toState = RedirectedStates[state.name];
         if (_.isFunction(toState)) {
             toState = toState(state.name, params);
             if (_.isNull(toState))
@@ -101,7 +116,10 @@ function addRedirectStateDecorator($provide) {
     "ngInject";
     $provide.decorator('$state', decorateRedirectStateService);
 }
-exports.addRedirectStateDecorator = addRedirectStateDecorator;
+angular
+    .module('pipRouting')
+    .config(addRedirectStateProviderDecorator)
+    .config(addRedirectStateDecorator);
 },{}],4:[function(require,module,exports){
 'use strict';
 hookRoutingEvents.$inject = ['$rootScope', '$log', '$state'];
@@ -131,276 +149,16 @@ function hookRoutingEvents($rootScope, $log, $state) {
         });
     });
 }
-exports.hookRoutingEvents = hookRoutingEvents;
+angular
+    .module('pipRouting')
+    .run(hookRoutingEvents);
 },{}],5:[function(require,module,exports){
 'use strict';
-var BackDecorator_1 = require('./BackDecorator');
-var BackDecorator_2 = require('./BackDecorator');
-var RedirectDecorator_1 = require('./RedirectDecorator');
-var RedirectDecorator_2 = require('./RedirectDecorator');
-var RoutingEvents_1 = require('./RoutingEvents');
-angular
-    .module('pipRouting', ['ui.router'])
-    .config(BackDecorator_1.addBackStateDecorator)
-    .run(BackDecorator_2.captureStateTranslations)
-    .config(RedirectDecorator_2.addRedirectStateProviderDecorator)
-    .config(RedirectDecorator_1.addRedirectStateDecorator)
-    .run(RoutingEvents_1.hookRoutingEvents);
+angular.module('pipRouting', ['ui.router']);
+require('./BackDecorator');
+require('./RedirectDecorator');
+require('./RoutingEvents');
 },{"./BackDecorator":2,"./RedirectDecorator":3,"./RoutingEvents":4}],6:[function(require,module,exports){
-'use strict';
-angular.module('pipScope', ['pipTranslate', 'pipScope.Error', 'pipScope.Transaction']);
-angular.module('pipTransactions', ['pipScope']);
-},{}],7:[function(require,module,exports){
-'use strict';
-var thisModule = angular.module('pipScope.Error', []);
-thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
-    $rootScope.errors = {};
-    return createError;
-    function initError(scope) {
-        $rootScope.errors[scope] = {
-            message: undefined,
-            code: undefined,
-            details: undefined
-        };
-    }
-    ;
-    function errorMessage(error) {
-        if (_.isNull(error)) {
-            return null;
-        }
-        if (error.message) {
-            return error.message;
-        }
-        if (error.data) {
-            if (error.data.code) {
-                return 'ERROR_' + error.data.code;
-            }
-            if (error.data.message) {
-                return error.data.message;
-            }
-        }
-        if (error.statusText) {
-            return error.statusText;
-        }
-        if (error.status) {
-            return 'ERROR_' + error.status;
-        }
-        return error.data ? error.data : error;
-    }
-    ;
-    function errorCode(error) {
-        if (_.isNull(error)) {
-            return null;
-        }
-        if (error.data && error.data.code) {
-            return error.data.code;
-        }
-        if (error.status) {
-            return error.status;
-        }
-        return null;
-    }
-    ;
-    function errorDetails(error) {
-        return error && error.data ? error.data : error;
-    }
-    ;
-    function createError(scope, scopeObject) {
-        scope = scope || 'global';
-        var error = {
-            reset: function () {
-                initError(scope);
-            },
-            empty: function () {
-                var error = $rootScope.errors[scope];
-                return _.isNull(error) || (_.isNull(error.message) && _.isNull(error.code));
-            },
-            get: function () {
-                if ($rootScope.errors[scope]) {
-                    return $rootScope.errors[scope];
-                }
-                return '';
-            },
-            message: function () {
-                if ($rootScope.errors[scope]) {
-                    return $rootScope.errors[scope].message;
-                }
-                return null;
-            },
-            code: function () {
-                if ($rootScope.errors[scope]) {
-                    return $rootScope.errors[scope].code;
-                }
-                return null;
-            },
-            details: function () {
-                if ($rootScope.errors[scope]) {
-                    return $rootScope.errors[scope].details;
-                }
-                return null;
-            },
-            set: function (error) {
-                if (error) {
-                    $rootScope.errors[scope] = {
-                        message: errorMessage(error),
-                        code: errorCode(error),
-                        details: errorDetails(error)
-                    };
-                    console.error($rootScope.errors[scope]);
-                }
-                else {
-                    initError(scope);
-                }
-            }
-        };
-        if (_.isObject(scopeObject))
-            scopeObject.error = error;
-        return error;
-    }
-    ;
-}]);
-},{}],8:[function(require,module,exports){
-'use strict';
-var thisModule = angular.module('pipScope.Transaction', ['pipTranslate']);
-thisModule.run(['$injector', function ($injector) {
-    var pipTranslate = $injector.has('pipTranslate') ? $injector.get('pipTranslate') : null;
-    if (pipTranslate) {
-        pipTranslate.setTranslations('en', {
-            'ENTERING': 'Entering...',
-            'PROCESSING': 'Processing...',
-            'LOADING': 'Loading...',
-            'SAVING': 'Saving...'
-        });
-        pipTranslate.setTranslations('ru', {
-            'ENTERING': 'Вход в систему...',
-            'PROCESSING': 'Обрабатывается...',
-            'LOADING': 'Загружается...',
-            'SAVING': 'Сохраняется...'
-        });
-    }
-}]);
-thisModule.factory('pipTransaction', ['$rootScope', 'pipError', function ($rootScope, pipError) {
-    $rootScope.transactions = {};
-    return createTransaction;
-    function initTransaction(scope) {
-        $rootScope.transactions[scope] = {
-            id: undefined,
-            operation: undefined
-        };
-    }
-    function createTransaction(scope, scopeObject) {
-        scope = scope || 'global';
-        var error = pipError(scope);
-        var transaction = {
-            error: error,
-            reset: function () {
-                initTransaction("");
-                error.reset();
-            },
-            busy: function () {
-                var transaction = $rootScope.transactions[scope];
-                return transaction != null && transaction.id;
-            },
-            failed: function () {
-                return !error.empty();
-            },
-            aborted: function (id) {
-                var transaction = $rootScope.transactions[scope];
-                return _.isNull(transaction) || transaction.id != id;
-            },
-            get: function () {
-                if (_.isNull($rootScope.transactions[scope])) {
-                    initTransaction(scope);
-                }
-                return $rootScope.transactions[scope];
-            },
-            id: function () {
-                var transaction = $rootScope.transactions[scope];
-                return transaction ? transaction.id : null;
-            },
-            operation: function () {
-                var transaction = $rootScope.transactions[scope];
-                return transaction ? transaction.operation : null;
-            },
-            errorMessage: function () {
-                return error.message();
-            },
-            begin: function (operation) {
-                var transaction = $rootScope.transactions[scope];
-                if (transaction != null && transaction.id) {
-                    return null;
-                }
-                transaction = $rootScope.transactions[scope] = {
-                    id: new Date().getTime(),
-                    operation: operation || 'PROCESSING'
-                };
-                error.reset();
-                return transaction.id;
-            },
-            abort: function () {
-                var transaction = $rootScope.transactions[scope];
-                if (transaction) {
-                    transaction.id = null;
-                }
-                error.reset();
-            },
-            end: function (err) {
-                if (err)
-                    error.set(err);
-                else
-                    error.reset();
-                var transaction = $rootScope.transactions[scope];
-                if (transaction != null) {
-                    transaction.id = null;
-                }
-            }
-        };
-        if (_.isObject(scopeObject)) {
-            scopeObject.error = error;
-            scopeObject.transaction = transaction;
-        }
-        return transaction;
-    }
-}]);
-},{}],9:[function(require,module,exports){
-'use strict';
-var IdentityService_1 = require('./IdentityService');
-var IdentityProvider = (function () {
-    function IdentityProvider() {
-        this._setRootVar = true;
-        this._identity = null;
-        this._service = null;
-    }
-    Object.defineProperty(IdentityProvider.prototype, "setRootVar", {
-        get: function () {
-            return this._setRootVar;
-        },
-        set: function (value) {
-            this._setRootVar = !!value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(IdentityProvider.prototype, "identity", {
-        get: function () {
-            return this._identity;
-        },
-        set: function (value) {
-            this._identity = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    IdentityProvider.prototype.$get = ['$rootScope', '$log', function ($rootScope, $log) {
-        "ngInject";
-        if (this._service == null)
-            this._service = new IdentityService_1.IdentityService(this._setRootVar, this._identity, $rootScope, $log);
-        return this._service;
-    }];
-    return IdentityProvider;
-}());
-exports.IdentityProvider = IdentityProvider;
-},{"./IdentityService":10}],10:[function(require,module,exports){
 'use strict';
 exports.IdentityRootVar = "$identity";
 exports.IdentityChangedEvent = "pipIdentityChanged";
@@ -432,25 +190,13 @@ var IdentityService = (function () {
     });
     return IdentityService;
 }());
-exports.IdentityService = IdentityService;
-},{}],11:[function(require,module,exports){
-'use strict';
-var IdentityProvider_1 = require('./IdentityProvider');
-var SessionProvider_1 = require('./SessionProvider');
-angular
-    .module('pipSession', [])
-    .provider('pipIdentity', IdentityProvider_1.IdentityProvider)
-    .provider('pipSession', SessionProvider_1.SessionProvider);
-},{"./IdentityProvider":9,"./SessionProvider":12}],12:[function(require,module,exports){
-'use strict';
-var SessionService_1 = require('./SessionService');
-var SessionProvider = (function () {
-    function SessionProvider() {
+var IdentityProvider = (function () {
+    function IdentityProvider() {
         this._setRootVar = true;
-        this._session = null;
+        this._identity = null;
         this._service = null;
     }
-    Object.defineProperty(SessionProvider.prototype, "setRootVar", {
+    Object.defineProperty(IdentityProvider.prototype, "setRootVar", {
         get: function () {
             return this._setRootVar;
         },
@@ -460,26 +206,33 @@ var SessionProvider = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SessionProvider.prototype, "session", {
+    Object.defineProperty(IdentityProvider.prototype, "identity", {
         get: function () {
-            return this._session;
+            return this._identity;
         },
         set: function (value) {
-            this._session = value;
+            this._identity = value;
         },
         enumerable: true,
         configurable: true
     });
-    SessionProvider.prototype.$get = ['$rootScope', '$log', function ($rootScope, $log) {
+    IdentityProvider.prototype.$get = ['$rootScope', '$log', function ($rootScope, $log) {
         "ngInject";
         if (this._service == null)
-            this._service = new SessionService_1.SessionService(this._setRootVar, this._session, $rootScope, $log);
+            this._service = new IdentityService(this._setRootVar, this._identity, $rootScope, $log);
         return this._service;
     }];
-    return SessionProvider;
+    return IdentityProvider;
 }());
-exports.SessionProvider = SessionProvider;
-},{"./SessionService":13}],13:[function(require,module,exports){
+angular
+    .module('pipSession')
+    .provider('pipIdentity', IdentityProvider);
+},{}],7:[function(require,module,exports){
+'use strict';
+angular.module('pipSession', []);
+require('./IdentityService');
+require('./SessionService');
+},{"./IdentityService":6,"./SessionService":8}],8:[function(require,module,exports){
 'use strict';
 exports.SessionRootVar = "$session";
 exports.SessionOpenedEvent = "pipSessionOpened";
@@ -527,7 +280,235 @@ var SessionService = (function () {
     };
     return SessionService;
 }());
-exports.SessionService = SessionService;
+var SessionProvider = (function () {
+    function SessionProvider() {
+        this._setRootVar = true;
+        this._session = null;
+        this._service = null;
+    }
+    Object.defineProperty(SessionProvider.prototype, "setRootVar", {
+        get: function () {
+            return this._setRootVar;
+        },
+        set: function (value) {
+            this._setRootVar = !!value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SessionProvider.prototype, "session", {
+        get: function () {
+            return this._session;
+        },
+        set: function (value) {
+            this._session = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SessionProvider.prototype.$get = ['$rootScope', '$log', function ($rootScope, $log) {
+        "ngInject";
+        if (this._service == null)
+            this._service = new SessionService(this._setRootVar, this._session, $rootScope, $log);
+        return this._service;
+    }];
+    return SessionProvider;
+}());
+angular
+    .module('pipSession')
+    .provider('pipSession', SessionProvider);
+},{}],9:[function(require,module,exports){
+'use strict';
+var TransactionError_1 = require('./TransactionError');
+var Transaction = (function () {
+    function Transaction(scope) {
+        this._error = new TransactionError_1.TransactionError();
+        this._progress = 0;
+        this._scope = scope;
+    }
+    Object.defineProperty(Transaction.prototype, "scope", {
+        get: function () {
+            return this._scope;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transaction.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transaction.prototype, "operation", {
+        get: function () {
+            return this._operation;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transaction.prototype, "progress", {
+        get: function () {
+            return this._progress;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transaction.prototype, "error", {
+        get: function () {
+            return this._error;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transaction.prototype, "errorMessage", {
+        get: function () {
+            return this._error.message;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Transaction.prototype.reset = function () {
+        this._id = null;
+        this._operation = null;
+        this._progress = 0;
+        this._error.reset();
+    };
+    Transaction.prototype.busy = function () {
+        return this._id != null;
+    };
+    Transaction.prototype.failed = function () {
+        return !this._error.empty();
+    };
+    Transaction.prototype.aborted = function (id) {
+        return this._id != id;
+    };
+    Transaction.prototype.begin = function (operation) {
+        if (this._id != null)
+            return null;
+        this._id = new Date().getTime().toString();
+        this._operation = operation || 'PROCESSING';
+        this._error.reset();
+        return this._id;
+    };
+    Transaction.prototype.update = function (progress) {
+        this._progress = Math.max(progress, 100);
+    };
+    Transaction.prototype.abort = function () {
+        this._id = null;
+        this._error.reset();
+    };
+    Transaction.prototype.end = function (error) {
+        this._error.decode(error);
+        this._id = null;
+    };
+    return Transaction;
+}());
+exports.Transaction = Transaction;
+},{"./TransactionError":10}],10:[function(require,module,exports){
+'use strict';
+var TransactionError = (function () {
+    function TransactionError(error) {
+        if (error != null)
+            this.decode(error);
+    }
+    TransactionError.prototype.reset = function () {
+        this.code = null;
+        this.message = null;
+        this.details = null;
+        this.cause = null;
+        this.stack_trace = null;
+    };
+    TransactionError.prototype.empty = function () {
+        return this.message = null && this.code == null;
+    };
+    TransactionError.prototype.decode = function (error) {
+        this.reset();
+        if (error == null)
+            return;
+        if (error.message)
+            this.message = error.message;
+        if (error.data) {
+            if (error.data.code) {
+                this.message = this.message || 'ERROR_' + error.data.code;
+                this.code = this.code || error.data.code;
+            }
+            if (error.data.message)
+                this.message = this.message || error.data.message;
+            this.message = this.message || error.data;
+            this.details = this.details || error.data;
+            this.cause = error.data.cause;
+            this.stack_trace = error.data.stack_trace;
+            this.details = error.data.details;
+        }
+        if (error.statusText)
+            this.message = this.message || error.statusText;
+        if (error.status) {
+            this.message = this.message || 'ERROR_' + error.status;
+            this.code = this.code || error.status;
+        }
+        this.message = this.message || error;
+        this.details = this.details || error;
+    };
+    return TransactionError;
+}());
+exports.TransactionError = TransactionError;
+},{}],11:[function(require,module,exports){
+'use strict';
+angular.module('pipTransaction', []);
+require('./TransactionStrings');
+require('./TransactionService');
+},{"./TransactionService":12,"./TransactionStrings":13}],12:[function(require,module,exports){
+'use strict';
+var Transaction_1 = require('./Transaction');
+var TransactionService = (function () {
+    function TransactionService() {
+        this._transactions = {};
+    }
+    TransactionService.prototype.create = function (scope) {
+        var transaction = new Transaction_1.Transaction(scope);
+        if (scope != null)
+            this._transactions[scope] = transaction;
+        return transaction;
+    };
+    TransactionService.prototype.get = function (scope) {
+        var transaction = scope != null ? this._transactions[scope] : null;
+        if (transaction == null) {
+            transaction = new Transaction_1.Transaction(scope);
+            if (scope != null)
+                this._transactions[scope] = transaction;
+        }
+        return transaction;
+    };
+    return TransactionService;
+}());
+angular
+    .module('pipTransaction')
+    .service('pipTransaction', TransactionService);
+},{"./Transaction":9}],13:[function(require,module,exports){
+'use strict';
+configureTransactionStrings.$inject = ['$injector'];
+function configureTransactionStrings($injector) {
+    "ngInject";
+    var pipTranslate = $injector.has('pipTranslateProvider') ? $injector.get('pipTranslateProvider') : null;
+    if (pipTranslate) {
+        pipTranslate.setTranslations('en', {
+            'ENTERING': 'Entering...',
+            'PROCESSING': 'Processing...',
+            'LOADING': 'Loading...',
+            'SAVING': 'Saving...'
+        });
+        pipTranslate.setTranslations('ru', {
+            'ENTERING': 'Вход в систему...',
+            'PROCESSING': 'Обрабатывается...',
+            'LOADING': 'Загружается...',
+            'SAVING': 'Сохраняется...'
+        });
+    }
+}
+angular
+    .module('pipTransaction')
+    .config(configureTransactionStrings);
 },{}],14:[function(require,module,exports){
 'use strict';
 translateDirective.$inject = ['pipTranslate'];
@@ -547,7 +528,6 @@ function translateDirective(pipTranslate) {
         }
     };
 }
-exports.translateDirective = translateDirective;
 function translateHtmlDirective(pipTranslate) {
     "ngInject";
     return {
@@ -563,7 +543,10 @@ function translateHtmlDirective(pipTranslate) {
         }
     };
 }
-exports.translateHtmlDirective = translateHtmlDirective;
+angular
+    .module('pipTranslate')
+    .directive('pipTranslate', translateDirective)
+    .directive('pipTranslateHtml', translateHtmlDirective);
 },{}],15:[function(require,module,exports){
 'use strict';
 translateFilter.$inject = ['pipTranslate'];
@@ -574,7 +557,6 @@ function translateFilter(pipTranslate) {
         return pipTranslate.translate(key) || key;
     };
 }
-exports.translateFilter = translateFilter;
 function optionalTranslateFilter($injector) {
     "ngInject";
     var pipTranslate = $injector.has('pipTranslate')
@@ -583,20 +565,16 @@ function optionalTranslateFilter($injector) {
         return pipTranslate ? pipTranslate.translate(key) || key : key;
     };
 }
-exports.optionalTranslateFilter = optionalTranslateFilter;
+angular
+    .module('pipTranslate')
+    .filter('translate', translateFilter);
 },{}],16:[function(require,module,exports){
 'use strict';
-var TranslateProvider_1 = require('./TranslateProvider');
-var TranslateFilter_1 = require('./TranslateFilter');
-var TranslateDirective_1 = require('./TranslateDirective');
-var TranslateDirective_2 = require('./TranslateDirective');
-angular
-    .module('pipTranslate', [])
-    .provider('pipTranslate', TranslateProvider_1.TranslateProvider)
-    .filter('translate', TranslateFilter_1.translateFilter)
-    .directive('pipTranslate', TranslateDirective_1.translateDirective)
-    .directive('pipTranslateHtml', TranslateDirective_2.translateHtmlDirective);
-},{"./TranslateDirective":14,"./TranslateFilter":15,"./TranslateProvider":17}],17:[function(require,module,exports){
+angular.module('pipTranslate', []);
+require('./TranslateService');
+require('./TranslateFilter');
+require('./TranslateDirective');
+},{"./TranslateDirective":14,"./TranslateFilter":15,"./TranslateService":17}],17:[function(require,module,exports){
 'use strict';
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -604,45 +582,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Translation_1 = require('./Translation');
-var TranslateService_1 = require('./TranslateService');
-var TranslateProvider = (function (_super) {
-    __extends(TranslateProvider, _super);
-    function TranslateProvider() {
-        _super.call(this);
-        this._setRootVar = true;
-        this._persist = true;
-    }
-    Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
-        get: function () {
-            return this._setRootVar;
-        },
-        set: function (value) {
-            this._setRootVar = !!value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TranslateProvider.prototype, "persist", {
-        get: function () {
-            return this._persist;
-        },
-        set: function (value) {
-            this._persist = !!value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TranslateProvider.prototype.$get = ['$rootScope', '$log', '$window', function ($rootScope, $log, $window) {
-        "ngInject";
-        if (this._service == null)
-            this._service = new TranslateService_1.TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
-        return this._service;
-    }];
-    return TranslateProvider;
-}(Translation_1.Translation));
-exports.TranslateProvider = TranslateProvider;
-},{"./TranslateService":18,"./Translation":19}],18:[function(require,module,exports){
-'use strict';
 var PageResetService_1 = require('../utilities/PageResetService');
 exports.LanguageRootVar = "$language";
 exports.LanguageChangedEvent = "pipLanguageChanged";
@@ -715,8 +654,45 @@ var TranslateService = (function () {
     };
     return TranslateService;
 }());
-exports.TranslateService = TranslateService;
-},{"../utilities/PageResetService":22}],19:[function(require,module,exports){
+var TranslateProvider = (function (_super) {
+    __extends(TranslateProvider, _super);
+    function TranslateProvider() {
+        _super.call(this);
+        this._setRootVar = true;
+        this._persist = true;
+    }
+    Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
+        get: function () {
+            return this._setRootVar;
+        },
+        set: function (value) {
+            this._setRootVar = !!value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TranslateProvider.prototype, "persist", {
+        get: function () {
+            return this._persist;
+        },
+        set: function (value) {
+            this._persist = !!value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TranslateProvider.prototype.$get = ['$rootScope', '$log', '$window', function ($rootScope, $log, $window) {
+        "ngInject";
+        if (this._service == null)
+            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
+        return this._service;
+    }];
+    return TranslateProvider;
+}(Translation_1.Translation));
+angular
+    .module('pipTranslate')
+    .provider('pipTranslate', TranslateProvider);
+},{"../utilities/PageResetService":21,"./Translation":18}],18:[function(require,module,exports){
 'use strict';
 var Translation = (function () {
     function Translation() {
@@ -850,7 +826,7 @@ var Translation = (function () {
     return Translation;
 }());
 exports.Translation = Translation;
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 var Codes = (function () {
     function Codes() {
@@ -868,8 +844,10 @@ var Codes = (function () {
     };
     return Codes;
 }());
-exports.Codes = Codes;
-},{}],21:[function(require,module,exports){
+angular
+    .module('pipCodes', [])
+    .service('pipCodes', Codes);
+},{}],20:[function(require,module,exports){
 'use strict';
 var Format = (function () {
     function Format() {
@@ -1026,14 +1004,18 @@ var Format = (function () {
     };
     return Format;
 }());
-exports.Format = Format;
-},{}],22:[function(require,module,exports){
+angular
+    .module('pipFormat', [])
+    .service('pipFormat', Format);
+},{}],21:[function(require,module,exports){
 'use strict';
+hookResetEvents.$inject = ['$rootScope', 'pipPageReset'];
 exports.ResetPageEvent = "pipResetPage";
 exports.ResetAreaEvent = "pipResetArea";
 exports.ResetRootVar = "$reset";
 exports.ResetAreaRootVar = "$resetArea";
 var PageResetService = (function () {
+    PageResetService.$inject = ['$rootScope', '$log', '$timeout'];
     function PageResetService($rootScope, $log, $timeout) {
         this._rootScope = $rootScope;
         this._log = $log;
@@ -1060,13 +1042,14 @@ var PageResetService = (function () {
     };
     return PageResetService;
 }());
-exports.PageResetService = PageResetService;
 function hookResetEvents($rootScope, pipPageReset) {
     $rootScope.$on(exports.ResetPageEvent, function () { pipPageReset.reset(); });
     $rootScope.$on(exports.ResetAreaEvent, function (event, area) { pipPageReset.resetArea(area); });
 }
-exports.hookResetEvents = hookResetEvents;
-},{}],23:[function(require,module,exports){
+angular.module('pipPageReset', [])
+    .service('pipPageReset', PageResetService)
+    .run(hookResetEvents);
+},{}],22:[function(require,module,exports){
 'use strict';
 var ScrollService = (function () {
     function ScrollService() {
@@ -1091,8 +1074,10 @@ var ScrollService = (function () {
     };
     return ScrollService;
 }());
-exports.ScrollService = ScrollService;
-},{}],24:[function(require,module,exports){
+angular
+    .module('pipScroll', [])
+    .service('pipScroll', ScrollService);
+},{}],23:[function(require,module,exports){
 'use strict';
 var SystemInfo = (function () {
     SystemInfo.$inject = ['$window'];
@@ -1223,8 +1208,10 @@ var SystemInfo = (function () {
     };
     return SystemInfo;
 }());
-exports.SystemInfo = SystemInfo;
-},{}],25:[function(require,module,exports){
+angular
+    .module('pipSystemInfo', [])
+    .service('pipSystemInfo', SystemInfo);
+},{}],24:[function(require,module,exports){
 'use strict';
 var Tags = (function () {
     function Tags() {
@@ -1274,8 +1261,10 @@ var Tags = (function () {
     };
     return Tags;
 }());
-exports.Tags = Tags;
-},{}],26:[function(require,module,exports){
+angular
+    .module('pipTags', [])
+    .service('pipTags', Tags);
+},{}],25:[function(require,module,exports){
 'use strict';
 var TimerEvent = (function () {
     function TimerEvent(event, timeout) {
@@ -1362,37 +1351,9 @@ var TimerService = (function () {
     };
     return TimerService;
 }());
-exports.TimerService = TimerService;
-},{}],27:[function(require,module,exports){
-'use strict';
-var Format_1 = require('./Format');
-var Tags_1 = require('./Tags');
-var Codes_1 = require('./Codes');
-var SystemInfo_1 = require('./SystemInfo');
-var TimerService_1 = require('./TimerService');
-var ScrollService_1 = require('./ScrollService');
-angular.module('pipFormat', []).service('pipFormat', Format_1.Format);
-angular.module('pipTags', []).service('pipTags', Tags_1.Tags);
-angular.module('pipCodes', []).service('pipCodes', Codes_1.Codes);
-angular.module('pipSystemInfo', []).service('pipSystemInfo', SystemInfo_1.SystemInfo);
-angular.module('pipTimer', []).service('pipTimer', TimerService_1.TimerService);
-angular.module('pipScroll', []).service('pipScroll', ScrollService_1.ScrollService);
-var PageResetService_1 = require('./PageResetService');
-var PageResetService_2 = require('./PageResetService');
-angular.module('pipPageReset', [])
-    .service('pipPageReset', PageResetService_1.PageResetService)
-    .run(PageResetService_2.hookResetEvents);
-angular
-    .module('pipUtils', [
-    'pipFormat',
-    'pipTimer',
-    'pipScroll',
-    'pipTags',
-    'pipCodes',
-    'pipSystemInfo',
-    'pipPageReset'
-]);
-},{"./Codes":20,"./Format":21,"./PageResetService":22,"./ScrollService":23,"./SystemInfo":24,"./Tags":25,"./TimerService":26}]},{},[2,3,4,5,7,8,6,1,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27])(27)
+angular.module('pipTimer', [])
+    .service('pipTimer', TimerService);
+},{}]},{},[1])(1)
 });
 
 

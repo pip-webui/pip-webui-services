@@ -25,7 +25,7 @@
     thisModule.controller('TransactionController',
         function($scope, $timeout, pipTransaction) {
 
-            $scope.transaction = pipTransaction('sample_login', $scope);
+            $scope.transaction = pipTransaction.create('sample_login');
 
             $scope.onProcess = function () {
                 var tid = $scope.transaction.begin('PROCESSING');

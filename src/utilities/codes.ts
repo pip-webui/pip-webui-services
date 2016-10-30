@@ -7,7 +7,8 @@ export interface ICodes {
     verification(): string;
 }
 
-export class Codes implements ICodes {
+
+class Codes implements ICodes {
     // Simple version of string hashcode
     public hash(value: string): number {
         if (value == null) return 0;
@@ -24,3 +25,7 @@ export class Codes implements ICodes {
         return Math.random().toString(36).substr(2, 10).toUpperCase(); // remove `0.`
     }
 }
+
+angular
+    .module('pipCodes', [])
+    .service('pipCodes', Codes);

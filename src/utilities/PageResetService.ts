@@ -11,7 +11,8 @@ export interface IPageResetService {
     resetArea(area: string): void;
 }
 
-export class PageResetService implements IPageResetService {
+
+class PageResetService implements IPageResetService {
     private _rootScope: ng.IRootScopeService;
     private _log: ng.ILogService;
     private _timeout: ng.ITimeoutService;
@@ -50,10 +51,16 @@ export class PageResetService implements IPageResetService {
     }
 }
 
-export function hookResetEvents(
+
+function hookResetEvents(
     $rootScope: ng.IRootScopeService, 
     pipPageReset: IPageResetService
 ) {
     $rootScope.$on(ResetPageEvent, () => { pipPageReset.reset(); });
     $rootScope.$on(ResetAreaEvent, (event, area) => { pipPageReset.resetArea(area); });
 }
+
+
+angular.module('pipPageReset', [])
+    .service('pipPageReset', PageResetService)
+    .run(hookResetEvents);

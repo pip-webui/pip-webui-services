@@ -4,7 +4,7 @@ export interface IScrollService {
     scrollTo(parentElement, childElement, animationDuration): void;
 }
 
-export class ScrollService implements IScrollService {
+class ScrollService implements IScrollService {
 
     public scrollTo(parentElement, childElement, animationDuration): void {
         if (!parentElement || !childElement) return;
@@ -23,3 +23,8 @@ export class ScrollService implements IScrollService {
     }
 
 }
+
+
+angular
+    .module('pipScroll', [])
+    .service('pipScroll', ScrollService);

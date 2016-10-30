@@ -2,7 +2,7 @@
 
 export let RoutingVar: string = "$routing";
 
-export function hookRoutingEvents(
+function hookRoutingEvents(
     $rootScope: ng.IRootScopeService,
     $log: ng.ILogService,
     $state: ng.ui.IStateService
@@ -54,3 +54,7 @@ export function hookRoutingEvents(
 
 }
 
+angular
+    .module('pipRouting')
+    .run(hookRoutingEvents);
+    

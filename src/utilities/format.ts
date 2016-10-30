@@ -7,7 +7,8 @@ export interface IFormat {
     sprintf(message: string, ...args: any[]): string;
 }
 
-export class Format implements IFormat {
+
+class Format implements IFormat {
     // Cached for parsed formats
     private cache = {};
 
@@ -144,3 +145,8 @@ export class Format implements IFormat {
         return this.format(this.cache[message], args);
     }
 }
+
+
+angular
+    .module('pipFormat', [])
+    .service('pipFormat', Format);

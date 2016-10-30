@@ -12,7 +12,8 @@ export interface ISystemInfo {
     isSupported(supported?: any): boolean;
 }
 
-export class SystemInfo implements ISystemInfo {
+
+class SystemInfo implements ISystemInfo {
     private _window: ng.IWindowService;
 
     public constructor($window: ng.IWindowService) {
@@ -138,3 +139,6 @@ export class SystemInfo implements ISystemInfo {
 }
 
 
+angular
+    .module('pipSystemInfo', [])
+    .service('pipSystemInfo', SystemInfo);

@@ -1,6 +1,6 @@
 'use strict';
 
-export let RedirectedStates: any = {};
+let RedirectedStates: any = {};
 
 function decorateRedirectStateProvider($delegate) {
     "ngInject";
@@ -17,7 +17,7 @@ function decorateRedirectStateProvider($delegate) {
     }
 }
 
-export function addRedirectStateProviderDecorator($provide) {
+function addRedirectStateProviderDecorator($provide) {
     "ngInject";
 
     $provide.decorator('$state', decorateRedirectStateProvider);
@@ -55,9 +55,14 @@ function decorateRedirectStateService($delegate, $timeout) {
     }
 }
 
-export function addRedirectStateDecorator($provide) {
+function addRedirectStateDecorator($provide) {
     "ngInject";
 
     $provide.decorator('$state', decorateRedirectStateService);
 }
 
+angular
+    .module('pipRouting')
+    .config(addRedirectStateProviderDecorator)
+    .config(addRedirectStateDecorator);
+    

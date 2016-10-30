@@ -11,6 +11,7 @@ export interface ITimerService {
     stop(): void;
 }
 
+
 class TimerEvent {
     public event: string;
     public timeout: number;
@@ -22,13 +23,15 @@ class TimerEvent {
     }
 }
 
+
 let DefaultEvents: TimerEvent[] = [
     new TimerEvent('pipAutoPullChanges', 60000), // 1 min
     new TimerEvent('pipAutoUpdatePage', 15000), // 15 sec
     new TimerEvent('pipAutoUpdateCollection', 300000) // 5 min
 ];
 
-export class TimerService implements ITimerService {
+
+class TimerService implements ITimerService {
     private _rootScope: ng.IRootScopeService;
     private _log: ng.ILogService;
     private _interval: ng.IIntervalService;        
@@ -119,3 +122,7 @@ export class TimerService implements ITimerService {
         this._started = false;
     }
 }
+
+
+angular.module('pipTimer', [])
+    .service('pipTimer', TimerService);
