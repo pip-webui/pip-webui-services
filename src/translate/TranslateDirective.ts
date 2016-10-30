@@ -1,6 +1,6 @@
 'use strict';
 
-function pipTranslateDirective(pipTranslate): ng.IDirective {
+export function translateDirective(pipTranslate): ng.IDirective {
     "ngInject";
 
     return {
@@ -17,7 +17,7 @@ function pipTranslateDirective(pipTranslate): ng.IDirective {
     };
 }
 
-function pipTranslateHtmlDirective(pipTranslate): ng.IDirective {
+export function translateHtmlDirective(pipTranslate): ng.IDirective {
     "ngInject";
 
     return {
@@ -33,8 +33,3 @@ function pipTranslateHtmlDirective(pipTranslate): ng.IDirective {
         }
     };
 }
-
-angular
-    .module('pipTranslate.Directive', [])
-    .directive('pipTranslate', pipTranslateDirective)
-    .directive('pipTranslateHtml', pipTranslateHtmlDirective);

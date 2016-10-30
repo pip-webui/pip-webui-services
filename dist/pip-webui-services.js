@@ -1,8 +1,24 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.pip || (g.pip = {})).services = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-},{}],2:[function(require,module,exports){
+'use strict';
+require('./translate/TranslateModule');
+angular.module('pipServices', [
+    'pipScope',
+    'pipTranslate',
+    'pipRouting',
+    'pipTimer',
+    'pipSession',
+    'pipIdentity',
+    'pipSystemInfo',
+    'pipFormat',
+    'pipScroll',
+    'pipPageReset',
+    'pipTags'
+]);
+},{"./translate/TranslateModule":15}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
+
+},{}],4:[function(require,module,exports){
 'use strict';
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window'];
@@ -49,7 +65,7 @@ angular
     .module('pipRouting.Back', [])
     .config(addBackStateDecorator)
     .run(captureStateTranslations);
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 decorateRedirectStateProvider.$inject = ['$delegate'];
 addRedirectStateProviderDecorator.$inject = ['$provide'];
@@ -98,12 +114,12 @@ angular
     .module('pipRouting.Redirect', ['ui.router'])
     .config(addRedirectStateProviderDecorator)
     .config(addRedirectStateDecorator);
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 angular.module('pipRouting', [
     'ui.router', 'pipRouting.Events', 'pipRouting.Back', 'pipRouting.Redirect'
 ]);
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 hookRoutingEvents.$inject = ['$log', '$rootScope', '$state'];
 exports.RoutingVar = "$routing";
@@ -137,11 +153,11 @@ function hookRoutingEvents($log, $rootScope, $state) {
 angular
     .module('pipRouting.Events', [])
     .run(hookRoutingEvents);
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 angular.module('pipScope', ['pipTranslate', 'pipScope.Error', 'pipScope.Transaction']);
 angular.module('pipTransactions', ['pipScope']);
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipScope.Error', []);
 thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
@@ -250,7 +266,7 @@ thisModule.factory('pipError', ['$rootScope', function ($rootScope) {
     }
     ;
 }]);
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipScope.Transaction', ['pipTranslate']);
 thisModule.run(['$injector', function ($injector) {
@@ -353,21 +369,6 @@ thisModule.factory('pipTransaction', ['$rootScope', 'pipError', function ($rootS
         return transaction;
     }
 }]);
-},{}],10:[function(require,module,exports){
-'use strict';
-angular.module('pipServices', [
-    'pipScope',
-    'pipTranslate',
-    'pipRouting',
-    'pipTimer',
-    'pipSession',
-    'pipIdentity',
-    'pipSystemInfo',
-    'pipFormat',
-    'pipScroll',
-    'pipPageReset',
-    'pipTags'
-]);
 },{}],11:[function(require,module,exports){
 'use strict';
 exports.IdentityRootVar = "$identity";
@@ -521,14 +522,9 @@ angular.module('pipSession', ['pipPageReset'])
     .provider('pipSession', SessionProvider);
 },{}],13:[function(require,module,exports){
 'use strict';
-angular.module('pipTranslate', [
-    'LocalStorageModule', 'pipTranslate.Service', 'pipTranslate.Filter', 'pipTranslate.Directive'
-]);
-},{}],14:[function(require,module,exports){
-'use strict';
-pipTranslateDirective.$inject = ['pipTranslate'];
-pipTranslateHtmlDirective.$inject = ['pipTranslate'];
-function pipTranslateDirective(pipTranslate) {
+translateDirective.$inject = ['pipTranslate'];
+translateHtmlDirective.$inject = ['pipTranslate'];
+function translateDirective(pipTranslate) {
     "ngInject";
     return {
         restrict: 'EA',
@@ -543,7 +539,8 @@ function pipTranslateDirective(pipTranslate) {
         }
     };
 }
-function pipTranslateHtmlDirective(pipTranslate) {
+exports.translateDirective = translateDirective;
+function translateHtmlDirective(pipTranslate) {
     "ngInject";
     return {
         restrict: 'EA',
@@ -558,11 +555,8 @@ function pipTranslateHtmlDirective(pipTranslate) {
         }
     };
 }
-angular
-    .module('pipTranslate.Directive', [])
-    .directive('pipTranslate', pipTranslateDirective)
-    .directive('pipTranslateHtml', pipTranslateHtmlDirective);
-},{}],15:[function(require,module,exports){
+exports.translateHtmlDirective = translateHtmlDirective;
+},{}],14:[function(require,module,exports){
 'use strict';
 translateFilter.$inject = ['pipTranslate'];
 optionalTranslateFilter.$inject = ['$injector'];
@@ -572,6 +566,7 @@ function translateFilter(pipTranslate) {
         return pipTranslate.translate(key) || key;
     };
 }
+exports.translateFilter = translateFilter;
 function optionalTranslateFilter($injector) {
     "ngInject";
     var pipTranslate = $injector.has('pipTranslate')
@@ -580,18 +575,134 @@ function optionalTranslateFilter($injector) {
         return pipTranslate ? pipTranslate.translate(key) || key : key;
     };
 }
+exports.optionalTranslateFilter = optionalTranslateFilter;
+},{}],15:[function(require,module,exports){
+'use strict';
+var TranslateProvider_1 = require('./TranslateProvider');
+var TranslateFilter_1 = require('./TranslateFilter');
+var TranslateDirective_1 = require('./TranslateDirective');
+var TranslateDirective_2 = require('./TranslateDirective');
 angular
-    .module('pipTranslate.Filter', [])
-    .filter('translate', translateFilter);
-},{}],16:[function(require,module,exports){
+    .module('pipTranslate', [])
+    .provider('pipTranslate', TranslateProvider_1.TranslateProvider)
+    .filter('translate', TranslateFilter_1.translateFilter)
+    .directive('pipTranslate', TranslateDirective_1.translateDirective)
+    .directive('pipTranslateHtml', TranslateDirective_2.translateHtmlDirective);
+},{"./TranslateDirective":13,"./TranslateFilter":14,"./TranslateProvider":16}],16:[function(require,module,exports){
 'use strict';
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Translation_1 = require('./Translation');
+var TranslateService_1 = require('./TranslateService');
+var TranslateProvider = (function (_super) {
+    __extends(TranslateProvider, _super);
+    function TranslateProvider() {
+        _super.call(this);
+    }
+    Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
+        get: function () {
+            return this._setRootVar;
+        },
+        set: function (value) {
+            this._setRootVar = !!value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TranslateProvider.prototype, "persist", {
+        get: function () {
+            return this._persist;
+        },
+        set: function (value) {
+            this._persist = !!value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TranslateProvider.prototype.$get = ['$rootScope', '$window', function ($rootScope, $window) {
+        "ngInject";
+        if (this._service == null)
+            this._service = new TranslateService_1.TranslateService(this, this._setRootVar, this._persist, $rootScope, $window);
+        return this._service;
+    }];
+    return TranslateProvider;
+}(Translation_1.Translation));
+exports.TranslateProvider = TranslateProvider;
+},{"./TranslateService":17,"./Translation":18}],17:[function(require,module,exports){
+'use strict';
 exports.LanguageRootVar = "$language";
 exports.LanguageChangedEvent = "pipLanguageChanged";
+var TranslateService = (function () {
+    function TranslateService(translation, setRootVar, persist, $rootScope, $window) {
+        this._setRootVar = setRootVar;
+        this._persist = persist;
+        this._translation = translation;
+        this._rootScope = $rootScope;
+        this._window = $window;
+        if (this._persist && this._window.localStorage)
+            this._translation.language = this._window.localStorage.getItem('language') || this._translation.language;
+        this.save();
+    }
+    TranslateService.prototype.save = function () {
+        if (this._setRootVar)
+            this._rootScope[exports.LanguageRootVar] = this._translation.language;
+        if (this._persist && this._window.localStorage != null)
+            this._window.localStorage.setItem('language', this._translation.language);
+    };
+    Object.defineProperty(TranslateService.prototype, "language", {
+        get: function () {
+            return this._translation.language;
+        },
+        set: function (value) {
+            if (value != this._translation.language) {
+                this._translation.language = value;
+                this.save();
+                this._rootScope.$broadcast(exports.LanguageChangedEvent, value);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TranslateService.prototype.use = function (language) {
+        if (language != null)
+            this.language = language;
+        return this.language;
+    };
+    TranslateService.prototype.setTranslations = function (language, translations) {
+        return this._translation.setTranslations(language, translations);
+    };
+    TranslateService.prototype.translations = function (language, translations) {
+        return this._translation.setTranslations(language, translations);
+    };
+    TranslateService.prototype.translate = function (key) {
+        return this._translation.translate(key);
+    };
+    TranslateService.prototype.translateArray = function (keys) {
+        return this._translation.translateArray(keys);
+    };
+    TranslateService.prototype.translateSet = function (keys, keyProp, valueProp) {
+        return this._translation.translateSet(keys, keyProp, valueProp);
+    };
+    TranslateService.prototype.translateObjects = function (items, keyProp, valueProp) {
+        return this._translation.translateObjects(items, keyProp, valueProp);
+    };
+    TranslateService.prototype.translateWithPrefix = function (prefix, key) {
+        return this._translation.translateWithPrefix(prefix, key);
+    };
+    TranslateService.prototype.translateSetWithPrefix = function (prefix, keys, keyProp, valueProp) {
+        return this._translation.translateSetWithPrefix(prefix, keys, keyProp, valueProp);
+    };
+    TranslateService.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
+        return this._translation.translateSetWithPrefix2(prefix, keys, keyProp, valueProp);
+    };
+    return TranslateService;
+}());
+exports.TranslateService = TranslateService;
+},{}],18:[function(require,module,exports){
+'use strict';
 var Translation = (function () {
     function Translation() {
         this._language = 'en';
@@ -628,6 +739,9 @@ var Translation = (function () {
     Translation.prototype.setTranslations = function (language, translations) {
         var map = this._translations[language] || {};
         this._translations[language] = _.extend(map, translations);
+    };
+    Translation.prototype.translations = function (language, translations) {
+        this.setTranslations(language, translations);
     };
     Translation.prototype.translate = function (key) {
         if (_.isNull(key) || _.isUndefined(key))
@@ -720,107 +834,8 @@ var Translation = (function () {
     };
     return Translation;
 }());
-var TranslateService = (function () {
-    function TranslateService(translation, setRootVar, persist, $rootScope, localStorageService) {
-        this._setRootVar = setRootVar;
-        this._persist = persist;
-        this._translation = translation;
-        this._rootScope = $rootScope;
-        this._storage = localStorageService;
-        if (this._persist) {
-            this._translation.language = localStorageService.get('language')
-                || this._translation.language;
-        }
-        this.save();
-    }
-    TranslateService.prototype.save = function () {
-        if (this._setRootVar)
-            this._rootScope[exports.LanguageRootVar] = this._translation.language;
-        if (this._persist)
-            this._storage.set('language', this._translation.language);
-    };
-    Object.defineProperty(TranslateService.prototype, "language", {
-        get: function () {
-            return this._translation.language;
-        },
-        set: function (value) {
-            if (value != this._translation.language) {
-                this._translation.language = value;
-                this.save();
-                this._rootScope.$broadcast(exports.LanguageChangedEvent, value);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TranslateService.prototype.use = function (language) {
-        if (language != null)
-            this.language = language;
-        return this.language;
-    };
-    TranslateService.prototype.setTranslations = function (language, translations) {
-        return this._translation.setTranslations(language, translations);
-    };
-    TranslateService.prototype.translate = function (key) {
-        return this._translation.translate(key);
-    };
-    TranslateService.prototype.translateArray = function (keys) {
-        return this._translation.translateArray(keys);
-    };
-    TranslateService.prototype.translateSet = function (keys, keyProp, valueProp) {
-        return this._translation.translateSet(keys, keyProp, valueProp);
-    };
-    TranslateService.prototype.translateObjects = function (items, keyProp, valueProp) {
-        return this._translation.translateObjects(items, keyProp, valueProp);
-    };
-    TranslateService.prototype.translateWithPrefix = function (prefix, key) {
-        return this._translation.translateWithPrefix(prefix, key);
-    };
-    TranslateService.prototype.translateSetWithPrefix = function (prefix, keys, keyProp, valueProp) {
-        return this._translation.translateSetWithPrefix(prefix, keys, keyProp, valueProp);
-    };
-    TranslateService.prototype.translateSetWithPrefix2 = function (prefix, keys, keyProp, valueProp) {
-        return this._translation.translateSetWithPrefix2(prefix, keys, keyProp, valueProp);
-    };
-    return TranslateService;
-}());
-var TranslateProvider = (function (_super) {
-    __extends(TranslateProvider, _super);
-    function TranslateProvider() {
-        _super.call(this);
-    }
-    Object.defineProperty(TranslateProvider.prototype, "setRootVar", {
-        get: function () {
-            return this._setRootVar;
-        },
-        set: function (value) {
-            this._setRootVar = !!value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TranslateProvider.prototype, "persist", {
-        get: function () {
-            return this._persist;
-        },
-        set: function (value) {
-            this._persist = !!value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TranslateProvider.prototype.$get = ['$rootScope', 'localStorageService', function ($rootScope, localStorageService) {
-        "ngInject";
-        if (this._service == null)
-            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, localStorageService);
-        return this._service;
-    }];
-    return TranslateProvider;
-}(Translation));
-angular
-    .module('pipTranslate.Service', [])
-    .provider('pipTranslate', TranslateProvider);
-},{}],17:[function(require,module,exports){
+exports.Translation = Translation;
+},{}],19:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipCodes', []);
 thisModule.factory('pipCodes', function () {
@@ -841,9 +856,9 @@ thisModule.factory('pipCodes', function () {
         return Math.random().toString(36).substr(2, 10).toUpperCase();
     }
 });
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipFormat', []);
 thisModule.factory('pipFormat', function () {
@@ -1005,9 +1020,9 @@ thisModule.factory('pipFormat', function () {
         sample: sample
     };
 });
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipPageReset', []);
 thisModule.factory('pipPageReset', ['$rootScope', '$timeout', function ($rootScope, $timeout) {
@@ -1040,7 +1055,7 @@ thisModule.factory('pipPageReset', ['$rootScope', '$timeout', function ($rootSco
         }
     }
 }]);
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipScroll', []);
 thisModule.factory('pipScroll', function () {
@@ -1066,7 +1081,7 @@ thisModule.factory('pipScroll', function () {
         }, 100);
     }
 });
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipSystemInfo', []);
 thisModule.factory('pipSystemInfo', ['$rootScope', '$window', function ($rootScope, $window) {
@@ -1186,7 +1201,7 @@ thisModule.factory('pipSystemInfo', ['$rootScope', '$window', function ($rootSco
     }
     ;
 }]);
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 var thisModule = angular.module('pipTags', []);
 thisModule.factory('pipTags', function () {
@@ -1247,7 +1262,7 @@ thisModule.factory('pipTags', function () {
         return _.uniq(tags);
     }
 });
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 var TimerEvent = (function () {
     function TimerEvent() {
@@ -1334,9 +1349,9 @@ var TimerService = (function () {
 angular
     .module('pipTimer', [])
     .service('pipTimer', TimerService);
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 
-},{}]},{},[1,2,3,4,6,5,8,9,7,10,11,12,14,15,16,13,17,18,19,20,21,22,23,24,25,26])(26)
+},{}]},{},[2,3,4,5,7,6,9,10,8,1,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])(28)
 });
 
 

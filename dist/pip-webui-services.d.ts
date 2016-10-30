@@ -4,6 +4,7 @@ declare module pip {
 
 
 
+
 export let CurrentState: any;
 export let PreviousState: any;
 
@@ -48,19 +49,36 @@ export interface ISessionProvider extends ng.IServiceProvider {
     session: any;
 }
 
+export function translateDirective(pipTranslate: any): ng.IDirective;
+export function translateHtmlDirective(pipTranslate: any): ng.IDirective;
 
-function pipTranslateDirective(pipTranslate: any): ng.IDirective;
-function pipTranslateHtmlDirective(pipTranslate: any): ng.IDirective;
+export function translateFilter(pipTranslate: any): (key: any) => any;
+export function optionalTranslateFilter($injector: any): (key: any) => any;
 
-function translateFilter(pipTranslate: any): (key: any) => any;
-function optionalTranslateFilter($injector: any): (key: any) => any;
 
-export const LanguageRootVar: string;
-export const LanguageChangedEvent: string;
+
+
+export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
+}
+export class TranslateProvider extends Translation implements ITranslateProvider {
+    private _translation;
+    private _setRootVar;
+    private _persist;
+    private _service;
+    constructor();
+    setRootVar: boolean;
+    persist: boolean;
+    $get($rootScope: ng.IRootScopeService, $window: ng.IWindowService): any;
+}
+
+
+export let LanguageRootVar: string;
+export let LanguageChangedEvent: string;
 export interface ITranslateService {
     language: string;
     use(language: string): string;
     setTranslations(language: string, translations: any): void;
+    translations(language: string, translations: any): void;
     translate(key: string): string;
     translateArray(keys: string[]): string[];
     translateSet(keys: string[], keyProp: string, valueProp: string): any[];
@@ -69,7 +87,59 @@ export interface ITranslateService {
     translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any;
     translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any;
 }
-export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
+export class TranslateService implements ITranslateService {
+    private _translation;
+    private _setRootVar;
+    private _persist;
+    private _rootScope;
+    private _window;
+    constructor(translation: Translation, setRootVar: boolean, persist: boolean, $rootScope: ng.IRootScopeService, $window: ng.IWindowService);
+    private save();
+    language: string;
+    use(language: string): string;
+    setTranslations(language: string, translations: any): void;
+    translations(language: string, translations: any): void;
+    translate(key: string): string;
+    translateArray(keys: string[]): string[];
+    translateSet(keys: string[], keyProp: string, valueProp: string): any[];
+    translateObjects(items: any[], keyProp: string, valueProp: string): any[];
+    translateWithPrefix(prefix: string, key: string): any;
+    translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
+    translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
+}
+
+export class Translation {
+    protected _language: string;
+    protected _translations: {
+        en: {
+            'en': string;
+            'ru': string;
+            'es': string;
+            'pt': string;
+            'de': string;
+            'fr': string;
+        };
+        ru: {
+            'en': string;
+            'ru': string;
+            'es': string;
+            'pt': string;
+            'de': string;
+            'fr': string;
+        };
+    };
+    constructor();
+    language: string;
+    use(language: string): string;
+    setTranslations(language: string, translations: any): void;
+    translations(language: string, translations: any): void;
+    translate(key: string): string;
+    translateArray(keys: string[]): string[];
+    translateSet(keys: string[], keyProp: string, valueProp: string): any[];
+    translateObjects(items: any[], keyProp: string, valueProp: string): any[];
+    translateWithPrefix(prefix: string, key: string): any;
+    translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
+    translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
 }
 
 var thisModule: ng.IModule;

@@ -1,5 +1,7 @@
 ﻿'use strict';
 
+import './translate/TranslateModule';
+
 angular.module('pipServices', [
     'pipScope',
     'pipTranslate',

@@ -17,11 +17,6 @@ module.exports = {
         dist: false
     },
 
-    typescript: {
-        noImplicitAny: false,
-        declaration: true
-    },
-
     file: {
         lib: [
             '../pip-webui-lib/dist/**/*'

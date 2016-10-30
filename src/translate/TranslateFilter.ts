@@ -1,6 +1,6 @@
 'use strict';
 
-function translateFilter(pipTranslate) {
+export function translateFilter(pipTranslate) {
     "ngInject";
 
     return function (key) {
@@ -8,7 +8,7 @@ function translateFilter(pipTranslate) {
     }
 }
 
-function optionalTranslateFilter($injector) {
+export function optionalTranslateFilter($injector) {
     "ngInject";
 
     let pipTranslate = $injector.has('pipTranslate') 
@@ -18,7 +18,3 @@ function optionalTranslateFilter($injector) {
         return pipTranslate  ? pipTranslate.translate(key) || key : key;
     }
 }
-
-angular
-    .module('pipTranslate.Filter', [])
-    .filter('translate', translateFilter);
