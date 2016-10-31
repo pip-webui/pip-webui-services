@@ -322,6 +322,9 @@ angular
 var TransactionError_1 = require('./TransactionError');
 var Transaction = (function () {
     function Transaction(scope) {
+        this._scope = null;
+        this._id = null;
+        this._operation = null;
         this._error = new TransactionError_1.TransactionError();
         this._progress = 0;
         this._scope = scope;

@@ -3,9 +3,9 @@
 import { TransactionError } from './TransactionError'
 
 export class Transaction {
-    private _scope: string;
-    private _id: string;
-    private _operation: string;
+    private _scope: string = null;
+    private _id: string = null;
+    private _operation: string = null;
     private _error: TransactionError = new TransactionError();
     private _progress: number = 0;
 
