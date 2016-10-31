@@ -1,8 +1,10 @@
+'use strict';
+
 import { assert } from 'chai';
 import { ngMock } from '../browser';
-import { ITags } from '../../src/utilities/Tags';
 
-import '../../src/utilities/Tags';
+import { ITags } from '../../src/utilities';
+import '../../src/utilities';
 
 suite('Tags', () => {
     let _tagsService: ITags;

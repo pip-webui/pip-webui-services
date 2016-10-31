@@ -29,7 +29,9 @@
 
     thisModule.controller('TranslateController',
         function ($scope) {
-
+            var obj = new pip.services.Translation();
+            $scope.objLanguage = obj.language;
+            $scope.objText = obj.translate('en');
         }
     );
 

@@ -1,8 +1,9 @@
+'use strict';
+
 import { assert } from 'chai';
 import { ngMock } from '../browser';
 
-import { ITransactionService } from '../../src/transactions/TransactionService';
-import '../../src/transactions/TransactionModule';
+import { ITransactionService } from '../../src/transactions';
 
 suite('pipTransaction', () => {
     let _rootScope: ng.IRootScopeService;

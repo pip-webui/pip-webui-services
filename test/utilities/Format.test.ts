@@ -1,8 +1,10 @@
+'use strict';
+
 import { assert } from 'chai';
 import { ngMock } from '../browser';
-import { IFormat } from '../../src/utilities/Format';
 
-import '../../src/utilities/Format';
+import { IFormat } from '../../src/utilities';
+import '../../src/utilities';
 
 suite('Format', () => {
     let _formatService: IFormat;

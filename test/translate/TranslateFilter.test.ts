@@ -1,12 +1,13 @@
+'use strict';
+
 import { assert } from 'chai';
 import { ngMock } from '../browser';
 
-import { ITranslateService } from '../../src/translate/TranslateService';
-import '../../src/translate/TranslateModule';
+import { ITranslateService } from '../../src/translate';
 
-suite('TranslateFilter', ()=> {
+suite('TranslateFilter', () => {
     let _translateFilter: any;
-    let _translateService: ITranslateService; 
+    let _translateService: ITranslateService;
 
     // Load angular modules
     setup(() => {
@@ -21,14 +22,14 @@ suite('TranslateFilter', ()=> {
 
     test('translate', () => {
         // English language
-        _translateService.language = 'en'; 
+        _translateService.language = 'en';
         assert.equal('English', _translateFilter('en'));
         assert.equal('Russian', _translateFilter('ru'));
 
         // Russian language
-        _translateService.language = 'ru'; 
+        _translateService.language = 'ru';
         assert.equal('Английский', _translateFilter('en'));
         assert.equal('Русский', _translateFilter('ru'));
-   });
+    });
 
 });

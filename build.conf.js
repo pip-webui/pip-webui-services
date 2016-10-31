@@ -24,7 +24,7 @@ module.exports = {
     },
 
     browserify: {
-        entries: [ './src/ServicesModule.ts' ]
+        entries: [ './src/index.ts' ]
     },
 
     samples: {

@@ -1,16 +1,13 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.pip || (g.pip = {})).services = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
-require('./translate/TranslateModule');
-require('./session/SessionModule');
-require('./transactions/TransactionModule');
-require('./routing/RoutingModule');
-require('./utilities/Format');
-require('./utilities/TimerService');
-require('./utilities/ScrollService');
-require('./utilities/Tags');
-require('./utilities/Codes');
-require('./utilities/SystemInfo');
-require('./utilities/PageResetService');
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+require('./translate');
+require('./session');
+require('./transactions');
+require('./routing');
+require('./utilities');
 angular.module('pipServices', [
     'pipTranslate',
     'pipSession',
@@ -24,7 +21,12 @@ angular.module('pipServices', [
     'pipSystemInfo',
     'pipPageReset'
 ]);
-},{"./routing/RoutingModule":5,"./session/SessionModule":7,"./transactions/TransactionModule":11,"./translate/TranslateModule":16,"./utilities/Codes":19,"./utilities/Format":20,"./utilities/PageResetService":21,"./utilities/ScrollService":22,"./utilities/SystemInfo":23,"./utilities/Tags":24,"./utilities/TimerService":25}],2:[function(require,module,exports){
+__export(require('./translate'));
+__export(require('./session'));
+__export(require('./transactions'));
+__export(require('./routing'));
+__export(require('./utilities'));
+},{"./routing":5,"./session":8,"./transactions":13,"./translate":18,"./utilities":26}],2:[function(require,module,exports){
 'use strict';
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window'];
@@ -154,10 +156,15 @@ angular
     .run(hookRoutingEvents);
 },{}],5:[function(require,module,exports){
 'use strict';
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 angular.module('pipRouting', ['ui.router']);
 require('./BackDecorator');
 require('./RedirectDecorator');
 require('./RoutingEvents');
+__export(require('./BackDecorator'));
+__export(require('./RoutingEvents'));
 },{"./BackDecorator":2,"./RedirectDecorator":3,"./RoutingEvents":4}],6:[function(require,module,exports){
 'use strict';
 exports.IdentityRootVar = "$identity";
@@ -228,11 +235,6 @@ angular
     .module('pipSession')
     .provider('pipIdentity', IdentityProvider);
 },{}],7:[function(require,module,exports){
-'use strict';
-angular.module('pipSession', []);
-require('./IdentityService');
-require('./SessionService');
-},{"./IdentityService":6,"./SessionService":8}],8:[function(require,module,exports){
 'use strict';
 exports.SessionRootVar = "$session";
 exports.SessionOpenedEvent = "pipSessionOpened";
@@ -317,7 +319,17 @@ var SessionProvider = (function () {
 angular
     .module('pipSession')
     .provider('pipSession', SessionProvider);
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
+'use strict';
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+angular.module('pipSession', []);
+require('./IdentityService');
+require('./SessionService');
+__export(require('./IdentityService'));
+__export(require('./SessionService'));
+},{"./IdentityService":6,"./SessionService":7}],9:[function(require,module,exports){
 'use strict';
 var TransactionError_1 = require('./TransactionError');
 var Transaction = (function () {
@@ -458,11 +470,6 @@ var TransactionError = (function () {
 exports.TransactionError = TransactionError;
 },{}],11:[function(require,module,exports){
 'use strict';
-angular.module('pipTransaction', []);
-require('./TransactionStrings');
-require('./TransactionService');
-},{"./TransactionService":12,"./TransactionStrings":13}],12:[function(require,module,exports){
-'use strict';
 var Transaction_1 = require('./Transaction');
 var TransactionService = (function () {
     function TransactionService() {
@@ -488,7 +495,7 @@ var TransactionService = (function () {
 angular
     .module('pipTransaction')
     .service('pipTransaction', TransactionService);
-},{"./Transaction":9}],13:[function(require,module,exports){
+},{"./Transaction":9}],12:[function(require,module,exports){
 'use strict';
 configureTransactionStrings.$inject = ['$injector'];
 function configureTransactionStrings($injector) {
@@ -512,7 +519,19 @@ function configureTransactionStrings($injector) {
 angular
     .module('pipTransaction')
     .config(configureTransactionStrings);
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
+'use strict';
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+angular.module('pipTransaction', []);
+require('./TransactionStrings');
+require('./TransactionError');
+require('./Transaction');
+require('./TransactionService');
+__export(require('./TransactionError'));
+__export(require('./Transaction'));
+},{"./Transaction":9,"./TransactionError":10,"./TransactionService":11,"./TransactionStrings":12}],14:[function(require,module,exports){
 'use strict';
 translateDirective.$inject = ['pipTranslate'];
 translateHtmlDirective.$inject = ['pipTranslate'];
@@ -572,12 +591,6 @@ angular
     .module('pipTranslate')
     .filter('translate', translateFilter);
 },{}],16:[function(require,module,exports){
-'use strict';
-angular.module('pipTranslate', []);
-require('./TranslateService');
-require('./TranslateFilter');
-require('./TranslateDirective');
-},{"./TranslateDirective":14,"./TranslateFilter":15,"./TranslateService":17}],17:[function(require,module,exports){
 'use strict';
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -695,7 +708,7 @@ var TranslateProvider = (function (_super) {
 angular
     .module('pipTranslate')
     .provider('pipTranslate', TranslateProvider);
-},{"../utilities/PageResetService":21,"./Translation":18}],18:[function(require,module,exports){
+},{"../utilities/PageResetService":21,"./Translation":17}],17:[function(require,module,exports){
 'use strict';
 var Translation = (function () {
     function Translation() {
@@ -829,7 +842,19 @@ var Translation = (function () {
     return Translation;
 }());
 exports.Translation = Translation;
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+'use strict';
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+angular.module('pipTranslate', []);
+require('./Translation');
+require('./TranslateService');
+require('./TranslateFilter');
+require('./TranslateDirective');
+__export(require('./Translation'));
+__export(require('./TranslateService'));
+},{"./TranslateDirective":14,"./TranslateFilter":15,"./TranslateService":16,"./Translation":17}],19:[function(require,module,exports){
 'use strict';
 var Codes = (function () {
     function Codes() {
@@ -1356,7 +1381,20 @@ var TimerService = (function () {
 }());
 angular.module('pipTimer', [])
     .service('pipTimer', TimerService);
-},{}]},{},[1])(1)
+},{}],26:[function(require,module,exports){
+'use strict';
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+require('./Format');
+require('./TimerService');
+require('./ScrollService');
+require('./Tags');
+require('./Codes');
+require('./SystemInfo');
+require('./PageResetService');
+__export(require('./PageResetService'));
+},{"./Codes":19,"./Format":20,"./PageResetService":21,"./ScrollService":22,"./SystemInfo":23,"./Tags":24,"./TimerService":25}]},{},[1])(1)
 });
 
 

@@ -1,7 +1,8 @@
-// Example of angular-independent test
+'use strict';
 
 import { assert } from 'chai';
-import { Translation } from '../../src/translate/Translation';
+
+import { Translation } from '../../src/translate';
 
 suite('Translation', ()=> {
 

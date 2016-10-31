@@ -2,7 +2,7 @@
 
 import { assert } from 'chai';
 
-import { TransactionError } from '../../src/transactions/TransactionError';
+import { TransactionError } from '../../src/transactions';
 
 suite('TransactionError', () => {
 
