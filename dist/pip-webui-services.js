@@ -592,6 +592,7 @@ angular
     .filter('translate', translateFilter);
 },{}],16:[function(require,module,exports){
 'use strict';
+initTranslate.$inject = ['pipTranslate'];
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -705,9 +706,13 @@ var TranslateProvider = (function (_super) {
     }];
     return TranslateProvider;
 }(Translation_1.Translation));
+function initTranslate(pipTranslate) {
+    pipTranslate.language;
+}
 angular
     .module('pipTranslate')
-    .provider('pipTranslate', TranslateProvider);
+    .provider('pipTranslate', TranslateProvider)
+    .run(initTranslate);
 },{"../utilities/PageResetService":21,"./Translation":17}],17:[function(require,module,exports){
 'use strict';
 var Translation = (function () {

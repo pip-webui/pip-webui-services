@@ -164,6 +164,11 @@ class TranslateProvider extends Translation implements ITranslateProvider {
     }
 }
 
+function initTranslate(pipTranslate: ITranslateService) {
+    pipTranslate.language;
+}
+
 angular
     .module('pipTranslate')
-    .provider('pipTranslate', TranslateProvider);
+    .provider('pipTranslate', TranslateProvider)
+    .run(initTranslate);
