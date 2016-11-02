@@ -1,22 +1,7 @@
 declare module pip.services {
 
-
-
-
-
-
-
-
-
-
-
 export let CurrentState: any;
 export let PreviousState: any;
-
-
-
-
-
 
 
 let RedirectedStates: any;
@@ -45,10 +30,6 @@ export interface IIdentityProvider extends ng.IServiceProvider {
 }
 
 
-
-
-
-
 export const SessionRootVar: string;
 export const SessionOpenedEvent: string;
 export const SessionClosedEvent: string;
@@ -62,64 +43,6 @@ export interface ISessionProvider extends ng.IServiceProvider {
     setRootVar: boolean;
     session: any;
 }
-
-
-
-
-
-
-
-
-
-
-export class Transaction {
-    private _scope;
-    private _id;
-    private _operation;
-    private _error;
-    private _progress;
-    constructor(scope: string);
-    readonly scope: string;
-    readonly id: string;
-    readonly operation: string;
-    readonly progress: number;
-    readonly error: TransactionError;
-    readonly errorMessage: string;
-    reset(): void;
-    busy(): boolean;
-    failed(): boolean;
-    aborted(id: string): boolean;
-    begin(operation: string): string;
-    update(progress: number): void;
-    abort(): void;
-    end(error?: any): void;
-}
-
-export class TransactionError {
-    code: string;
-    message: string;
-    details: any;
-    cause: string;
-    stack_trace: string;
-    constructor(error?: any);
-    reset(): void;
-    empty(): boolean;
-    decode(error: any): void;
-}
-
-
-export interface ITransactionService {
-    create(scope?: string): Transaction;
-    get(scope?: string): Transaction;
-}
-
-function configureTransactionStrings($injector: any): void;
-
-
-
-
-
-
 
 
 function translateDirective(pipTranslate: any): ng.IDirective;
@@ -180,6 +103,49 @@ export class Translation {
     translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
 }
 
+
+export class Transaction {
+    private _scope;
+    private _id;
+    private _operation;
+    private _error;
+    private _progress;
+    constructor(scope: string);
+    readonly scope: string;
+    readonly id: string;
+    readonly operation: string;
+    readonly progress: number;
+    readonly error: TransactionError;
+    readonly errorMessage: string;
+    reset(): void;
+    busy(): boolean;
+    failed(): boolean;
+    aborted(id: string): boolean;
+    begin(operation: string): string;
+    update(progress: number): void;
+    abort(): void;
+    end(error?: any): void;
+}
+
+export class TransactionError {
+    code: string;
+    message: string;
+    details: any;
+    cause: string;
+    stack_trace: string;
+    constructor(error?: any);
+    reset(): void;
+    empty(): boolean;
+    decode(error: any): void;
+}
+
+export interface ITransactionService {
+    create(scope?: string): Transaction;
+    get(scope?: string): Transaction;
+}
+
+function configureTransactionStrings($injector: any): void;
+
 export interface ICodes {
     hash(value: string): number;
     verification(): string;
@@ -189,20 +155,6 @@ export interface IFormat {
     sample(value: string, maxLength: number): string;
     sprintf(message: string, ...args: any[]): string;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export let ResetPageEvent: string;
