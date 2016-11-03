@@ -603,18 +603,31 @@ var PageResetService_1 = require('../utilities/PageResetService');
 exports.LanguageRootVar = "$language";
 exports.LanguageChangedEvent = "pipLanguageChanged";
 var TranslateService = (function () {
-    function TranslateService(translation, setRootVar, persist, $rootScope, $log, $window) {
+    function TranslateService(translation, setRootVar, persist, $rootScope, $log, $window, $mdDateLocale) {
         this._setRootVar = setRootVar;
         this._persist = persist;
         this._translation = translation;
         this._rootScope = $rootScope;
         this._log = $log;
         this._window = $window;
+        this._mdDateLocale = $mdDateLocale;
         if (this._persist && this._window.localStorage)
             this._translation.language = this._window.localStorage.getItem('language') || this._translation.language;
         this._log.debug("Set language to " + this._translation.language);
         this.save();
     }
+    TranslateService.prototype.changeLocale = function (locale) {
+        if (!locale)
+            return;
+        var localeDate;
+        moment.locale(locale);
+        localeDate = moment.localeData();
+        this._mdDateLocale.months = angular.isArray(localeDate._months) ? localeDate._months : localeDate._months.format;
+        this._mdDateLocale.shortMonths = angular.isArray(localeDate._monthsShort) ? localeDate._monthsShort : localeDate._monthsShort.format;
+        this._mdDateLocale.days = angular.isArray(localeDate._weekdays) ? localeDate._weekdays : localeDate._weekdays.format;
+        this._mdDateLocale.shortDays = localeDate._weekdaysMin;
+        this._mdDateLocale.firstDayOfWeek = localeDate._week.dow;
+    };
     TranslateService.prototype.save = function () {
         if (this._setRootVar)
             this._rootScope[exports.LanguageRootVar] = this._translation.language;
@@ -629,6 +642,7 @@ var TranslateService = (function () {
             if (value != this._translation.language) {
                 this._translation.language = value;
                 this._log.debug("Changing language to " + value);
+                this.changeLocale(this._translation.language);
                 this.save();
                 this._rootScope.$emit(exports.LanguageChangedEvent, value);
                 this._rootScope.$emit(PageResetService_1.ResetPageEvent);
@@ -698,10 +712,10 @@ var TranslateProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    TranslateProvider.prototype.$get = ['$rootScope', '$log', '$window', function ($rootScope, $log, $window) {
+    TranslateProvider.prototype.$get = ['$rootScope', '$log', '$window', '$mdDateLocale', function ($rootScope, $log, $window, $mdDateLocale) {
         "ngInject";
         if (this._service == null)
-            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
+            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window, $mdDateLocale);
         return this._service;
     }];
     return TranslateProvider;
