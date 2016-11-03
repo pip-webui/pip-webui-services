@@ -32,6 +32,7 @@ class TranslateService implements ITranslateService {
     private _rootScope: ng.IRootScopeService;
     private _log: ng.ILogService;
     private _window: ng.IWindowService;
+    private _mdDateLocale;
 
     public constructor(
         translation: Translation,
@@ -39,7 +40,8 @@ class TranslateService implements ITranslateService {
         persist: boolean,
         $rootScope: ng.IRootScopeService,
         $log: ng.ILogService,
-        $window: ng.IWindowService
+        $window: ng.IWindowService,
+        $mdDateLocale: angular.material.IDateLocaleProvider,
     ) {
         this._setRootVar = setRootVar;
         this._persist = persist;
@@ -47,6 +49,7 @@ class TranslateService implements ITranslateService {
         this._rootScope = $rootScope;
         this._log = $log;
         this._window = $window;
+        this._mdDateLocale = $mdDateLocale;
 
         if (this._persist && this._window.localStorage)
             this._translation.language = this._window.localStorage.getItem('language') || this._translation.language;
@@ -54,6 +57,22 @@ class TranslateService implements ITranslateService {
         this._log.debug("Set language to " + this._translation.language);
 
         this.save();
+    }
+
+    private changeLocale(locale: string) {
+        if (!locale) return;
+
+        // var localeDate: moment.MomentLanguageData;
+        var localeDate: any;
+
+        moment.locale(locale);
+        localeDate = moment.localeData();
+
+        this._mdDateLocale.months = angular.isArray(localeDate._months) ? localeDate._months : localeDate._months.format;
+        this._mdDateLocale.shortMonths = angular.isArray(localeDate._monthsShort) ? localeDate._monthsShort : localeDate._monthsShort.format;
+        this._mdDateLocale.days = angular.isArray(localeDate._weekdays) ? localeDate._weekdays : localeDate._weekdays.format;
+        this._mdDateLocale.shortDays = localeDate._weekdaysMin;
+        this._mdDateLocale.firstDayOfWeek = localeDate._week.dow;
     }
 
     private save(): void {
@@ -74,7 +93,8 @@ class TranslateService implements ITranslateService {
             
             this._log.debug("Changing language to " + value);
 
-            this.save();                
+            this.changeLocale(this._translation.language);
+            this.save();   
 
             this._rootScope.$emit(LanguageChangedEvent, value);
             this._rootScope.$emit(ResetPageEvent);
@@ -153,12 +173,13 @@ class TranslateProvider extends Translation implements ITranslateProvider {
     public $get(
         $rootScope: ng.IRootScopeService,
         $log: ng.ILogService, 
-        $window: ng.IWindowService
+        $window: ng.IWindowService,
+        $mdDateLocale: angular.material.IDateLocaleProvider
     ): any {
         "ngInject";
 
         if (this._service == null) 
-            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window);
+            this._service = new TranslateService(this, this._setRootVar, this._persist, $rootScope, $log, $window, $mdDateLocale);
 
         return this._service;
     }
