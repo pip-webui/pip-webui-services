@@ -7,7 +7,7 @@ export interface ITransactionService {
     get(scope?: string): Transaction;
 }
 
-class TransactionService implements TransactionService {
+class TransactionService implements ITransactionService {
     private _transactions: any = {};
 
     public constructor() {}
