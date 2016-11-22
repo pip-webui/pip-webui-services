@@ -9,6 +9,7 @@ export interface IIdentity {
     details: string;
     email: string;
     photo_url: string;
+    groups: string[];
 }
 
 export interface IIdentityService {
