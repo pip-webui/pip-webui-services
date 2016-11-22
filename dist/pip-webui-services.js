@@ -190,7 +190,7 @@ var IdentityService = (function () {
             this.setRootVar();
             this._rootScope.$emit(exports.IdentityChangedEvent, this._identity);
             var identity = value || {};
-            this._log.debug("Changed identity to " + identity.id + " " + identity.full_name);
+            this._log.debug("Changed identity to " + JSON.stringify(identity));
         },
         enumerable: true,
         configurable: true
