@@ -13,24 +13,24 @@ export interface IIdentity {
 }
 
 export interface IIdentityService {
-    identity: IIdentity;
+    identity: any;
 }
 
 export interface IIdentityProvider extends ng.IServiceProvider {
     setRootVar: boolean;
-    identity: IIdentity;
+    identity: any;
 }
 
 
 class IdentityService implements IIdentityService {
-    private _identity: IIdentity;
+    private _identity: any;
     private _setRootVar: boolean;
     private _rootScope: ng.IRootScopeService;
     private _log: ng.ILogService;
 
     public constructor(
         setRootVar: boolean,
-        identity: IIdentity,
+        identity: any,
         $rootScope: ng.IRootScopeService,
         $log: ng.ILogService
     ) {
@@ -47,23 +47,23 @@ class IdentityService implements IIdentityService {
             this._rootScope[IdentityRootVar] = this._identity;
     }
 
-    public get identity(): IIdentity {
+    public get identity(): any {
         return this._identity;
     }
 
-    public set identity(value: IIdentity) {
+    public set identity(value: any) {
         this._identity = value;
         this.setRootVar();
         this._rootScope.$emit(IdentityChangedEvent, this._identity);
 
-        let identity: IIdentity = value || <IIdentity>{};
-        this._log.debug("Changed identity to " + identity.id + " " + identity.full_name);
+        let identity: any = value || {};
+        this._log.debug("Changed identity to " + JSON.stringify(identity));
     }
 }
 
 class IdentityProvider implements IdentityProvider {
     private _setRootVar = true;
-    private _identity: IIdentity = null;
+    private _identity: any = null;
     private _service: IdentityService = null;
 
     public constructor() { }
