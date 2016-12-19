@@ -1,10 +1,4 @@
 declare module pip.services {
-<<<<<<< HEAD
-
-export let CurrentState: any;
-export let PreviousState: any;
-
-=======
 import './translate';
 import './session';
 import './transactions';
@@ -17,7 +11,6 @@ export let PreviousState: any;
 import './BackDecorator';
 import './RedirectDecorator';
 import './RoutingEvents';
->>>>>>> 765d51c2ded9f1ab90b4125eb4180c51dec99a14
 
 let RedirectedStates: any;
 function decorateRedirectStateProvider($delegate: any): any;
@@ -27,48 +20,10 @@ function addRedirectStateDecorator($provide: any): void;
 
 export let RoutingVar: string;
 
-export let IdentityRootVar: string;
-export let IdentityChangedEvent: string;
-export interface IIdentity {
-    id: string;
-    full_name: string;
-    details: string;
-    email: string;
-    photo_url: string;
-    groups: string[];
-}
-export interface IIdentityService {
-    identity: any;
-}
-export interface IIdentityProvider extends ng.IServiceProvider {
-    setRootVar: boolean;
-    identity: any;
-}
-
-import './IdentityService';
-import './SessionService';
-
-export const SessionRootVar = "$session";
-export const SessionOpenedEvent = "pipSessionOpened";
-export const SessionClosedEvent = "pipSessionClosed";
-export interface ISessionService {
-    session: any;
-    isOpened(): boolean;
-    open(session: any): void;
-    close(): void;
-}
-export interface ISessionProvider extends ng.IServiceProvider {
-    setRootVar: boolean;
-    session: any;
-}
-
-<<<<<<< HEAD
-=======
 import './TransactionStrings';
 import './TransactionError';
 import './Transaction';
 import './TransactionService';
->>>>>>> 765d51c2ded9f1ab90b4125eb4180c51dec99a14
 
 export class Transaction {
     private _scope;
@@ -111,6 +66,41 @@ export interface ITransactionService {
 }
 
 function configureTransactionStrings($injector: any): void;
+
+export let IdentityRootVar: string;
+export let IdentityChangedEvent: string;
+export interface IIdentity {
+    id: string;
+    full_name: string;
+    details: string;
+    email: string;
+    photo_url: string;
+    groups: string[];
+}
+export interface IIdentityService {
+    identity: any;
+}
+export interface IIdentityProvider extends ng.IServiceProvider {
+    setRootVar: boolean;
+    identity: any;
+}
+
+import './IdentityService';
+import './SessionService';
+
+export const SessionRootVar = "$session";
+export const SessionOpenedEvent = "pipSessionOpened";
+export const SessionClosedEvent = "pipSessionClosed";
+export interface ISessionService {
+    session: any;
+    isOpened(): boolean;
+    open(session: any): void;
+    close(): void;
+}
+export interface ISessionProvider extends ng.IServiceProvider {
+    setRootVar: boolean;
+    session: any;
+}
 
 import './Translation';
 import './TranslateService';
