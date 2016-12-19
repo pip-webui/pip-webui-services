@@ -1,8 +1,23 @@
 declare module pip.services {
+<<<<<<< HEAD
 
 export let CurrentState: any;
 export let PreviousState: any;
 
+=======
+import './translate';
+import './session';
+import './transactions';
+import './routing';
+import './utilities';
+
+export let CurrentState: any;
+export let PreviousState: any;
+
+import './BackDecorator';
+import './RedirectDecorator';
+import './RoutingEvents';
+>>>>>>> 765d51c2ded9f1ab90b4125eb4180c51dec99a14
 
 let RedirectedStates: any;
 function decorateRedirectStateProvider($delegate: any): any;
@@ -30,10 +45,12 @@ export interface IIdentityProvider extends ng.IServiceProvider {
     identity: any;
 }
 
+import './IdentityService';
+import './SessionService';
 
-export const SessionRootVar: string;
-export const SessionOpenedEvent: string;
-export const SessionClosedEvent: string;
+export const SessionRootVar = "$session";
+export const SessionOpenedEvent = "pipSessionOpened";
+export const SessionClosedEvent = "pipSessionClosed";
 export interface ISessionService {
     session: any;
     isOpened(): boolean;
@@ -45,6 +62,13 @@ export interface ISessionProvider extends ng.IServiceProvider {
     session: any;
 }
 
+<<<<<<< HEAD
+=======
+import './TransactionStrings';
+import './TransactionError';
+import './Transaction';
+import './TransactionService';
+>>>>>>> 765d51c2ded9f1ab90b4125eb4180c51dec99a14
 
 export class Transaction {
     private _scope;
@@ -88,6 +112,10 @@ export interface ITransactionService {
 
 function configureTransactionStrings($injector: any): void;
 
+import './Translation';
+import './TranslateService';
+import './TranslateFilter';
+import './TranslateDirective';
 
 function translateDirective(pipTranslate: any): ng.IDirective;
 function translateHtmlDirective(pipTranslate: any): ng.IDirective;
@@ -157,6 +185,13 @@ export interface IFormat {
     sprintf(message: string, ...args: any[]): string;
 }
 
+import './Format';
+import './TimerService';
+import './ScrollService';
+import './Tags';
+import './Codes';
+import './SystemInfo';
+import './PageResetService';
 
 export let ResetPageEvent: string;
 export let ResetAreaEvent: string;
