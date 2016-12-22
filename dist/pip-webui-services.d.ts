@@ -31,9 +31,9 @@ export interface IIdentityProvider extends ng.IServiceProvider {
 }
 
 
-export const SessionRootVar = "$session";
-export const SessionOpenedEvent = "pipSessionOpened";
-export const SessionClosedEvent = "pipSessionClosed";
+export const SessionRootVar: string;
+export const SessionOpenedEvent: string;
+export const SessionClosedEvent: string;
 export interface ISessionService {
     session: any;
     isOpened(): boolean;
