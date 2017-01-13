@@ -3,6 +3,7 @@ declare module pip.services {
 export let CurrentState: any;
 export let PreviousState: any;
 
+
 let RedirectedStates: any;
 function decorateRedirectStateProvider($delegate: any): any;
 function addRedirectStateProviderDecorator($provide: any): void;
@@ -10,7 +11,6 @@ function decorateRedirectStateService($delegate: any, $timeout: any): any;
 function addRedirectStateDecorator($provide: any): void;
 
 export let RoutingVar: string;
-
 
 export let IdentityRootVar: string;
 export let IdentityChangedEvent: string;
@@ -29,6 +29,7 @@ export interface IIdentityProvider extends ng.IServiceProvider {
     setRootVar: boolean;
     identity: any;
 }
+
 
 export const SessionRootVar = "$session";
 export const SessionOpenedEvent = "pipSessionOpened";
@@ -146,6 +147,16 @@ export class Translation {
     translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
 }
 
+export interface ICodes {
+    hash(value: string): number;
+    verification(): string;
+}
+
+export interface IFormat {
+    sample(value: string, maxLength: number): string;
+    sprintf(message: string, ...args: any[]): string;
+}
+
 
 export let ResetPageEvent: string;
 export let ResetAreaEvent: string;
@@ -171,26 +182,6 @@ export interface ISystemInfo {
     isSupported(supported?: any): boolean;
 }
 
-export interface ITimerService {
-    isStarted(): boolean;
-    addEvent(event: string, timeout: number): void;
-    removeEvent(event: string): void;
-    clearEvents(): void;
-    start(): void;
-    stop(): void;
-}
-
-export interface ICodes {
-    hash(value: string): number;
-    verification(): string;
-}
-
-export interface IFormat {
-    sample(value: string, maxLength: number): string;
-    sprintf(message: string, ...args: any[]): string;
-}
-
-
 export interface ITags {
     normalizeOne(tag: string): string;
     compressOne(tag: string): string;
@@ -198,6 +189,15 @@ export interface ITags {
     normalizeAll(tags: any): string[];
     compressAll(tags: any): string[];
     extract(entity: any, searchFields?: string[]): string[];
+}
+
+export interface ITimerService {
+    isStarted(): boolean;
+    addEvent(event: string, timeout: number): void;
+    removeEvent(event: string): void;
+    clearEvents(): void;
+    start(): void;
+    stop(): void;
 }
 
 }
