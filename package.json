@@ -1,47 +1,49 @@
 {
-    "name": "pip-webui-services",
-    "version": "1.5.0",
-    "author": "Digital Living Software Corp. <www.digitallivingsoftware.com>",
-    "description": "Non-visual services for Pip.WebUI",
-    "contributors": [
-        {
-            "name": "Sergey Seroukhov",
-            "email": "seroukhov@gmail.com"
-        },
-        {
-            "name": "Alexey Dvoikin",
-            "email": "94dvoikin@gmail.com"
-        },
-        {
-            "name": "Mark Zontak",
-            "email": "mark@zontak.me"
-        }
-    ],
-    "keywords": [
-        "pip",
-        "webui",
-        "services"
-    ],
-    "noAnalyze": true,
-    "license": "MIT",
-    "private": false,
-    "scripts": {
-        "build": "tsc",
-        "package": "gulp build",
-        "watch": "tsc --watch",
-        "test": "mocha -t 10000 -R spec -u tdd --recursive ./obj/test",
-        "retest": "tsc && mocha -t 10000 -R spec -u tdd --recursive ./obj/test",
-        "benchmark": "matcha -R clean -I tdd ./lib/benchmark/run.js",
-        "rebenchmark": "tsc && matcha -R clean -I tdd ./lib/benchmark/run.js",
-        "docgen": "typedoc --out doc/api src --mode file --excludeExternals --target ES5 --ignoreCompilerErrors --readme doc/ApiReference.md"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "pip-webui-tasks": "git+https://github.com/pip-webui/pip-webui-tasks.git",
-        "mocha": "*",
-        "chai": "*",
-        "jsdom": "*",
-        "angular": "*",
-        "angular-mocks": "*"
-    }
+    "name":  "pip-webui-services",
+    "version":  "1.5.0",
+    "author":  "Digital Living Software Corp. <www.digitallivingsoftware.com>",
+    "description":  "Non-visual services for Pip.WebUI",
+    "contributors":  [
+                         {
+                             "name":  "Sergey Seroukhov",
+                             "email":  "seroukhov@gmail.com"
+                         },
+                         {
+                             "name":  "Alexey Dvoikin",
+                             "email":  "94dvoikin@gmail.com"
+                         },
+                         {
+                             "name":  "Mark Zontak",
+                             "email":  "mark@zontak.me"
+                         }
+                     ],
+    "keywords":  [
+                     "pip",
+                     "webui",
+                     "services"
+                 ],
+    "noAnalyze":  true,
+    "license":  "MIT",
+    "private":  false,
+    "scripts":  {
+                    "build":  "tsc",
+                    "package":  "gulp build",
+                    "watch":  "tsc --watch",
+                    "test":  "mocha -t 10000 -R spec -u tdd --recursive ./obj/test",
+                    "retest":  "tsc && mocha -t 10000 -R spec -u tdd --recursive ./obj/test",
+                    "benchmark":  "matcha -R clean -I tdd ./lib/benchmark/run.js",
+                    "rebenchmark":  "tsc && matcha -R clean -I tdd ./lib/benchmark/run.js",
+                    "docgen":  "typedoc --out doc/api src --mode file --excludeExternals --target ES5 --ignoreCompilerErrors --readme doc/ApiReference.md"
+                },
+    "dependencies":  {
+
+                     },
+    "devDependencies":  {
+                            "pip-webui-tasks":  "^1.8.0",
+                            "mocha":  "*",
+                            "chai":  "*",
+                            "jsdom":  "*",
+                            "angular":  "*",
+                            "angular-mocks":  "*"
+                        }
 }
