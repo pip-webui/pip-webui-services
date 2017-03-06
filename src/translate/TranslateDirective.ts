@@ -9,15 +9,15 @@ function translateDirective(pipTranslate): ng.IDirective {
             key1: '@pipTranslate',
             key2: '@key'
         },
-        link: (scope: any, element: any, attrs: any) => {
-            let key = scope.key1 || scope.key2;
-            let value = pipTranslate.translate(key);
+        link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+            let key: string = scope.key1 || scope.key2;
+            let value: string = pipTranslate.translate(key);
             element.text(value);
         }
     };
 }
 
-function translateHtmlDirective(pipTranslate): ng.IDirective {
+function translateHtmlDirective(pipTranslate: pip.services.ITranslateService): ng.IDirective {
     "ngInject";
 
     return {
@@ -26,9 +26,9 @@ function translateHtmlDirective(pipTranslate): ng.IDirective {
             key1: '@pipTranslateHtml',
             key2: '@key'
         },
-        link: (scope: any, element: any, attrs: any) => {
-            let key = scope.key1 || scope.key2;
-            let value = pipTranslate.translate(key);
+        link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+            let key: string = scope.key1 || scope.key2;
+            let value: string = pipTranslate.translate(key);
             element.html(value);
         }
     };

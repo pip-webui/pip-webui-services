@@ -10,3 +10,4 @@
 /// <reference path="assertion-error/assertion-error.d.ts" />
 /// <reference path="chai/chai.d.ts" />
 /// <reference path="moment/moment.d.ts" />
+/// <reference path="../../pip-webui-all/dist/pip-webui.d.ts" />

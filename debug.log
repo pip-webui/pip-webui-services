@@ -9,3 +9,5 @@
 [1103/014930:WARNING:in_range_cast.h(38)] value 1430686133696 out of range
 [0109/164908:ERROR:tcp_listen_socket.cc(76)] Could not bind socket to 127.0.0.1:6004
 [0109/164908:ERROR:node_debugger.cc(86)] Cannot start debugger server
+[0301/221850:ERROR:tcp_listen_socket.cc(76)] Could not bind socket to 127.0.0.1:6004
+[0301/221850:ERROR:node_debugger.cc(86)] Cannot start debugger server

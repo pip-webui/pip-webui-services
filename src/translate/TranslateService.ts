@@ -32,7 +32,7 @@ class TranslateService implements ITranslateService {
     private _rootScope: ng.IRootScopeService;
     private _log: ng.ILogService;
     private _window: ng.IWindowService;
-    private _mdDateLocale;
+    private _mdDateLocale: angular.material.IDateLocaleProvider;
 
     public constructor(
         translation: Translation,

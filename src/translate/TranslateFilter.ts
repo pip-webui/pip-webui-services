@@ -1,20 +1,20 @@
 'use strict';
 
-function translateFilter(pipTranslate) {
+function translateFilter(pipTranslate: pip.services.ITranslateService) {
     "ngInject";
 
-    return function (key) {
+    return function (key: string) {
         return pipTranslate.translate(key) || key;
     }
 }
 
-function optionalTranslateFilter($injector) {
+function optionalTranslateFilter($injector: ng.auto.IInjectorService) {
     "ngInject";
 
-    let pipTranslate = $injector.has('pipTranslate') 
-        ? $injector.get('pipTranslate') : null;
+    let pipTranslate: pip.services.ITranslateService = $injector.has('pipTranslate') 
+        ? <pip.services.ITranslateService>$injector.get('pipTranslate') : null;
 
-    return function (key) {
+    return function (key: string) {
         return pipTranslate  ? pipTranslate.translate(key) || key : key;
     }
 }

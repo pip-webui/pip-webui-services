@@ -1,7 +1,7 @@
 'use strict';
 
 export class Translation {
-    protected _language = 'en';
+    protected _language: string = 'en';
     protected _translations = {
         en: {
             'en': 'English',
@@ -55,10 +55,10 @@ export class Translation {
     public translateArray(keys: string[]): string[] {
         if (_.isNull(keys) || keys.length == 0) return [];
 
-        let values = [];
+        let values: string[] = [];
         let translations = this._translations[this._language] || {};
 
-        _.each(keys, function (k) {
+        _.each(keys, function (k: string) {
             let key = k || '';
             values.push(translations[key] || key);
         });
@@ -76,7 +76,7 @@ export class Translation {
         let values: any[] = [];
         let translations = this._translations[this._language] || {};
 
-        _.each(keys, function (key) {
+        _.each(keys, function (key: string) {
             let value: any = {};
             key = key || '';
 
@@ -98,7 +98,7 @@ export class Translation {
 
         let translations = this._translations[this._language] || {};
 
-        _.each(items, function (item) {
+        _.each(items, function (item: any) {
             let key = item[keyProp] || '';
 
             item[valueProp] = translations[key] || key;
@@ -126,7 +126,7 @@ export class Translation {
         let values = [];
         let translations = this._translations[this._language] || {};
 
-        _.each(keys, function (key) {
+        _.each(keys, function (key: string) {
             let value: any = {}; 
             key = key || '';
 
@@ -150,7 +150,7 @@ export class Translation {
         let values = [];
         let translations = this._translations[this._language] || {};
 
-        _.each(keys, function (key) {
+        _.each(keys, function (key: string) {
             let value: any = {};
             key = key || '';
 

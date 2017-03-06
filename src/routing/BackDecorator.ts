@@ -24,7 +24,7 @@ function captureStateTranslations($rootScope: ng.IRootScopeService) {
 
 }
 
-function decorateBackStateService($delegate, $window: ng.IWindowService) {
+function decorateBackStateService($delegate: any, $window: ng.IWindowService): any {
     "ngInject";
 
     $delegate.goBack = goBack;
@@ -38,6 +38,7 @@ function decorateBackStateService($delegate, $window: ng.IWindowService) {
     }
 
     function goBackAndSelect(params: any): void {
+        // todo: define end fix PreviousState
         if (PreviousState != null 
             && PreviousState.name != null) {
 
