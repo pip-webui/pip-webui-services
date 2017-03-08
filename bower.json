@@ -1,6 +1,6 @@
 {
     "name": "pip-webui-services",
-    "version": "1.5.0",
+    "version": "2.0.0",
     "description": "Non-visual services for Pip.WebUI",
     "main": "",
     "authors": [
