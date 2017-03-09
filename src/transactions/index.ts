@@ -7,4 +7,4 @@ import './TransactionService';
 
 export * from './TransactionError';
 export * from './Transaction';
-export * from './TransactionService';
+export * from './ITransactionService';

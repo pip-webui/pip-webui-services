@@ -1,6 +1,7 @@
 export let CurrentState: any;
 export let PreviousState: any;
 
+// Run function to set CurrentState and PreviousState global variables
 function captureStateTranslations($rootScope: ng.IRootScopeService) {
     "ngInject";
 
@@ -22,6 +23,7 @@ function captureStateTranslations($rootScope: ng.IRootScopeService) {
 
 }
 
+// Decorator function to modify $state service by adding goBack and goBackAndSelect methods
 function decorateBackStateService($delegate: any, $window: ng.IWindowService): any {
     "ngInject";
 
@@ -52,6 +54,7 @@ function decorateBackStateService($delegate: any, $window: ng.IWindowService): a
     }
 }
 
+// Config function to decorate $state service
 function addBackStateDecorator($provide) {
     $provide.decorator('$state', decorateBackStateService);
 }

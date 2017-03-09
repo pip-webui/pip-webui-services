@@ -1,24 +1,7 @@
+import { IIdentityService, IIdentityProvider } from './IIdentityService';
+
 export let IdentityRootVar = "$identity";
 export let IdentityChangedEvent = "pipIdentityChanged";
-
-export interface IIdentity {
-    id: string;
-    full_name: string;
-    details: string;
-    email: string;
-    photo_url: string;
-    groups: string[];
-}
-
-export interface IIdentityService {
-    identity: any;
-}
-
-export interface IIdentityProvider extends ng.IServiceProvider {
-    setRootVar: boolean;
-    identity: any;
-}
-
 
 class IdentityService implements IIdentityService {
     private _identity: any;

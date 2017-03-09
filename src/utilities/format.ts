@@ -1,10 +1,4 @@
-export interface IFormat {
-    // Creates a sample line from a text
-    sample(value: string, maxLength: number): string;
-
-    sprintf(message: string, ...args: any[]): string;
-}
-
+import { IFormat } from './IFormat';
 
 class Format implements IFormat {
     // Cached for parsed formats

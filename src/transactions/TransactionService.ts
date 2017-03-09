@@ -1,9 +1,5 @@
 import { Transaction } from './Transaction';
-
-export interface ITransactionService {
-    create(scope?: string): Transaction;
-    get(scope?: string): Transaction;
-}
+import { ITransactionService } from './ITransactionService';
 
 class TransactionService implements ITransactionService {
     private _transactions: Transaction = <Transaction>{};

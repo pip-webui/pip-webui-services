@@ -12,6 +12,47 @@ function addRedirectStateDecorator($provide: any): void;
 export let RoutingVar: string;
 
 
+export interface IIdentity {
+    id: string;
+    full_name: string;
+    details: string;
+    email: string;
+    photo_url: string;
+    groups: string[];
+}
+
+export interface IIdentityService {
+    identity: any;
+}
+export interface IIdentityProvider extends ng.IServiceProvider {
+    setRootVar: boolean;
+    identity: any;
+}
+
+export interface ISessionService {
+    session: any;
+    isOpened(): boolean;
+    open(session: any): void;
+    close(): void;
+}
+export interface ISessionProvider extends ng.IServiceProvider {
+    setRootVar: boolean;
+    session: any;
+}
+
+export let IdentityRootVar: string;
+export let IdentityChangedEvent: string;
+
+export const SessionRootVar = "$session";
+export const SessionOpenedEvent = "pipSessionOpened";
+export const SessionClosedEvent = "pipSessionClosed";
+
+
+export interface ITransactionService {
+    create(scope?: string): Transaction;
+    get(scope?: string): Transaction;
+}
+
 export class Transaction {
     private _scope;
     private _id;
@@ -47,17 +88,9 @@ export class TransactionError {
     decode(error: any): void;
 }
 
-export interface ITransactionService {
-    create(scope?: string): Transaction;
-    get(scope?: string): Transaction;
-}
 
 
 
-
-
-export let LanguageRootVar: string;
-export let LanguageChangedEvent: string;
 export interface ITranslateService {
     language: string;
     use(language: string): string;
@@ -73,6 +106,11 @@ export interface ITranslateService {
 }
 export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
 }
+
+
+
+export let LanguageRootVar: string;
+export let LanguageChangedEvent: string;
 
 export class Translation {
     protected _language: string;
@@ -109,37 +147,6 @@ export class Translation {
 }
 
 
-export let IdentityRootVar: string;
-export let IdentityChangedEvent: string;
-export interface IIdentity {
-    id: string;
-    full_name: string;
-    details: string;
-    email: string;
-    photo_url: string;
-    groups: string[];
-}
-export interface IIdentityService {
-    identity: any;
-}
-export interface IIdentityProvider extends ng.IServiceProvider {
-    setRootVar: boolean;
-    identity: any;
-}
-
-export const SessionRootVar = "$session";
-export const SessionOpenedEvent = "pipSessionOpened";
-export const SessionClosedEvent = "pipSessionClosed";
-export interface ISessionService {
-    session: any;
-    isOpened(): boolean;
-    open(session: any): void;
-    close(): void;
-}
-export interface ISessionProvider extends ng.IServiceProvider {
-    setRootVar: boolean;
-    session: any;
-}
 
 
 export interface ICodes {
@@ -152,10 +159,6 @@ export interface IFormat {
     sprintf(message: string, ...args: any[]): string;
 }
 
-export let ResetPageEvent: string;
-export let ResetAreaEvent: string;
-export let ResetRootVar: string;
-export let ResetAreaRootVar: string;
 export interface IPageResetService {
     reset(): void;
     resetArea(area: string): void;
@@ -193,6 +196,15 @@ export interface ITimerService {
     start(): void;
     stop(): void;
 }
+
+export let ResetPageEvent: string;
+export let ResetAreaEvent: string;
+export let ResetRootVar: string;
+export let ResetAreaRootVar: string;
+
+
+
+
 
 
 }

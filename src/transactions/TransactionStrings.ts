@@ -1,4 +1,4 @@
-import { ITranslateService } from '../translate/TranslateService';
+import { ITranslateService } from '../translate/ITranslateService';
 
 function configureTransactionStrings($injector: ng.auto.IInjectorService) {
     "ngInject";

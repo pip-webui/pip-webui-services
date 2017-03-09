@@ -1,5 +1,6 @@
 let RedirectedStates: any = {};
 
+// Decorator function to add $stateProvider redirect method
 function decorateRedirectStateProvider($delegate) {
     "ngInject";
 
@@ -15,12 +16,14 @@ function decorateRedirectStateProvider($delegate) {
     }
 }
 
+// Config function to decorate $state provider
 function addRedirectStateProviderDecorator($provide) {
     "ngInject";
 
     $provide.decorator('$state', decorateRedirectStateProvider);
 }
 
+// Decorator function to add redirect method to $state service
 function decorateRedirectStateService($delegate, $timeout) {
     "ngInject";
 
@@ -53,6 +56,7 @@ function decorateRedirectStateService($delegate, $timeout) {
     }
 }
 
+// Config function to decorate $state service
 function addRedirectStateDecorator($provide) {
     "ngInject";
 

@@ -1,4 +1,4 @@
-import { ITranslateService } from './TranslateService';
+import { ITranslateService } from './ITranslateService';
 
 function translateFilter(pipTranslate: ITranslateService) {
     "ngInject";

@@ -1,13 +1,11 @@
+import { IPageResetService } from './IPageResetService';
+
+
 export let ResetPageEvent: string = "pipResetPage";
 export let ResetAreaEvent: string = "pipResetArea";
 
 export let ResetRootVar: string = "$reset";
 export let ResetAreaRootVar: string = "$resetArea";
-
-export interface IPageResetService {
-    reset(): void;
-    resetArea(area: string): void;
-}
 
 
 class PageResetService implements IPageResetService {

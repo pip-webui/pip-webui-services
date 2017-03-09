@@ -6,4 +6,5 @@ import './TranslateFilter';
 import './TranslateDirective';
 
 export * from './Translation';
+export * from './ITranslateService';
 export * from './TranslateService';

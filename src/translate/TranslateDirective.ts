@@ -1,4 +1,4 @@
-import { ITranslateService } from '../translate/TranslateService';
+import { ITranslateService } from '../translate/ITranslateService';
 
 function translateDirective(pipTranslate): ng.IDirective {
     "ngInject";
@@ -9,7 +9,7 @@ function translateDirective(pipTranslate): ng.IDirective {
             key1: '@pipTranslate',
             key2: '@key'
         },
-        link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+        link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
             let key: string = scope.key1 || scope.key2;
             let value: string = pipTranslate.translate(key);
             element.text(value);
