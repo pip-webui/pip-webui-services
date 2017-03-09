@@ -1,5 +1,3 @@
-'use strict';
-
 export class TransactionError {
     public code: string;
     public message: string;

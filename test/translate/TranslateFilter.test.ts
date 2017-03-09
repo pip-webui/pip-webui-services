@@ -1,5 +1,3 @@
-'use strict';
-
 import { assert } from 'chai';
 import { ngMock } from '../browser';
 

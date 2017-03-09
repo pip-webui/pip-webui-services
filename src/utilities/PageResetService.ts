@@ -1,5 +1,3 @@
-'use strict';
-
 export let ResetPageEvent: string = "pipResetPage";
 export let ResetAreaEvent: string = "pipResetArea";
 

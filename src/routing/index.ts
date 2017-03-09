@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('pipRouting', ['ui.router']);
 
 import './BackDecorator';

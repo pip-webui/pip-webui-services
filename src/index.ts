@@ -1,6 +1,4 @@
-﻿'use strict';
-
-import './translate';
+﻿import './translate';
 import './session';
 import './transactions';
 import './routing';

@@ -1,4 +1,4 @@
-'use strict';
+import { ITranslateService } from '../translate/TranslateService';
 
 function translateDirective(pipTranslate): ng.IDirective {
     "ngInject";
@@ -17,7 +17,7 @@ function translateDirective(pipTranslate): ng.IDirective {
     };
 }
 
-function translateHtmlDirective(pipTranslate: pip.services.ITranslateService): ng.IDirective {
+function translateHtmlDirective(pipTranslate: ITranslateService): ng.IDirective {
     "ngInject";
 
     return {
@@ -26,7 +26,7 @@ function translateHtmlDirective(pipTranslate: pip.services.ITranslateService): n
             key1: '@pipTranslateHtml',
             key2: '@key'
         },
-        link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+        link: (scope: any, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
             let key: string = scope.key1 || scope.key2;
             let value: string = pipTranslate.translate(key);
             element.html(value);

@@ -1,5 +1,3 @@
-'use strict';
-
 export interface ISystemInfo {
     browserName: string;
     browserVersion: string;

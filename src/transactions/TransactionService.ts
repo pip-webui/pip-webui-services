@@ -1,5 +1,3 @@
-'use strict';
-
 import { Transaction } from './Transaction';
 
 export interface ITransactionService {

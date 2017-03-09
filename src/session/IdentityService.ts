@@ -1,5 +1,3 @@
-'use strict';
-
 export let IdentityRootVar = "$identity";
 export let IdentityChangedEvent = "pipIdentityChanged";
 

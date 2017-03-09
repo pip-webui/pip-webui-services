@@ -1,5 +1,3 @@
-'use strict';
-
 export let RoutingVar: string = "$routing";
 
 function hookRoutingEvents(

@@ -1,5 +1,3 @@
-'use strict';
-
 export interface ICodes {
     // Simple version of string hashcode
     hash(value: string): number;

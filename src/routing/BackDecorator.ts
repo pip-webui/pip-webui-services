@@ -1,5 +1,3 @@
-'use strict';
-
 export let CurrentState: any;
 export let PreviousState: any;
 

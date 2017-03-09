@@ -1,9 +1,10 @@
-'use strict';
+import { ITranslateService } from '../translate/TranslateService';
 
 function configureTransactionStrings($injector: ng.auto.IInjectorService) {
     "ngInject";
 
-    let pipTranslate:pip.services.ITranslateService = $injector.has('pipTranslateProvider') ? <pip.services.ITranslateService>$injector.get('pipTranslateProvider') : null;
+    let pipTranslate: ITranslateService = $injector.has('pipTranslateProvider') 
+        ? <ITranslateService>$injector.get('pipTranslateProvider') : null;
 
     if (pipTranslate) {
         pipTranslate.setTranslations('en', {

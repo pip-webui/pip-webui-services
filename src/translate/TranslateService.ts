@@ -1,6 +1,4 @@
-﻿'use strict';
-
-import { Translation } from './Translation';
+﻿import { Translation } from './Translation';
 import { ResetPageEvent } from '../utilities/PageResetService';
 
 export let LanguageRootVar = "$language";

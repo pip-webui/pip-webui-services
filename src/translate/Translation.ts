@@ -1,5 +1,3 @@
-'use strict';
-
 export class Translation {
     protected _language: string = 'en';
     protected _translations = {

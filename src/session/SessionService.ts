@@ -1,5 +1,3 @@
-'use strict';
-
 export const SessionRootVar = "$session";
 export const SessionOpenedEvent = "pipSessionOpened";
 export const SessionClosedEvent = "pipSessionClosed";
