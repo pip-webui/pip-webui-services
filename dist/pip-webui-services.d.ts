@@ -1,5 +1,17 @@
 declare module pip.services {
 
+export let CurrentState: any;
+export let PreviousState: any;
+
+let RedirectedStates: any;
+function decorateRedirectStateProvider($delegate: any): any;
+function addRedirectStateProviderDecorator($provide: any): void;
+function decorateRedirectStateService($delegate: any, $timeout: any): any;
+function addRedirectStateDecorator($provide: any): void;
+
+export let RoutingVar: string;
+
+
 export interface IIdentity {
     id: string;
     full_name: string;
@@ -34,18 +46,6 @@ export let IdentityChangedEvent: string;
 export const SessionRootVar = "$session";
 export const SessionOpenedEvent = "pipSessionOpened";
 export const SessionClosedEvent = "pipSessionClosed";
-
-
-export let CurrentState: any;
-export let PreviousState: any;
-
-let RedirectedStates: any;
-function decorateRedirectStateProvider($delegate: any): any;
-function addRedirectStateProviderDecorator($provide: any): void;
-function decorateRedirectStateService($delegate: any, $timeout: any): any;
-function addRedirectStateDecorator($provide: any): void;
-
-export let RoutingVar: string;
 
 
 export interface ITransactionService {
