@@ -15,4 +15,6 @@ export interface ITranslateService {
 }
 
 export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
+    setRootVar: boolean;
+    persist: boolean;
 }
