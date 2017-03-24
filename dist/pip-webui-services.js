@@ -29,25 +29,29 @@ __export(require("./routing"));
 },{"./routing":5,"./session":8,"./transactions":13,"./translate":18,"./utilities":26}],2:[function(require,module,exports){
 "use strict";
 captureStateTranslations.$inject = ['$rootScope'];
-decorateBackStateService.$inject = ['$delegate', '$window'];
+decorateBackStateService.$inject = ['$delegate', '$window', '$rootScope'];
 addBackStateDecorator.$inject = ['$provide'];
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.StateVar = "$state";
+exports.PrevStateVar = "$prevState";
 function captureStateTranslations($rootScope) {
     "ngInject";
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-        exports.CurrentState = {
+        var CurrentState = {
             name: toState.name,
             url: toState.url,
             params: toParams
         };
-        exports.PreviousState = {
+        var PreviousState = {
             name: fromState.name,
             url: fromState.url,
             params: fromParams
         };
+        $rootScope[exports.StateVar] = CurrentState;
+        $rootScope[exports.PrevStateVar] = PreviousState;
     });
 }
-function decorateBackStateService($delegate, $window) {
+function decorateBackStateService($delegate, $window, $rootScope) {
     "ngInject";
     $delegate.goBack = goBack;
     $delegate.goBackAndSelect = goBackAndSelect;
@@ -56,9 +60,8 @@ function decorateBackStateService($delegate, $window) {
         $window.history.back();
     }
     function goBackAndSelect(params) {
-        if (exports.PreviousState != null
-            && exports.PreviousState.name != null) {
-            var state = _.cloneDeep(exports.PreviousState);
+        if (!!$rootScope[exports.StateVar] && !!$rootScope[exports.PrevStateVar]) {
+            var state = _.cloneDeep($rootScope[exports.PrevStateVar]);
             state.params = _.extend(state.params, params);
             $delegate.go(state.name, state.params);
         }

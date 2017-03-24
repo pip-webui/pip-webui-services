@@ -1,5 +1,5 @@
-export let CurrentState: any;
-export let PreviousState: any;
+export let StateVar: string = "$state";
+export let PrevStateVar: string = "$prevState";
 
 // Run function to set CurrentState and PreviousState global variables
 function captureStateTranslations($rootScope: ng.IRootScopeService) {
@@ -7,24 +7,28 @@ function captureStateTranslations($rootScope: ng.IRootScopeService) {
 
     $rootScope.$on('$stateChangeSuccess',
         (event, toState, toParams, fromState, fromParams) => {
-            CurrentState = {
+
+            let CurrentState = {
                 name: toState.name, 
                 url: toState.url, 
                 params: toParams
             };
 
-            PreviousState = {
+            let PreviousState = {
                 name: fromState.name, 
                 url: fromState.url, 
                 params: fromParams
             };
+        // Record current and previous state
+        $rootScope[StateVar] = CurrentState;
+        $rootScope[PrevStateVar] = PreviousState;            
         }
     );
 
 }
 
 // Decorator function to modify $state service by adding goBack and goBackAndSelect methods
-function decorateBackStateService($delegate: any, $window: ng.IWindowService): any {
+function decorateBackStateService($delegate: any, $window: ng.IWindowService, $rootScope: ng.IRootScopeService): any {
     "ngInject";
 
     $delegate.goBack = goBack;
@@ -39,10 +43,9 @@ function decorateBackStateService($delegate: any, $window: ng.IWindowService): a
 
     function goBackAndSelect(params: any): void {
         // todo: define end fix PreviousState
-        if (PreviousState != null 
-            && PreviousState.name != null) {
+        if (!!$rootScope[StateVar] && !!$rootScope[PrevStateVar]) {
 
-            let state = _.cloneDeep(PreviousState);
+            let state = _.cloneDeep($rootScope[PrevStateVar]);
 
             // Override selected parameters
             state.params = _.extend(state.params, params);
