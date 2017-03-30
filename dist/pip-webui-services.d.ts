@@ -3,7 +3,6 @@ declare module pip.services {
 export let StateVar: string;
 export let PrevStateVar: string;
 
-
 let RedirectedStates: any;
 function decorateRedirectStateProvider($delegate: any): any;
 function addRedirectStateProviderDecorator($provide: any): void;
@@ -12,8 +11,6 @@ function addRedirectStateDecorator($provide: any): void;
 
 export let RoutingVar: string;
 
-export let IdentityRootVar: string;
-export let IdentityChangedEvent: string;
 
 export interface IIdentity {
     id: string;
@@ -32,7 +29,6 @@ export interface IIdentityProvider extends ng.IServiceProvider {
     identity: any;
 }
 
-
 export interface ISessionService {
     session: any;
     isOpened(): boolean;
@@ -43,6 +39,9 @@ export interface ISessionProvider extends ng.IServiceProvider {
     setRootVar: boolean;
     session: any;
 }
+
+export let IdentityRootVar: string;
+export let IdentityChangedEvent: string;
 
 export const SessionRootVar = "$session";
 export const SessionOpenedEvent = "pipSessionOpened";
@@ -151,6 +150,7 @@ export class Translation {
 
 
 
+
 export interface ICodes {
     hash(value: string): number;
     verification(): string;
@@ -160,7 +160,6 @@ export interface IFormat {
     sample(value: string, maxLength: number): string;
     sprintf(message: string, ...args: any[]): string;
 }
-
 
 export interface IPageResetService {
     reset(): void;
@@ -204,6 +203,7 @@ export let ResetPageEvent: string;
 export let ResetAreaEvent: string;
 export let ResetRootVar: string;
 export let ResetAreaRootVar: string;
+
 
 
 
