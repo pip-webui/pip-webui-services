@@ -1,5 +1,3 @@
-'use strict';
-
 export let RoutingVar: string = "$routing";
 
 function hookRoutingEvents(
@@ -30,25 +28,6 @@ function hookRoutingEvents(
 
             $log.error('Error while switching route to ' + toState.name);
             $log.error(error);
-        }
-    );
-
-    // Intercept route error
-    $rootScope.$on('$stateNotFound',
-        function(event, unfoundState, fromState, fromParams) {
-            event.preventDefault();
-
-            $rootScope[RoutingVar] = false;
-
-            // Todo: Move to errors
-            $state.go('errors_missing_route',  {
-                    unfoundState: unfoundState,
-                    fromState : {
-                        to: fromState ? fromState.name : '',
-                        fromParams: fromParams
-                    }
-                }
-            );
         }
     );
 

@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('pipTransaction', []);
 
 import './TransactionStrings';
@@ -9,4 +7,4 @@ import './TransactionService';
 
 export * from './TransactionError';
 export * from './Transaction';
-export * from './TransactionService';
+export * from './ITransactionService';

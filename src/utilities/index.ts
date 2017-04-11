@@ -1,5 +1,3 @@
-'use strict';
-
 import './Format';
 import './TimerService';
 import './ScrollService';
@@ -8,10 +6,10 @@ import './Codes';
 import './SystemInfo';
 import './PageResetService';
 
-export * from './Format';
-export * from './TimerService';
-export * from './ScrollService';
-export * from './Tags';
-export * from './Codes';
-export * from './SystemInfo';
-export * from './PageResetService';
+export * from './IFormat';
+export * from './ITimerService';
+export * from './IScrollService';
+export * from './ITags';
+export * from './ICodes';
+export * from './ISystemInfo';
+export * from './IPageResetService';

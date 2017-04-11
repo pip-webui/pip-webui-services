@@ -1,30 +1,34 @@
-'use strict';
+export let StateVar: string = "$state";
+export let PrevStateVar: string = "$prevState";
 
-export let CurrentState: any;
-export let PreviousState: any;
-
+// Run function to set CurrentState and PreviousState global variables
 function captureStateTranslations($rootScope: ng.IRootScopeService) {
     "ngInject";
 
     $rootScope.$on('$stateChangeSuccess',
         (event, toState, toParams, fromState, fromParams) => {
-            CurrentState = {
+
+            let CurrentState = {
                 name: toState.name, 
                 url: toState.url, 
                 params: toParams
             };
 
-            PreviousState = {
+            let PreviousState = {
                 name: fromState.name, 
                 url: fromState.url, 
                 params: fromParams
             };
+        // Record current and previous state
+        $rootScope[StateVar] = CurrentState;
+        $rootScope[PrevStateVar] = PreviousState;            
         }
     );
 
 }
 
-function decorateBackStateService($delegate, $window: ng.IWindowService) {
+// Decorator function to modify $state service by adding goBack and goBackAndSelect methods
+function decorateBackStateService($delegate: any, $window: ng.IWindowService, $rootScope: ng.IRootScopeService): any {
     "ngInject";
 
     $delegate.goBack = goBack;
@@ -38,10 +42,10 @@ function decorateBackStateService($delegate, $window: ng.IWindowService) {
     }
 
     function goBackAndSelect(params: any): void {
-        if (PreviousState != null 
-            && PreviousState.name != null) {
+        // todo: define end fix PreviousState
+        if (!!$rootScope[StateVar] && !!$rootScope[PrevStateVar]) {
 
-            let state = _.cloneDeep(PreviousState);
+            let state = _.cloneDeep($rootScope[PrevStateVar]);
 
             // Override selected parameters
             state.params = _.extend(state.params, params);
@@ -53,6 +57,7 @@ function decorateBackStateService($delegate, $window: ng.IWindowService) {
     }
 }
 
+// Config function to decorate $state service
 function addBackStateDecorator($provide) {
     $provide.decorator('$state', decorateBackStateService);
 }

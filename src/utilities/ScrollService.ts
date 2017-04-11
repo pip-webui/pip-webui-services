@@ -1,8 +1,5 @@
-'use strict';
+import { IScrollService } from './IScrollService';
 
-export interface IScrollService {
-    scrollTo(parentElement, childElement, animationDuration): void;
-}
 
 class ScrollService implements IScrollService {
 

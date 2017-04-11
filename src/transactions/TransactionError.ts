@@ -1,5 +1,3 @@
-'use strict';
-
 export class TransactionError {
     public code: string;
     public message: string;
@@ -30,8 +28,9 @@ export class TransactionError {
         if (error == null) return;
 
         // Process regular messages
-        if (error.message) 
+        if (error.message) {
             this.message = error.message;
+        }
 
         // Process server application errors
         if (error.data) {
@@ -41,8 +40,9 @@ export class TransactionError {
                 this.code = this.code || error.data.code;
             }
 
-            if (error.data.message)
+            if (error.data.message) {
                 this.message = this.message || error.data.message;
+            }
 
             this.message = this.message || error.data;
             this.details = this.details || error.data;
@@ -53,9 +53,9 @@ export class TransactionError {
         }
 
         // Process standard HTTP errors
-        if (error.statusText)
+        if (error.statusText) {
             this.message = this.message || error.statusText;
-
+        }
         if (error.status) {
             this.message = this.message || 'ERROR_' + error.status;
             this.code = this.code || error.status;

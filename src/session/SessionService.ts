@@ -1,21 +1,8 @@
-'use strict';
+import { ISessionService, ISessionProvider } from './ISessionService';
 
 export const SessionRootVar = "$session";
 export const SessionOpenedEvent = "pipSessionOpened";
 export const SessionClosedEvent = "pipSessionClosed";
-
-export interface ISessionService {
-    session: any;
-    isOpened(): boolean;
-
-    open(session: any): void;
-    close(): void;
-}
-
-export interface ISessionProvider extends ng.IServiceProvider {
-    setRootVar: boolean;
-    session: any;
-}
 
 class SessionService implements ISessionService {
     private _setRootVar: boolean;

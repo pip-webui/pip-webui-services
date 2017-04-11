@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('pipTranslate', []);
 
 import './Translation';
@@ -8,4 +6,5 @@ import './TranslateFilter';
 import './TranslateDirective';
 
 export * from './Translation';
+export * from './ITranslateService';
 export * from './TranslateService';

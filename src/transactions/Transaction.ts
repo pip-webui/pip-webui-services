@@ -1,5 +1,3 @@
-'use strict';
-
 import { TransactionError } from './TransactionError'
 
 export class Transaction {

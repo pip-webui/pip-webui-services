@@ -1,19 +1,13 @@
-'use strict';
-
 import { Transaction } from './Transaction';
-
-export interface ITransactionService {
-    create(scope?: string): Transaction;
-    get(scope?: string): Transaction;
-}
+import { ITransactionService } from './ITransactionService';
 
 class TransactionService implements ITransactionService {
-    private _transactions: any = {};
+    private _transactions: Transaction = <Transaction>{};
 
     public constructor() {}
 
     public create(scope?: string): Transaction {
-        let transaction = new Transaction(scope);
+        let transaction: Transaction = new Transaction(scope);
         
         if (scope != null)
             this._transactions[scope] = transaction;

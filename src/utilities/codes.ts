@@ -1,19 +1,11 @@
-'use strict';
-
-export interface ICodes {
-    // Simple version of string hashcode
-    hash(value: string): number;
-    // Generates random big number for verification codes
-    verification(): string;
-}
-
+import { ICodes } from './ICodes';
 
 class Codes implements ICodes {
     // Simple version of string hashcode
     public hash(value: string): number {
         if (value == null) return 0;
         
-        let result = 0;
+        let result: number = 0;
         for (let i = 0; i < value.length; i++)
             result += value.charCodeAt(i);
 

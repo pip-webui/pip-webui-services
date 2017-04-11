@@ -1,5 +1,3 @@
-'use strict';
-
 let jsdom = require('jsdom').jsdom;
 
 // Mimic browser DOM

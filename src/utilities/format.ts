@@ -1,12 +1,4 @@
-'use strict';
-
-export interface IFormat {
-    // Creates a sample line from a text
-    sample(value: string, maxLength: number): string;
-
-    sprintf(message: string, ...args: any[]): string;
-}
-
+import { IFormat } from './IFormat';
 
 class Format implements IFormat {
     // Cached for parsed formats
@@ -14,9 +6,11 @@ class Format implements IFormat {
 
     // Creates a sample line from a text
     public sample(value: string, maxLength: number): string {
-        if (!value || value == '') return '';
+        if (!value || value == '') {
+            return '';
+        }
 
-        var length = value.indexOf('\n');
+        var length: number = value.indexOf('\n');
         length = length >= 0 ? length : value.length;
         length = length < maxLength ? value.length : maxLength;
 
@@ -24,8 +18,10 @@ class Format implements IFormat {
     }
 
     private strRepeat(str: string, qty: number): string {
-        if (qty < 1) return '';
-        var result = '';
+        if (qty < 1) { 
+            return '';
+        }
+        var result: string = '';
         while (qty > 0) {
             if (qty & 1) result += str;
             qty >>= 1, str += str;
@@ -33,12 +29,12 @@ class Format implements IFormat {
         return result;
     }
 
-    private getType(variable) {
+    private getType(variable): string {
         return toString.call(variable).slice(8, -1).toLowerCase();
     }
 
-    private parseFormat(fmt: string) {
-        let _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+    private parseFormat(fmt: string): any {
+        let _fmt: string = fmt, match = [], parse_tree = [], arg_names: number = 0;
         while (_fmt) {
             if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
                 parse_tree.push(match[0]);
@@ -49,7 +45,7 @@ class Format implements IFormat {
             else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
                 if (match[2]) {
                     arg_names |= 1;
-                    var field_list = [], replacement_field = match[2], field_match = [];
+                    let field_list: string[] = [], replacement_field: string = match[2], field_match: string[] = [];
                     if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
                         field_list.push(field_match[1]);
                         while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
@@ -85,9 +81,9 @@ class Format implements IFormat {
         return parse_tree;
     }
 
-    private format(parse_tree, argv) {
-        let cursor = 0; 
-        let tree_length = parse_tree.length; 
+    private format(parse_tree: any, argv: any): string {
+        let cursor: number = 0; 
+        let tree_length: number = parse_tree.length; 
         let output = [];
 
         for (let i = 0; i < tree_length; i++) {
