@@ -1,7 +1,7 @@
 declare module pip.services {
 
-export let CurrentState: any;
-export let PreviousState: any;
+export let StateVar: string;
+export let PrevStateVar: string;
 
 
 let RedirectedStates: any;
@@ -14,6 +14,7 @@ export let RoutingVar: string;
 
 export let IdentityRootVar: string;
 export let IdentityChangedEvent: string;
+
 export interface IIdentity {
     id: string;
     full_name: string;
@@ -22,6 +23,7 @@ export interface IIdentity {
     photo_url: string;
     groups: string[];
 }
+
 export interface IIdentityService {
     identity: any;
 }
@@ -31,9 +33,6 @@ export interface IIdentityProvider extends ng.IServiceProvider {
 }
 
 
-export const SessionRootVar = "$session";
-export const SessionOpenedEvent = "pipSessionOpened";
-export const SessionClosedEvent = "pipSessionClosed";
 export interface ISessionService {
     session: any;
     isOpened(): boolean;
@@ -45,107 +44,11 @@ export interface ISessionProvider extends ng.IServiceProvider {
     session: any;
 }
 
-
-function translateDirective(pipTranslate: any): ng.IDirective;
-function translateHtmlDirective(pipTranslate: any): ng.IDirective;
-
-function translateFilter(pipTranslate: any): (key: any) => any;
-function optionalTranslateFilter($injector: any): (key: any) => any;
-
-export let LanguageRootVar: string;
-export let LanguageChangedEvent: string;
-export interface ITranslateService {
-    language: string;
-    use(language: string): string;
-    setTranslations(language: string, translations: any): void;
-    translations(language: string, translations: any): void;
-    translate(key: string): string;
-    translateArray(keys: string[]): string[];
-    translateSet(keys: string[], keyProp: string, valueProp: string): any[];
-    translateObjects(items: any[], keyProp: string, valueProp: string): any[];
-    translateWithPrefix(prefix: string, key: string): any;
-    translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any;
-    translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any;
-}
-export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
-}
-
-export class Translation {
-    protected _language: string;
-    protected _translations: {
-        en: {
-            'en': string;
-            'ru': string;
-            'es': string;
-            'pt': string;
-            'de': string;
-            'fr': string;
-        };
-        ru: {
-            'en': string;
-            'ru': string;
-            'es': string;
-            'pt': string;
-            'de': string;
-            'fr': string;
-        };
-    };
-    constructor();
-    language: string;
-    use(language: string): string;
-    setTranslations(language: string, translations: any): void;
-    translations(language: string, translations: any): void;
-    translate(key: string): string;
-    translateArray(keys: string[]): string[];
-    translateSet(keys: string[], keyProp: string, valueProp: string): any[];
-    translateObjects(items: any[], keyProp: string, valueProp: string): any[];
-    translateWithPrefix(prefix: string, key: string): any;
-    translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
-    translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
-}
+export const SessionRootVar = "$session";
+export const SessionOpenedEvent = "pipSessionOpened";
+export const SessionClosedEvent = "pipSessionClosed";
 
 
-export class Transaction {
-    private _scope;
-    private _id;
-    private _operation;
-    private _error;
-    private _progress;
-    constructor(scope: string);
-    readonly scope: string;
-    readonly id: string;
-    readonly operation: string;
-    readonly progress: number;
-    readonly error: TransactionError;
-    readonly errorMessage: string;
-    reset(): void;
-    busy(): boolean;
-    failed(): boolean;
-    aborted(id: string): boolean;
-    begin(operation: string): string;
-    update(progress: number): void;
-    abort(): void;
-    end(error?: any): void;
-}
-
-export class TransactionError {
-    code: string;
-    message: string;
-    details: any;
-    cause: string;
-    stack_trace: string;
-    constructor(error?: any);
-    reset(): void;
-    empty(): boolean;
-    decode(error: any): void;
-}
-
-export interface ITransactionService {
-    create(scope?: string): Transaction;
-    get(scope?: string): Transaction;
-}
-
-function configureTransactionStrings($injector: any): void;
 
 export interface ICodes {
     hash(value: string): number;
@@ -158,10 +61,6 @@ export interface IFormat {
 }
 
 
-export let ResetPageEvent: string;
-export let ResetAreaEvent: string;
-export let ResetRootVar: string;
-export let ResetAreaRootVar: string;
 export interface IPageResetService {
     reset(): void;
     resetArea(area: string): void;
@@ -199,6 +98,116 @@ export interface ITimerService {
     start(): void;
     stop(): void;
 }
+
+export let ResetPageEvent: string;
+export let ResetAreaEvent: string;
+export let ResetRootVar: string;
+export let ResetAreaRootVar: string;
+
+
+
+
+
+
+export interface ITranslateService {
+    language: string;
+    use(language: string): string;
+    setTranslations(language: string, translations: any): void;
+    translations(language: string, translations: any): void;
+    translate(key: string): string;
+    translateArray(keys: string[]): string[];
+    translateSet(keys: string[], keyProp: string, valueProp: string): any[];
+    translateObjects(items: any[], keyProp: string, valueProp: string): any[];
+    translateWithPrefix(prefix: string, key: string): any;
+    translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any;
+    translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any;
+}
+export interface ITranslateProvider extends ITranslateService, ng.IServiceProvider {
+    setRootVar: boolean;
+    persist: boolean;
+}
+
+
+
+export let LanguageRootVar: string;
+export let LanguageChangedEvent: string;
+
+export class Translation {
+    protected _language: string;
+    protected _translations: {
+        en: {
+            'en': string;
+            'ru': string;
+            'es': string;
+            'pt': string;
+            'de': string;
+            'fr': string;
+        };
+        ru: {
+            'en': string;
+            'ru': string;
+            'es': string;
+            'pt': string;
+            'de': string;
+            'fr': string;
+        };
+    };
+    constructor();
+    language: string;
+    use(language: string): string;
+    setTranslations(language: string, translations: any): void;
+    translations(language: string, translations: any): void;
+    translate(key: string): string;
+    translateArray(keys: string[]): string[];
+    translateSet(keys: string[], keyProp: string, valueProp: string): any[];
+    translateObjects(items: any[], keyProp: string, valueProp: string): any[];
+    translateWithPrefix(prefix: string, key: string): any;
+    translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
+    translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
+}
+
+
+export interface ITransactionService {
+    create(scope?: string): Transaction;
+    get(scope?: string): Transaction;
+}
+
+export class Transaction {
+    private _scope;
+    private _id;
+    private _operation;
+    private _error;
+    private _progress;
+    constructor(scope: string);
+    readonly scope: string;
+    readonly id: string;
+    readonly operation: string;
+    readonly progress: number;
+    readonly error: TransactionError;
+    readonly errorMessage: string;
+    reset(): void;
+    busy(): boolean;
+    failed(): boolean;
+    aborted(id: string): boolean;
+    begin(operation: string): string;
+    update(progress: number): void;
+    abort(): void;
+    end(error?: any): void;
+}
+
+export class TransactionError {
+    code: string;
+    message: string;
+    details: any;
+    cause: string;
+    stack_trace: string;
+    constructor(error?: any);
+    reset(): void;
+    empty(): boolean;
+    decode(error: any): void;
+}
+
+
 
 }
 
