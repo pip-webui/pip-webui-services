@@ -11,8 +11,8 @@ class SessionService implements ISessionService {
     private _log: ng.ILogService;
 
     public constructor(
-        setRootVar: boolean, 
-        session: any, 
+        setRootVar: boolean,
+        session: any,
         $rootScope: ng.IRootScopeService,
         $log: ng.ILogService
     ) {
@@ -23,7 +23,7 @@ class SessionService implements ISessionService {
 
         this.setRootVar();
     }
-    
+
     private setRootVar(): void {
         if (this._setRootVar)
             this._rootScope[SessionRootVar] = this._session;
@@ -37,15 +37,23 @@ class SessionService implements ISessionService {
         return this._session != null;
     }
 
-    public open(session: any, fullReset: boolean = false, partialReset: boolean = false) {
+    public open(session: any, decorator?: (callback: () => void) => void, fullReset: boolean = false, partialReset: boolean = false) {
         if (session == null)
             throw new Error("Session cannot be null");
 
         this._session = session;
-        this.setRootVar();
-        this._rootScope.$emit(SessionOpenedEvent, session);
 
-        this._log.debug("Opened session " + session);
+        if (decorator) {
+            decorator(() => {
+                this.setRootVar();
+                this._rootScope.$emit(SessionOpenedEvent, session);
+                this._log.debug("Opened session " + session);
+            });
+        } else {
+            this.setRootVar();
+            this._rootScope.$emit(SessionOpenedEvent, session);
+            this._log.debug("Opened session " + session);
+        }
     }
 
     public close(fullReset: boolean = false, partialReset: boolean = false) {
@@ -67,7 +75,7 @@ class SessionProvider implements ISessionProvider {
     public constructor() { }
 
     public get setRootVar(): boolean {
-        return this._setRootVar;  
+        return this._setRootVar;
     }
 
     public set setRootVar(value: boolean) {
@@ -75,7 +83,7 @@ class SessionProvider implements ISessionProvider {
     }
 
     public get session(): any {
-        return this._session;  
+        return this._session;
     }
 
     public set session(value: any) {
