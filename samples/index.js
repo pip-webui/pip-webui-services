@@ -25,7 +25,14 @@
             url: '/system_info',
             controller: 'SystemInfoController',
             templateUrl: 'system_info.html'
-        }
+        },
+        {
+            title: 'Session',
+            state: 'session',
+            url: '/session',
+            controller: 'SessionController',
+            templateUrl: 'session.html'
+        }        
     ];
 
     var thisModule = angular.module('appServices',
@@ -36,7 +43,7 @@
             'pipServices',
             'appServices.Timer',
             'appServices.Transaction', 'appServices.Translate',
-            'appServices.SystemInfo'
+            'appServices.SystemInfo', 'appServices.Session'
         ]
     );
     thisModule.config(function (pipTranslateProvider, $stateProvider, $urlRouterProvider, $mdIconProvider, $mdThemingProvider, $logProvider) {

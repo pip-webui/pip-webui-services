@@ -1,0 +1,10 @@
+<h2 class="top-space">Session Samples</h2>
+<div>
+    <md-button ng-click="onStartClick()">{{'OPEN_SESSION' | translate}}</md-button>
+    <md-button ng-click="onStopClick()">{{'CLOSE_SESSION' | translate}}</md-button>
+    <br>
+    <p>
+        <span ng-show="isSessionOpen()">Session opened</span>
+        <span ng-hide="isSessionOpen()">Session closed</span>
+    </p>
+</div>
