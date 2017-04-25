@@ -5683,13 +5683,14 @@ angular.module('pipServices', [
     'pipTags',
     'pipCodes',
     'pipSystemInfo',
-    'pipPageReset'
+    'pipPageReset',
+    'pipEnums'
 ]);
 __export(require("./translate"));
 __export(require("./session"));
 __export(require("./transactions"));
 __export(require("./routing"));
-},{"./routing":6,"./session":9,"./transactions":14,"./translate":19,"./utilities":27}],4:[function(require,module,exports){
+},{"./routing":6,"./session":9,"./transactions":14,"./translate":19,"./utilities":28}],4:[function(require,module,exports){
 "use strict";
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window', '$rootScope'];
@@ -6436,7 +6437,7 @@ angular
     .module('pipTranslate')
     .provider('pipTranslate', TranslateProvider)
     .run(initTranslate);
-},{"../utilities/PageResetService":22,"./Translation":18}],18:[function(require,module,exports){
+},{"../utilities/PageResetService":23,"./Translation":18}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Translation = (function () {
@@ -6609,6 +6610,27 @@ angular
 },{}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var Enums = (function () {
+    function Enums() {
+        "ngInject";
+    }
+    Enums.prototype.enumToArray = function (obj) {
+        var result = [];
+        var key;
+        for (key in obj)
+            if (obj.hasOwnProperty(key))
+                result.push(obj[key]);
+        return result;
+    };
+    ;
+    return Enums;
+}());
+angular
+    .module('pipEnums', [])
+    .service('pipEnums', Enums);
+},{}],22:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Format = (function () {
     function Format() {
         this.cache = {};
@@ -6769,7 +6791,7 @@ var Format = (function () {
 angular
     .module('pipFormat', [])
     .service('pipFormat', Format);
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 hookResetEvents.$inject = ['$rootScope', 'pipPageReset'];
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -6812,7 +6834,7 @@ function hookResetEvents($rootScope, pipPageReset) {
 angular.module('pipPageReset', [])
     .service('pipPageReset', PageResetService)
     .run(hookResetEvents);
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ScrollService = (function () {
@@ -6841,7 +6863,7 @@ var ScrollService = (function () {
 angular
     .module('pipScroll', [])
     .service('pipScroll', ScrollService);
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SystemInfo = (function () {
@@ -6976,7 +6998,7 @@ var SystemInfo = (function () {
 angular
     .module('pipSystemInfo', [])
     .service('pipSystemInfo', SystemInfo);
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Tags = (function () {
@@ -7030,7 +7052,7 @@ var Tags = (function () {
 angular
     .module('pipTags', [])
     .service('pipTags', Tags);
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TimerEvent = (function () {
@@ -7120,7 +7142,7 @@ var TimerService = (function () {
 }());
 angular.module('pipTimer', [])
     .service('pipTimer', TimerService);
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Format");
@@ -7130,7 +7152,8 @@ require("./Tags");
 require("./Codes");
 require("./SystemInfo");
 require("./PageResetService");
-},{"./Codes":20,"./Format":21,"./PageResetService":22,"./ScrollService":23,"./SystemInfo":24,"./Tags":25,"./TimerService":26}]},{},[3])(3)
+require("./Enums");
+},{"./Codes":20,"./Enums":21,"./Format":22,"./PageResetService":23,"./ScrollService":24,"./SystemInfo":25,"./Tags":26,"./TimerService":27}]},{},[3])(3)
 });
 
 //# sourceMappingURL=pip-webui-services.js.map

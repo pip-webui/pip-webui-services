@@ -155,9 +155,14 @@ export class Translation {
 
 
 
+
 export interface ICodes {
     hash(value: string): number;
     verification(): string;
+}
+
+export interface IEnums {
+    enumToArray(obj: any): any[];
 }
 
 export interface IFormat {
