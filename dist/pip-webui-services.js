@@ -5689,7 +5689,7 @@ __export(require("./translate"));
 __export(require("./session"));
 __export(require("./transactions"));
 __export(require("./routing"));
-},{"./routing":7,"./session":10,"./transactions":15,"./translate":20,"./utilities":28}],4:[function(require,module,exports){
+},{"./routing":6,"./session":9,"./transactions":14,"./translate":19,"./utilities":27}],4:[function(require,module,exports){
 "use strict";
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window', '$rootScope'];
@@ -5741,54 +5741,6 @@ angular
     .config(addBackStateDecorator)
     .run(captureStateTranslations);
 },{}],5:[function(require,module,exports){
-decorateRedirectStateProvider.$inject = ['$delegate'];
-addRedirectStateProviderDecorator.$inject = ['$provide'];
-decorateRedirectStateService.$inject = ['$delegate', '$timeout'];
-addRedirectStateDecorator.$inject = ['$provide'];
-var RedirectedStates = {};
-function decorateRedirectStateProvider($delegate) {
-    "ngInject";
-    $delegate.redirect = redirect;
-    return $delegate;
-    function redirect(fromState, toState) {
-        RedirectedStates[fromState] = toState;
-        return this;
-    }
-}
-function addRedirectStateProviderDecorator($provide) {
-    "ngInject";
-    $provide.decorator('$state', decorateRedirectStateProvider);
-}
-function decorateRedirectStateService($delegate, $timeout) {
-    "ngInject";
-    $delegate.redirect = redirect;
-    return $delegate;
-    function redirect(event, state, params) {
-        var toState = RedirectedStates[state.name];
-        if (_.isFunction(toState)) {
-            toState = toState(state.name, params);
-            if (_.isNull(toState))
-                throw new Error('Redirected toState cannot be null');
-        }
-        if (!!toState) {
-            $timeout(function () {
-                event.preventDefault();
-                $delegate.transitionTo(toState, params, { location: 'replace' });
-            });
-            return true;
-        }
-        return false;
-    }
-}
-function addRedirectStateDecorator($provide) {
-    "ngInject";
-    $provide.decorator('$state', decorateRedirectStateService);
-}
-angular
-    .module('pipRouting')
-    .config(addRedirectStateProviderDecorator)
-    .config(addRedirectStateDecorator);
-},{}],6:[function(require,module,exports){
 "use strict";
 hookRoutingEvents.$inject = ['$rootScope', '$log', '$state'];
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -5810,7 +5762,7 @@ function hookRoutingEvents($rootScope, $log, $state) {
 angular
     .module('pipRouting')
     .run(hookRoutingEvents);
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5818,11 +5770,10 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 angular.module('pipRouting', ['ui.router']);
 require("./BackDecorator");
-require("./RedirectDecorator");
 require("./RoutingEvents");
 __export(require("./BackDecorator"));
 __export(require("./RoutingEvents"));
-},{"./BackDecorator":4,"./RedirectDecorator":5,"./RoutingEvents":6}],8:[function(require,module,exports){
+},{"./BackDecorator":4,"./RoutingEvents":5}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IdentityRootVar = "$identity";
@@ -5892,7 +5843,7 @@ var IdentityProvider = (function () {
 angular
     .module('pipSession')
     .provider('pipIdentity', IdentityProvider);
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SessionRootVar = "$session";
@@ -5908,7 +5859,7 @@ var SessionService = (function () {
         this._log = $log;
         this.setRootVar();
     }
-    SessionService.prototype.fireListeners = function (type, callback) {
+    SessionService.prototype.notifyListeners = function (type, callback) {
         if (!type) {
             throw new Error("Event object missing 'type' property.");
         }
@@ -5921,9 +5872,9 @@ var SessionService = (function () {
             callback();
         }
     };
-    SessionService.prototype.fireOpenListeners = function (successCallback) {
+    SessionService.prototype.notifyOpenListeners = function (successCallback) {
         var _this = this;
-        this.fireListeners('open', function (error, result) {
+        this.notifyListeners('open', function (error, result) {
             if (!error) {
                 successCallback();
             }
@@ -5934,9 +5885,9 @@ var SessionService = (function () {
             }
         });
     };
-    SessionService.prototype.fireCloseListeners = function (successCallback) {
+    SessionService.prototype.notifyCloseListeners = function (successCallback) {
         var _this = this;
-        this.fireListeners('close', function (error, result) {
+        this.notifyListeners('close', function (error, result) {
             if (!error) {
                 successCallback();
             }
@@ -5979,9 +5930,6 @@ var SessionService = (function () {
             }
         }
     };
-    SessionService.prototype.clearListeners = function (type) {
-        this.listeners[type] = [];
-    };
     SessionService.prototype.addOpenListener = function (listener) {
         this.addListener('open', listener);
     };
@@ -5993,12 +5941,6 @@ var SessionService = (function () {
     };
     SessionService.prototype.removeCloseListener = function (listener) {
         this.removeListener('close', listener);
-    };
-    SessionService.prototype.clearOpenListeners = function () {
-        this.clearListeners('open');
-    };
-    SessionService.prototype.clearCloseListeners = function () {
-        this.clearListeners('close');
     };
     Object.defineProperty(SessionService.prototype, "session", {
         get: function () {
@@ -6015,7 +5957,7 @@ var SessionService = (function () {
         if (session == null)
             throw new Error("Session cannot be null");
         this._session = session;
-        this.fireOpenListeners(function () {
+        this.notifyOpenListeners(function () {
             _this.start(session);
         });
     };
@@ -6024,7 +5966,7 @@ var SessionService = (function () {
         if (this.session == null) {
             return;
         }
-        this.fireCloseListeners(function () {
+        this.notifyCloseListeners(function () {
             _this.stop();
         });
     };
@@ -6067,7 +6009,7 @@ var SessionProvider = (function () {
 angular
     .module('pipSession')
     .provider('pipSession', SessionProvider);
-},{"async":1}],10:[function(require,module,exports){
+},{"async":1}],9:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -6078,7 +6020,7 @@ require("./IdentityService");
 require("./SessionService");
 __export(require("./IdentityService"));
 __export(require("./SessionService"));
-},{"./IdentityService":8,"./SessionService":9}],11:[function(require,module,exports){
+},{"./IdentityService":7,"./SessionService":8}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TransactionError_1 = require("./TransactionError");
@@ -6170,7 +6112,7 @@ var Transaction = (function () {
     return Transaction;
 }());
 exports.Transaction = Transaction;
-},{"./TransactionError":12}],12:[function(require,module,exports){
+},{"./TransactionError":11}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TransactionError = (function () {
@@ -6222,7 +6164,7 @@ var TransactionError = (function () {
     return TransactionError;
 }());
 exports.TransactionError = TransactionError;
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Transaction_1 = require("./Transaction");
@@ -6250,7 +6192,7 @@ var TransactionService = (function () {
 angular
     .module('pipTransaction')
     .service('pipTransaction', TransactionService);
-},{"./Transaction":11}],14:[function(require,module,exports){
+},{"./Transaction":10}],13:[function(require,module,exports){
 "use strict";
 configureTransactionStrings.$inject = ['$injector'];
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -6276,7 +6218,7 @@ function configureTransactionStrings($injector) {
 angular
     .module('pipTransaction')
     .config(configureTransactionStrings);
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -6289,7 +6231,7 @@ require("./Transaction");
 require("./TransactionService");
 __export(require("./TransactionError"));
 __export(require("./Transaction"));
-},{"./Transaction":11,"./TransactionError":12,"./TransactionService":13,"./TransactionStrings":14}],16:[function(require,module,exports){
+},{"./Transaction":10,"./TransactionError":11,"./TransactionService":12,"./TransactionStrings":13}],15:[function(require,module,exports){
 "use strict";
 translateDirective.$inject = ['pipTranslate'];
 translateHtmlDirective.$inject = ['pipTranslate'];
@@ -6328,7 +6270,7 @@ angular
     .module('pipTranslate')
     .directive('pipTranslate', translateDirective)
     .directive('pipTranslateHtml', translateHtmlDirective);
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 translateFilter.$inject = ['pipTranslate'];
 optionalTranslateFilter.$inject = ['$injector'];
@@ -6350,7 +6292,7 @@ function optionalTranslateFilter($injector) {
 angular
     .module('pipTranslate')
     .filter('translate', translateFilter);
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 initTranslate.$inject = ['pipTranslate'];
 var __extends = (this && this.__extends) || (function () {
@@ -6494,7 +6436,7 @@ angular
     .module('pipTranslate')
     .provider('pipTranslate', TranslateProvider)
     .run(initTranslate);
-},{"../utilities/PageResetService":23,"./Translation":19}],19:[function(require,module,exports){
+},{"../utilities/PageResetService":22,"./Translation":18}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Translation = (function () {
@@ -6629,7 +6571,7 @@ var Translation = (function () {
     return Translation;
 }());
 exports.Translation = Translation;
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -6642,7 +6584,7 @@ require("./TranslateFilter");
 require("./TranslateDirective");
 __export(require("./Translation"));
 __export(require("./TranslateService"));
-},{"./TranslateDirective":16,"./TranslateFilter":17,"./TranslateService":18,"./Translation":19}],21:[function(require,module,exports){
+},{"./TranslateDirective":15,"./TranslateFilter":16,"./TranslateService":17,"./Translation":18}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Codes = (function () {
@@ -6664,7 +6606,7 @@ var Codes = (function () {
 angular
     .module('pipCodes', [])
     .service('pipCodes', Codes);
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Format = (function () {
@@ -6827,7 +6769,7 @@ var Format = (function () {
 angular
     .module('pipFormat', [])
     .service('pipFormat', Format);
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 hookResetEvents.$inject = ['$rootScope', 'pipPageReset'];
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -6870,7 +6812,7 @@ function hookResetEvents($rootScope, pipPageReset) {
 angular.module('pipPageReset', [])
     .service('pipPageReset', PageResetService)
     .run(hookResetEvents);
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ScrollService = (function () {
@@ -6899,7 +6841,7 @@ var ScrollService = (function () {
 angular
     .module('pipScroll', [])
     .service('pipScroll', ScrollService);
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SystemInfo = (function () {
@@ -7034,7 +6976,7 @@ var SystemInfo = (function () {
 angular
     .module('pipSystemInfo', [])
     .service('pipSystemInfo', SystemInfo);
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Tags = (function () {
@@ -7088,7 +7030,7 @@ var Tags = (function () {
 angular
     .module('pipTags', [])
     .service('pipTags', Tags);
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TimerEvent = (function () {
@@ -7178,7 +7120,7 @@ var TimerService = (function () {
 }());
 angular.module('pipTimer', [])
     .service('pipTimer', TimerService);
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Format");
@@ -7188,7 +7130,7 @@ require("./Tags");
 require("./Codes");
 require("./SystemInfo");
 require("./PageResetService");
-},{"./Codes":21,"./Format":22,"./PageResetService":23,"./ScrollService":24,"./SystemInfo":25,"./Tags":26,"./TimerService":27}]},{},[3])(3)
+},{"./Codes":20,"./Format":21,"./PageResetService":22,"./ScrollService":23,"./SystemInfo":24,"./Tags":25,"./TimerService":26}]},{},[3])(3)
 });
 
 //# sourceMappingURL=pip-webui-services.js.map

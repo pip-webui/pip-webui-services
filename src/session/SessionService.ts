@@ -27,7 +27,7 @@ class SessionService implements ISessionService {
         this.setRootVar();
     }
 
-    private fireListeners(type: string, callback: (error?: any, result?: any) => void): void {
+    private notifyListeners(type: string, callback: (error?: any, result?: any) => void): void {
         if (!type){  
             throw new Error("Event object missing 'type' property.");
         }
@@ -41,8 +41,8 @@ class SessionService implements ISessionService {
         }
     }
 
-    private fireOpenListeners(successCallback: () => void): void {
-        this.fireListeners('open', (error: any, result: any) => {
+    private notifyOpenListeners(successCallback: () => void): void {
+        this.notifyListeners('open', (error: any, result: any) => {
             if (!error) {
                 successCallback();
             } else {
@@ -54,8 +54,8 @@ class SessionService implements ISessionService {
         });
     }
 
-    private fireCloseListeners(successCallback: () => void): void {
-        this.fireListeners('close', (error: any, result: any) => {
+    private notifyCloseListeners(successCallback: () => void): void {
+        this.notifyListeners('close', (error: any, result: any) => {
             if (!error) {
                 successCallback();
             } else {
@@ -106,10 +106,6 @@ class SessionService implements ISessionService {
         }
     }
 
-    private clearListeners(type: string): void {
-        this.listeners[type] = [];
-    }
-
     public addOpenListener(listener: any): void {
         this.addListener('open', listener);
     }
@@ -126,14 +122,6 @@ class SessionService implements ISessionService {
         this.removeListener('close', listener);
     }
 
-    public clearOpenListeners(): void {
-        this.clearListeners('open')
-    }
-
-    public clearCloseListeners(): void {
-        this.clearListeners('close')
-    }
-
     public get session(): any {
         return this._session;
     }
@@ -148,7 +136,7 @@ class SessionService implements ISessionService {
 
         this._session = session;
 
-        this.fireOpenListeners(() => {
+        this.notifyOpenListeners(() => {
             this.start(session);
         });
     }
@@ -156,7 +144,7 @@ class SessionService implements ISessionService {
     public close() {
         if (this.session == null) { return }
 
-        this.fireCloseListeners(() => {
+        this.notifyCloseListeners(() => {
             this.stop();
         });
     }

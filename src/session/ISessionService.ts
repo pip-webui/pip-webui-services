@@ -6,8 +6,6 @@ export interface ISessionService {
     addCloseListener(listener: any): void;
     removeOpenListener(listener: any): void;
     removeCloseListener(listener: any): void;
-    clearOpenListeners(): void;
-    clearCloseListeners(): void;
     
     open(session: any, decorator?: (callback: () => void) => void): void;
     close(): void;
