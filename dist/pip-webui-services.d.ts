@@ -155,19 +155,17 @@ export class Translation {
 
 
 
-
 export interface ICodes {
     hash(value: string): number;
     verification(): string;
 }
 
-export interface IEnums {
-    enumToArray(obj: any): any[];
-}
-
 export interface IFormat {
     sample(value: string, maxLength: number): string;
     sprintf(message: string, ...args: any[]): string;
+    filterToString(filter: any): string;
+    arrayToString(array: string[]): string;
+    enumToArray(obj: any): any[];
 }
 
 

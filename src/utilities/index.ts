@@ -5,7 +5,7 @@ import './Tags';
 import './Codes';
 import './SystemInfo';
 import './PageResetService';
-import './Enums'
+
 
 export * from './IFormat';
 export * from './ITimerService';
@@ -14,4 +14,3 @@ export * from './ITags';
 export * from './ICodes';
 export * from './ISystemInfo';
 export * from './IPageResetService';
-export * from './IEnums';

@@ -15,8 +15,7 @@ angular.module('pipServices', [
     'pipTags',
     'pipCodes',
     'pipSystemInfo',
-    'pipPageReset',
-    'pipEnums'
+    'pipPageReset'
 ]);
 
 export * from './translate';

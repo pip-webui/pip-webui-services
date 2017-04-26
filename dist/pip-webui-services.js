@@ -5683,14 +5683,13 @@ angular.module('pipServices', [
     'pipTags',
     'pipCodes',
     'pipSystemInfo',
-    'pipPageReset',
-    'pipEnums'
+    'pipPageReset'
 ]);
 __export(require("./translate"));
 __export(require("./session"));
 __export(require("./transactions"));
 __export(require("./routing"));
-},{"./routing":6,"./session":9,"./transactions":14,"./translate":19,"./utilities":28}],4:[function(require,module,exports){
+},{"./routing":6,"./session":9,"./transactions":14,"./translate":19,"./utilities":27}],4:[function(require,module,exports){
 "use strict";
 captureStateTranslations.$inject = ['$rootScope'];
 decorateBackStateService.$inject = ['$delegate', '$window', '$rootScope'];
@@ -6437,7 +6436,7 @@ angular
     .module('pipTranslate')
     .provider('pipTranslate', TranslateProvider)
     .run(initTranslate);
-},{"../utilities/PageResetService":23,"./Translation":18}],18:[function(require,module,exports){
+},{"../utilities/PageResetService":22,"./Translation":18}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Translation = (function () {
@@ -6610,27 +6609,6 @@ angular
 },{}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Enums = (function () {
-    function Enums() {
-        "ngInject";
-    }
-    Enums.prototype.enumToArray = function (obj) {
-        var result = [];
-        var key;
-        for (key in obj)
-            if (obj.hasOwnProperty(key))
-                result.push(obj[key]);
-        return result;
-    };
-    ;
-    return Enums;
-}());
-angular
-    .module('pipEnums', [])
-    .service('pipEnums', Enums);
-},{}],22:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Format = (function () {
     function Format() {
         this.cache = {};
@@ -6786,12 +6764,47 @@ var Format = (function () {
             this.cache[message] = this.parseFormat(message);
         return this.format(this.cache[message], args);
     };
+    Format.prototype.filterToString = function (filter) {
+        if (filter == null)
+            return null;
+        var result = '';
+        for (var key in filter) {
+            if (result.length > 0)
+                result += ';';
+            var value = filter[key];
+            if (value != null)
+                result += key + '=' + value;
+            else
+                result += key;
+        }
+        return result;
+    };
+    Format.prototype.arrayToString = function (array) {
+        var result = '';
+        if (array == null || array.length == 0)
+            return result;
+        for (var i = 0; i < array.length; i++) {
+            if (result.length > 0)
+                result += ',';
+            result += array[i];
+        }
+        return result;
+    };
+    Format.prototype.enumToArray = function (obj) {
+        var result = [];
+        var key;
+        for (key in obj)
+            if (obj.hasOwnProperty(key))
+                result.push(obj[key]);
+        return result;
+    };
+    ;
     return Format;
 }());
 angular
     .module('pipFormat', [])
     .service('pipFormat', Format);
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 hookResetEvents.$inject = ['$rootScope', 'pipPageReset'];
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -6834,7 +6847,7 @@ function hookResetEvents($rootScope, pipPageReset) {
 angular.module('pipPageReset', [])
     .service('pipPageReset', PageResetService)
     .run(hookResetEvents);
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ScrollService = (function () {
@@ -6863,7 +6876,7 @@ var ScrollService = (function () {
 angular
     .module('pipScroll', [])
     .service('pipScroll', ScrollService);
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SystemInfo = (function () {
@@ -6998,7 +7011,7 @@ var SystemInfo = (function () {
 angular
     .module('pipSystemInfo', [])
     .service('pipSystemInfo', SystemInfo);
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Tags = (function () {
@@ -7052,7 +7065,7 @@ var Tags = (function () {
 angular
     .module('pipTags', [])
     .service('pipTags', Tags);
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TimerEvent = (function () {
@@ -7142,7 +7155,7 @@ var TimerService = (function () {
 }());
 angular.module('pipTimer', [])
     .service('pipTimer', TimerService);
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Format");
@@ -7152,8 +7165,7 @@ require("./Tags");
 require("./Codes");
 require("./SystemInfo");
 require("./PageResetService");
-require("./Enums");
-},{"./Codes":20,"./Enums":21,"./Format":22,"./PageResetService":23,"./ScrollService":24,"./SystemInfo":25,"./Tags":26,"./TimerService":27}]},{},[3])(3)
+},{"./Codes":20,"./Format":21,"./PageResetService":22,"./ScrollService":23,"./SystemInfo":24,"./Tags":25,"./TimerService":26}]},{},[3])(3)
 });
 
 //# sourceMappingURL=pip-webui-services.js.map
