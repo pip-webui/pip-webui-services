@@ -140,6 +140,50 @@ class Format implements IFormat {
 
         return this.format(this.cache[message], args);
     }
+
+    public filterToString(filter: any): string {
+        if (filter == null) return null;
+        let result = ''; 
+
+        for (let key in filter) {
+            if (result.length > 0)
+                result += ';';
+
+            let value = filter[key];
+            if (value != null)
+                result += key + '=' + value
+            else
+                result += key
+        }
+
+        return result;
+    }
+
+    public arrayToString(array: string[]): string {
+        let result = ''; 
+
+        if (array == null || array.length == 0)
+            return result;
+
+        for (let i = 0; i < array.length; i++) {
+            if (result.length > 0)
+                result += ',';
+            result += array[i]
+        }
+
+        return result;
+    }    
+
+    public enumToArray(obj: any): any[] {
+        let result: any[] = [];
+        let key;
+
+        for (key in obj)
+            if (obj.hasOwnProperty(key))
+                result.push(obj[key]);
+
+        return result;
+    };    
 }
 
 
