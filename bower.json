@@ -1,39 +1,39 @@
 {
-    "name":  "pip-webui-services",
-    "version":  "2.0.2",
-    "description":  "Non-visual services for Pip.WebUI",
-    "main":  "",
-    "authors":  [
-                    {
-                        "name":  "Sergey Seroukhov",
-                        "email":  "seroukhov@gmail.com"
-                    },
-                    {
-                        "name":  "Alexey Dvoikin",
-                        "email":  "94dvoikin@gmail.com"
-                    },
-                    {
-                        "name":  "Mark Zontak",
-                        "email":  "mark@zontak.me"
-                    }
-                ],
-    "license":  "MIT",
-    "keywords":  [
-                     "pip",
-                     "webui",
-                     "services"
-                 ],
-    "homepage":  "https://github.com/pip-webui/pip-webui-services",
-    "ignore":  [
-                   ".gitignore",
-                   "node_modules",
-                   "bower_components",
-                   "src",
-                   "tests",
-                   "samples",
-                   "scripts",
-                   "build.*",
-                   "gulpfile.js",
-                   "karma.conf.js"
-               ]
+  "name": "pip-webui-services",
+  "version": "2.1.0",
+  "description": "Non-visual services for Pip.WebUI",
+  "main": "",
+  "authors": [
+    {
+      "name": "Sergey Seroukhov",
+      "email": "seroukhov@gmail.com"
+    },
+    {
+      "name": "Alexey Dvoikin",
+      "email": "94dvoikin@gmail.com"
+    },
+    {
+      "name": "Mark Zontak",
+      "email": "mark@zontak.me"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "pip",
+    "webui",
+    "services"
+  ],
+  "homepage": "https://github.com/pip-webui/pip-webui-services",
+  "ignore": [
+    ".gitignore",
+    "node_modules",
+    "bower_components",
+    "src",
+    "tests",
+    "samples",
+    "scripts",
+    "build.*",
+    "gulpfile.js",
+    "karma.conf.js"
+  ]
 }
