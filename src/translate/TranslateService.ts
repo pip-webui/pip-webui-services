@@ -31,9 +31,10 @@ class TranslateService implements ITranslateService {
         this._window = $window;
         this._mdDateLocale = $mdDateLocale;
 
-        if (this._persist && this._window.localStorage)
+        if (this._persist && this._window.localStorage) {
             this._translation.language = this._window.localStorage.getItem('language') || this._translation.language;
-
+            this.changeLocale(this._translation.language);
+        }
         this._log.debug("Set language to " + this._translation.language);
 
         this.save();
