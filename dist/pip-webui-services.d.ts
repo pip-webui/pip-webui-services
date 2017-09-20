@@ -1,5 +1,17 @@
 declare module pip.services {
 
+export let StateVar: string;
+export let PrevStateVar: string;
+
+
+let RedirectedStates: any;
+function decorateRedirectStateProvider($delegate: any): any;
+function addRedirectStateProviderDecorator($provide: any): void;
+function decorateRedirectStateService($delegate: any, $timeout: any): any;
+function addRedirectStateDecorator($provide: any): void;
+
+export let RoutingVar: string;
+
 export let IdentityRootVar: string;
 export let IdentityChangedEvent: string;
 
@@ -39,18 +51,6 @@ export interface ISessionProvider extends ng.IServiceProvider {
 export const SessionRootVar = "$session";
 export const SessionOpenedEvent = "pipSessionOpened";
 export const SessionClosedEvent = "pipSessionClosed";
-
-export let StateVar: string;
-export let PrevStateVar: string;
-
-
-let RedirectedStates: any;
-function decorateRedirectStateProvider($delegate: any): any;
-function addRedirectStateProviderDecorator($provide: any): void;
-function decorateRedirectStateService($delegate: any, $timeout: any): any;
-function addRedirectStateDecorator($provide: any): void;
-
-export let RoutingVar: string;
 
 
 export interface ITransactionService {
