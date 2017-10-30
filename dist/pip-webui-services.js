@@ -6922,32 +6922,30 @@ var SystemInfo = (function () {
             var browser = this.browserName;
             switch (browser) {
                 case "edge":
-                    version = (ua.split("Edge")[1]).split("/")[1];
+                    version = (ua.split("Edge")[1]) ? (ua.split("Edge")[1]).split("/")[1] : null;
                     break;
                 case "ie":
-                    version = (ua.split("MSIE ")[1]).split(";")[0];
+                    var subVersion = ua.split("MSIE ")[1] ? ua.split("MSIE ")[1] : ua.split("Trident/")[1];
+                    version = subVersion ? subVersion.split(";")[0] : null;
                     break;
                 case "ie11":
                     browser = "ie";
-                    version = (ua.split("; rv:")[1]).split(")")[0];
+                    version = (ua.split("; rv:")[1]) ? (ua.split("; rv:")[1]).split(")")[0] : null;
                     break;
                 case "firefox":
                     version = ua.split("Firefox/")[1];
                     break;
                 case "opera":
-                    version = ua.split("Version/")[1];
-                    break;
-                case "operaWebkit":
-                    version = ua.split("OPR/")[1];
+                    version = (ua.search(/Opera/) > -1) ? ua.split("Version/")[1] : ua.split("OPR/")[1];
                     break;
                 case "yabrowser":
-                    version = (ua.split("YaBrowser/")[1]).split(" ")[0];
+                    version = (ua.split("YaBrowser/")[1]) ? (ua.split("YaBrowser/")[1]).split(" ")[0] : null;
                     break;
                 case "chrome":
-                    version = (ua.split("Chrome/")[1]).split(" ")[0];
+                    version = (ua.split("Chrome/")[1]) ? (ua.split("Chrome/")[1]).split(" ")[0] : null;
                     break;
                 case "safari":
-                    version = (ua.split("Version/")[1]).split(" ")[0];
+                    version = (ua.split("Version/")[1]) ? (ua.split("Version/")[1]).split(" ")[0] : null;
                     break;
                 case "maxthon":
                     version = ua.split("Maxthon/")[1];
