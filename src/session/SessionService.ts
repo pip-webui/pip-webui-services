@@ -139,12 +139,13 @@ class SessionService implements ISessionService {
         if (session == null)
             throw new Error("Session cannot be null");
 
-        
+        this._session = session;
 
         this.notifyOpenListeners((error?: any, result?: any) => {
             if (!error) {
-                this._session = session;
                 this.start(session);
+            } else {
+                this.stop();
             }
         });
     }

@@ -5956,10 +5956,13 @@ var SessionService = (function () {
         var _this = this;
         if (session == null)
             throw new Error("Session cannot be null");
+        this._session = session;
         this.notifyOpenListeners(function (error, result) {
             if (!error) {
-                _this._session = session;
                 _this.start(session);
+            }
+            else {
+                _this.stop();
             }
         });
     };
