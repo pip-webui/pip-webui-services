@@ -5853,47 +5853,47 @@ var async = require('async');
 var SessionService = (function () {
     function SessionService(setRootVar, session, $rootScope, $log) {
         this.listeners = {};
+        this.notifyError = false;
         this._setRootVar = setRootVar;
         this._session = session;
         this._rootScope = $rootScope;
         this._log = $log;
         this.setRootVar();
     }
-    SessionService.prototype.notifyListeners = function (type, callback) {
+    SessionService.prototype.notifyListeners = function (type, successCallback) {
         if (!type) {
             throw new Error("Event object missing 'type' property.");
         }
         if (this.listeners[type] instanceof Array) {
             async.each(this.listeners[type], function (listener, callback) {
                 listener(callback);
-            }, callback);
+            }, successCallback);
         }
         else {
-            callback();
+            successCallback();
         }
     };
-    SessionService.prototype.notifyOpenListeners = function (successCallback) {
+    SessionService.prototype.notifyOpenListeners = function (callback) {
         var _this = this;
         this.notifyListeners('open', function (error, result) {
             if (!error) {
-                successCallback();
+                callback(null, result);
             }
             else {
-                _this._session = null;
                 _this._log.error(error);
-                throw new Error('Session open error:');
+                callback(error);
             }
         });
     };
-    SessionService.prototype.notifyCloseListeners = function (successCallback) {
+    SessionService.prototype.notifyCloseListeners = function (callback) {
         var _this = this;
         this.notifyListeners('close', function (error, result) {
             if (!error) {
-                successCallback();
+                callback(null, result);
             }
             else {
                 _this._log.error(error);
-                throw new Error('Session close error:');
+                callback(error);
             }
         });
     };
@@ -5956,9 +5956,11 @@ var SessionService = (function () {
         var _this = this;
         if (session == null)
             throw new Error("Session cannot be null");
-        this._session = session;
-        this.notifyOpenListeners(function () {
-            _this.start(session);
+        this.notifyOpenListeners(function (error, result) {
+            if (!error) {
+                _this._session = session;
+                _this.start(session);
+            }
         });
     };
     SessionService.prototype.close = function () {
@@ -5966,8 +5968,9 @@ var SessionService = (function () {
         if (this.session == null) {
             return;
         }
-        this.notifyCloseListeners(function () {
-            _this.stop();
+        this.notifyCloseListeners(function (error, result) {
+            if (!error)
+                _this.stop();
         });
     };
     return SessionService;

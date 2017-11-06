@@ -12,6 +12,7 @@ class SessionService implements ISessionService {
     private _rootScope: ng.IRootScopeService;
     private _log: ng.ILogService;
     private listeners: any = {};
+    private notifyError: boolean = false;
 
     public constructor(
         setRootVar: boolean,
@@ -27,40 +28,44 @@ class SessionService implements ISessionService {
         this.setRootVar();
     }
 
-    private notifyListeners(type: string, callback: (error?: any, result?: any) => void): void {
+    private notifyListeners(type: string, successCallback: (error?: any, result?: any) => void): void {
         if (!type){  
             throw new Error("Event object missing 'type' property.");
         }
 
         if (this.listeners[type] instanceof Array){
-            async.each(this.listeners[type], (listener, callback) => {
+            async.each(
+                this.listeners[type], 
+                (listener, callback) => {
                 listener(callback);
-            }, callback);
+            }, successCallback);
         } else {
-            callback();
+            successCallback();
         }
     }
 
-    private notifyOpenListeners(successCallback: () => void): void {
+    private notifyOpenListeners(callback: (error?: any, result?: any) => void): void {
         this.notifyListeners('open', (error: any, result: any) => {
             if (!error) {
-                successCallback();
+                callback(null, result);
             } else {
                 // reset session
-                this._session = null;
+                // this._session = null;
                 this._log.error(error);
-                throw new Error('Session open error:');
+                callback(error);
+                // throw new Error('Session open error:');
             }
         });
     }
 
-    private notifyCloseListeners(successCallback: () => void): void {
+    private notifyCloseListeners(callback: (error?: any, result?: any) => void): void {
         this.notifyListeners('close', (error: any, result: any) => {
             if (!error) {
-                successCallback();
+                callback(null, result);
             } else {
                 this._log.error(error);
-                throw new Error('Session close error:');
+                callback(error);
+                // throw new Error('Session close error:');
             }
         });
     }
@@ -134,18 +139,21 @@ class SessionService implements ISessionService {
         if (session == null)
             throw new Error("Session cannot be null");
 
-        this._session = session;
+        
 
-        this.notifyOpenListeners(() => {
-            this.start(session);
+        this.notifyOpenListeners((error?: any, result?: any) => {
+            if (!error) {
+                this._session = session;
+                this.start(session);
+            }
         });
     }
 
     public close() {
         if (this.session == null) { return }
 
-        this.notifyCloseListeners(() => {
-            this.stop();
+        this.notifyCloseListeners((error?: any, result?: any) => {
+            if (!error) this.stop();
         });
     }
 }
