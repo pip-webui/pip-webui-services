@@ -6951,7 +6951,7 @@ var SystemInfo = (function () {
                     version = (ua.split("Chrome/")[1]) ? (ua.split("Chrome/")[1]).split(" ")[0] : null;
                     break;
                 case "safari":
-                    version = (ua.split("Version/")[1]) ? (ua.split("Version/")[1]).split(" ")[0] : null;
+                    version = (ua.split("Safari/")[1]) ? (ua.split("Safari/")[1]).split(" ")[0] : null;
                     break;
                 case "maxthon":
                     version = ua.split("Maxthon/")[1];
@@ -6999,11 +6999,12 @@ var SystemInfo = (function () {
     SystemInfo.prototype.isSupported = function (supported) {
         if (!supported)
             supported = {
-                edge: 11,
+                edge: 12,
                 ie: 11,
                 firefox: 43,
                 opera: 35,
-                chrome: 47
+                chrome: 47,
+                safari: 600
             };
         var browser = this.browserName;
         var version = this.browserVersion;

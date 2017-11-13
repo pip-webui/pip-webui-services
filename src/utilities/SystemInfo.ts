@@ -58,7 +58,7 @@ class SystemInfo implements ISystemInfo {
                 version = (ua.split("Chrome/")[1]) ? (ua.split("Chrome/")[1]).split(" ")[0] : null;
                 break;
             case "safari":
-                version = (ua.split("Version/")[1]) ? (ua.split("Version/")[1]).split(" ")[0] : null;
+                version = (ua.split("Safari/")[1]) ? (ua.split("Safari/")[1]).split(" ")[0] : null;
                 break;
             case "maxthon":
                 version = ua.split("Maxthon/")[1];
@@ -106,11 +106,12 @@ class SystemInfo implements ISystemInfo {
     public isSupported(supported?: any): boolean {
         if (!supported) 
             supported = {
-                edge: 11,
+                edge: 12,
                 ie: 11,
                 firefox: 43, //4, for testing
                 opera: 35,
-                chrome: 47
+                chrome: 47,
+                safari: 600
             };
 
         let browser = this.browserName;
