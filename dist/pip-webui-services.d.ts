@@ -12,69 +12,6 @@ function addRedirectStateDecorator($provide: any): void;
 
 export let RoutingVar: string;
 
-
-
-export interface ICodes {
-    hash(value: string): number;
-    verification(): string;
-}
-
-export interface IFormat {
-    sample(value: string, maxLength: number): string;
-    sprintf(message: string, ...args: any[]): string;
-    filterToString(filter: any): string;
-    arrayToString(array: string[]): string;
-    enumToArray(obj: any): any[];
-}
-
-
-export interface IPageResetService {
-    reset(): void;
-    resetArea(area: string): void;
-}
-
-export interface IScrollService {
-    scrollTo(parentElement: any, childElement: any, animationDuration: any): void;
-}
-
-export interface ISystemInfo {
-    browserName: string;
-    browserVersion: string;
-    platform: string;
-    os: string;
-    isDesktop(): boolean;
-    isMobile(): boolean;
-    isCordova(): boolean;
-    isSupported(supported?: any): boolean;
-}
-
-export interface ITags {
-    normalizeOne(tag: string): string;
-    compressOne(tag: string): string;
-    equal(tag1: string, tag2: string): boolean;
-    normalizeAll(tags: any): string[];
-    compressAll(tags: any): string[];
-    extract(entity: any, searchFields?: string[]): string[];
-}
-
-export interface ITimerService {
-    isStarted(): boolean;
-    addEvent(event: string, timeout: number): void;
-    removeEvent(event: string): void;
-    clearEvents(): void;
-    start(): void;
-    stop(): void;
-}
-
-export let ResetPageEvent: string;
-export let ResetAreaEvent: string;
-export let ResetRootVar: string;
-export let ResetAreaRootVar: string;
-
-
-
-
-
 export let IdentityRootVar: string;
 export let IdentityChangedEvent: string;
 
@@ -215,6 +152,69 @@ export class Translation {
     translateSetWithPrefix(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
     translateSetWithPrefix2(prefix: string, keys: string[], keyProp: string, valueProp: string): any[];
 }
+
+
+
+export interface ICodes {
+    hash(value: string): number;
+    verification(): string;
+}
+
+export interface IFormat {
+    sample(value: string, maxLength: number): string;
+    sprintf(message: string, ...args: any[]): string;
+    filterToString(filter: any): string;
+    arrayToString(array: string[]): string;
+    enumToArray(obj: any): any[];
+}
+
+
+export interface IPageResetService {
+    reset(): void;
+    resetArea(area: string): void;
+}
+
+export interface IScrollService {
+    scrollTo(parentElement: any, childElement: any, animationDuration: any): void;
+}
+
+export interface ISystemInfo {
+    browserName: string;
+    browserVersion: string;
+    platform: string;
+    os: string;
+    isDesktop(): boolean;
+    isMobile(): boolean;
+    isCordova(): boolean;
+    isSupported(supported?: any): boolean;
+}
+
+export interface ITags {
+    normalizeOne(tag: string): string;
+    compressOne(tag: string): string;
+    equal(tag1: string, tag2: string): boolean;
+    normalizeAll(tags: any): string[];
+    compressAll(tags: any): string[];
+    extract(entity: any, searchFields?: string[]): string[];
+}
+
+export interface ITimerService {
+    isStarted(): boolean;
+    addEvent(event: string, timeout: number): void;
+    removeEvent(event: string): void;
+    clearEvents(): void;
+    start(): void;
+    stop(): void;
+}
+
+export let ResetPageEvent: string;
+export let ResetAreaEvent: string;
+export let ResetRootVar: string;
+export let ResetAreaRootVar: string;
+
+
+
+
 
 }
 
